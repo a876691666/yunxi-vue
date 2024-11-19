@@ -1,7 +1,7 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, Min, Length, IsOptional, IsBoolean, IsNumber } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsEnum, IsJSON, IsNumber, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
 
-import { PagingDto } from 'src/common/dto/index';
+import { PagingDto } from 'src/common/dto/index'
 
 export enum StatusEnum {
   STATIC = '0',
@@ -14,14 +14,14 @@ export class CreateDictTypeDto {
   })
   @IsString()
   @Length(0, 100)
-  dictName: string;
+  dictName: string
 
   @ApiProperty({
     required: true,
   })
   @IsString()
   @Length(0, 100)
-  dictType: string;
+  dictType: string
 
   @ApiProperty({
     required: true,
@@ -29,7 +29,7 @@ export class CreateDictTypeDto {
   @IsOptional()
   @IsString()
   @Length(0, 500)
-  remark?: string;
+  remark?: string
 
   @ApiProperty({
     required: false,
@@ -37,81 +37,81 @@ export class CreateDictTypeDto {
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }
 
 export class UpdateDictTypeDto extends CreateDictTypeDto {
   @IsNumber()
-  dictId: number;
+  dictId: number
 }
 
 export class ListDictType extends PagingDto {
   @IsOptional()
   @IsString()
   @Length(0, 100)
-  dictName?: string;
+  dictName?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 100)
-  dictType?: string;
+  dictType?: string
 
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }
 
 export class CreateDictDataDto {
   @IsString()
   @Length(0, 100)
-  dictType: string;
+  dictType: string
 
   @IsString()
   @Length(0, 100)
-  dictLabel: string;
+  dictLabel: string
 
   @IsString()
   @Length(0, 100)
-  dictValue: string;
+  dictValue: string
 
   @IsString()
   @Length(0, 100)
-  listClass: string;
+  listClass: string
 
   @IsOptional()
   @IsNumber()
-  dictSort?: number;
+  dictSort?: number
 
   @IsOptional()
   @IsString()
   @Length(0, 500)
-  remark?: string;
+  remark?: string
 
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }
 
 export class UpdateDictDataDto extends CreateDictDataDto {
   @IsNumber()
-  dictCode: number;
+  dictCode: number
 }
 
 export class ListDictData extends PagingDto {
   @IsOptional()
   @IsString()
   @Length(0, 100)
-  dictLabel?: string;
+  dictLabel?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 100)
-  dictType?: string;
+  dictType?: string
 
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }

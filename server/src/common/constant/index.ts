@@ -2,7 +2,7 @@
  * 登录用户 redis key 过期时间
  * 24h
  */
-export const LOGIN_TOKEN_EXPIRESIN = 1000 * 60 * 60 * 24;
+export const LOGIN_TOKEN_EXPIRESIN = 1000 * 60 * 60 * 24
 
 /**
  * 用户类型
@@ -10,7 +10,7 @@ export const LOGIN_TOKEN_EXPIRESIN = 1000 * 60 * 60 * 24;
  *
  * 20 客户端用户
  */
-export const enum SYS_USER_TYPE {
+export enum SYS_USER_TYPE {
   SYS = '00',
   CUSTOM = '10',
   CLIENT = '20',

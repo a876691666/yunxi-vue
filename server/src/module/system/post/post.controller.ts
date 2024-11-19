@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Res, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiConsumes, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
-import { PostService } from './post.service';
-import { CreatePostDto, UpdatePostDto, ListPostDto } from './dto/index';
-import { RequirePermission } from 'src/common/decorators/require-premission.decorator';
-import { Response } from 'express';
+import type { Response } from 'express'
+import type { PostService } from './post.service'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from '@nestjs/common'
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
+import { CreatePostDto, ListPostDto, UpdatePostDto } from './dto/index'
 
 @ApiTags('岗位管理')
 @Controller('system/post')
@@ -20,7 +20,7 @@ export class PostController {
   @RequirePermission('system:post:add')
   @Post('/')
   create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
+    return this.postService.create(createPostDto)
   }
 
   @ApiOperation({
@@ -33,7 +33,7 @@ export class PostController {
   @RequirePermission('system:post:list')
   @Get('/list')
   findAll(@Query() query: ListPostDto) {
-    return this.postService.findAll(query);
+    return this.postService.findAll(query)
   }
 
   @ApiOperation({
@@ -42,7 +42,7 @@ export class PostController {
   @RequirePermission('system:post:query')
   @Get('/:id')
   findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
+    return this.postService.findOne(+id)
   }
 
   @ApiOperation({
@@ -55,7 +55,7 @@ export class PostController {
   @RequirePermission('system:post:edit')
   @Put('/')
   update(@Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(updatePostDto);
+    return this.postService.update(updatePostDto)
   }
 
   @ApiOperation({
@@ -64,14 +64,14 @@ export class PostController {
   @RequirePermission('system:post:remove')
   @Delete('/:ids')
   remove(@Param('ids') ids: string) {
-    const menuIds = ids.split(',').map((id) => id);
-    return this.postService.remove(menuIds);
+    const menuIds = ids.split(',').map(id => id)
+    return this.postService.remove(menuIds)
   }
 
   @ApiOperation({ summary: '导出岗位管理xlsx文件' })
   @RequirePermission('system:post:export')
   @Post('/export')
   async export(@Res() res: Response, @Body() body: ListPostDto): Promise<void> {
-    return this.postService.export(res, body);
+    return this.postService.export(res, body)
   }
 }

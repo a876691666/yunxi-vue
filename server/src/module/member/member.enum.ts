@@ -2,9 +2,9 @@ export const MEMBER_ENUM = {
   USER: 'member_user:',
 
   LOGIN_TOKEN_KEY: 'member_login_token:',
-};
+}
 
-export const LOGIN_TOKEN_EXPIRESIN = 1000 * 60 * 60 * 24;
+export const LOGIN_TOKEN_EXPIRESIN = 1000 * 60 * 60 * 24
 
 /**
  * 删除标志:0代表存在 1代表删除

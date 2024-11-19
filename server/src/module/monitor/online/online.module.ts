@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { OnlineService } from './online.service';
-import { OnlineController } from './online.controller';
+import { Module } from '@nestjs/common'
+import { OnlineController } from './online.controller'
+import { OnlineService } from './online.service'
 
 @Module({
   controllers: [OnlineController],

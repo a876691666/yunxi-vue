@@ -1,11 +1,11 @@
-import { Global, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { RoleService } from './role.service';
-import { RoleController } from './role.controller';
-import { SysRoleEntity } from './entities/role.entity';
-import { SysRoleWithMenuEntity } from './entities/role-width-menu.entity';
-import { SysRoleWithDeptEntity } from './entities/role-width-dept.entity';
-import { SysDeptEntity } from '../dept/entities/dept.entity';
+import { Global, Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { SysDeptEntity } from '../dept/entities/dept.entity'
+import { SysRoleEntity } from './entities/role.entity'
+import { SysRoleWithDeptEntity } from './entities/role-width-dept.entity'
+import { SysRoleWithMenuEntity } from './entities/role-width-menu.entity'
+import { RoleController } from './role.controller'
+import { RoleService } from './role.service'
 
 @Global()
 @Module({

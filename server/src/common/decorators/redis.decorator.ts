@@ -1,57 +1,59 @@
-import { Inject } from '@nestjs/common';
-import { RedisService } from 'src/module/common/redis/redis.service';
-import { paramsKeyFormat } from '../utils/decorator';
+import { Inject } from '@nestjs/common'
+import { RedisService } from 'src/module/common/redis/redis.service'
+import { paramsKeyFormat } from '../utils/decorator'
 
 export function CacheEvict(CACHE_NAME: string, CACHE_KEY: string) {
-  const injectRedis = Inject(RedisService);
+  const injectRedis = Inject(RedisService)
 
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    injectRedis(target, 'redis');
+    injectRedis(target, 'redis')
 
-    const originMethod = descriptor.value;
+    const originMethod = descriptor.value
 
     descriptor.value = async function (...args: any[]) {
-      const key = paramsKeyFormat(originMethod, CACHE_KEY, args);
+      const key = paramsKeyFormat(originMethod, CACHE_KEY, args)
 
       if (key === '*') {
-        await this.redis.del(await this.redis.keys(`${CACHE_NAME}*`));
-      } else if (key !== null) {
-        await this.redis.del(`${CACHE_NAME}${key}`);
-      } else {
-        await this.redis.del(`${CACHE_NAME}${CACHE_KEY}`);
+        await this.redis.del(await this.redis.keys(`${CACHE_NAME}*`))
+      }
+      else if (key !== null) {
+        await this.redis.del(`${CACHE_NAME}${key}`)
+      }
+      else {
+        await this.redis.del(`${CACHE_NAME}${CACHE_KEY}`)
       }
 
-      return await originMethod.apply(this, args);
-    };
-  };
+      return await originMethod.apply(this, args)
+    }
+  }
 }
 
 export function Cacheable(CACHE_NAME: string, CACHE_KEY: string, CACHE_EXPIRESIN?: number) {
-  const injectRedis = Inject(RedisService);
+  const injectRedis = Inject(RedisService)
 
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    injectRedis(target, 'redis');
+    injectRedis(target, 'redis')
 
-    const originMethod = descriptor.value;
+    const originMethod = descriptor.value
 
     descriptor.value = async function (...args: any[]) {
-      const key = paramsKeyFormat(originMethod, CACHE_KEY, args);
+      const key = paramsKeyFormat(originMethod, CACHE_KEY, args)
 
       if (key === null) {
-        return await originMethod.apply(this, args);
+        return await originMethod.apply(this, args)
       }
 
-      const cacheResult = await this.redis.get(`${CACHE_NAME}${key}`);
+      const cacheResult = await this.redis.get(`${CACHE_NAME}${key}`)
 
       if (!cacheResult) {
-        const result = await originMethod.apply(this, args);
+        const result = await originMethod.apply(this, args)
 
-        await this.redis.set(`${CACHE_NAME}${key}`, result, CACHE_EXPIRESIN);
+        await this.redis.set(`${CACHE_NAME}${key}`, result, CACHE_EXPIRESIN)
 
-        return result;
+        return result
       }
 
-      return cacheResult;
-    };
-  };
+      return cacheResult
+    }
+  }
 }

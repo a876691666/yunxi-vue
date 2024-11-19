@@ -1,9 +1,9 @@
-import { Module, Global } from '@nestjs/common';
-import { CacheModule } from './cache/cache.module';
-import { LoginlogModule } from './loginlog/loginlog.module';
-import { OnlineModule } from './online/online.module';
-import { OperlogModule } from './operlog/operlog.module';
-import { ServerModule } from './server/server.module';
+import { Global, Module } from '@nestjs/common'
+import { CacheModule } from './cache/cache.module'
+import { LoginlogModule } from './loginlog/loginlog.module'
+import { OnlineModule } from './online/online.module'
+import { OperlogModule } from './operlog/operlog.module'
+import { ServerModule } from './server/server.module'
 
 @Global()
 @Module({

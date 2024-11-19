@@ -1,220 +1,220 @@
-import { IsString, IsNumber, IsDate, IsOptional, Length, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { PagingDto } from 'src/common/dto';
-import { MemberUserEntity } from './member-user.entity';
+import type { MemberUserEntity } from './member-user.entity'
+import { ApiProperty } from '@nestjs/swagger'
+import { IsDate, IsNumber, IsOptional, IsString, Length, MaxLength } from 'class-validator'
+import { PagingDto } from 'src/common/dto'
 
 export class CreateMemberUserDto {
   @ApiProperty({ required: true })
   @IsString()
-  userName: string;
+  userName: string
 
   @ApiProperty({ required: true })
   @IsString()
-  nickName: string;
+  nickName: string
 
   @ApiProperty({ required: true })
   @IsString()
-  email: string;
+  email: string
 
   @ApiProperty({ required: true })
   @IsString()
-  phonenumber: string;
+  phonenumber: string
 
   @ApiProperty({ required: true })
   @IsString()
-  sex: string;
+  sex: string
 
   @ApiProperty({ required: true })
   @IsString()
-  password: string;
+  password: string
 
   @ApiProperty({ required: true })
   @IsString()
-  status: string;
+  status: string
 
   @ApiProperty({ required: true })
   @IsString()
-  delFlag: string;
+  delFlag: string
 
   @ApiProperty({ required: true })
   @IsString()
-  loginIp: string;
+  loginIp: string
 
   @ApiProperty({ required: true })
   @IsString()
-  createBy: string;
+  createBy: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  createTime?: Date;
+  createTime?: Date
 
   @ApiProperty({ required: true })
   @IsString()
-  updateBy: string;
+  updateBy: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  updateTime?: Date;
+  updateTime?: Date
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  remark?: string;
+  remark?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  userId?: number;
+  userId?: number
 
   @ApiProperty({ required: true })
   @IsString()
-  avatar: string;
+  avatar: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  loginDate?: Date;
+  loginDate?: Date
 }
 
 export class UpdateMemberUserDto {
   @ApiProperty({ required: true })
   @IsNumber()
-  userId: number;
+  userId: number
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  userName?: string;
+  userName?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  remark?: string;
+  remark?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  nickName?: string;
+  nickName?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  email?: string;
+  email?: string
 
   @ApiProperty({ required: false })
   @MaxLength(11)
   @IsOptional()
   @IsString()
-  phonenumber?: string;
+  phonenumber?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  sex?: string;
+  sex?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  password?: string;
+  password?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  status?: string;
+  status?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  delFlag?: string;
+  delFlag?: string
 }
 
 export class ListMemberUserDto extends PagingDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  userName: string;
+  userName: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  nickName: string;
+  nickName: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  email: string;
+  email: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  phonenumber: string;
+  phonenumber: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  sex: string;
+  sex: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  password: string;
+  password: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  status: string;
+  status: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  delFlag: string;
+  delFlag: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  loginIp: string;
+  loginIp: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  createBy: string;
+  createBy: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  createTime?: Date;
+  createTime?: Date
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  updateBy: string;
+  updateBy: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  updateTime?: Date;
+  updateTime?: Date
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  remark?: string;
+  remark?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  userId?: number;
+  userId?: number
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  avatar: string;
+  avatar: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  loginDate?: Date;
+  loginDate?: Date
 }
 
 export class ResetPwdDto {
@@ -222,17 +222,17 @@ export class ResetPwdDto {
     required: true,
   })
   @IsNumber()
-  userId: number;
+  userId: number
 
   @ApiProperty({
     required: true,
   })
   @IsString()
   @Length(5, 20)
-  password: string;
+  password: string
 }
 
-export type MemberUserType = {
-  token: string;
-  user: MemberUserEntity;
-};
+export interface MemberUserType {
+  token: string
+  user: MemberUserEntity
+}

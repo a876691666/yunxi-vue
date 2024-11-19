@@ -1,7 +1,7 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, Min, Length, IsOptional, IsBoolean, IsNumber } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsEnum, IsJSON, IsNumber, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
 
-import { PagingDto } from 'src/common/dto/index';
+import { PagingDto } from 'src/common/dto/index'
 
 export enum StatusEnum {
   STATIC = '0',
@@ -14,19 +14,19 @@ export enum TypeEnum {
 export class CreateConfigDto {
   @IsString()
   @Length(0, 100)
-  configName: string;
+  configName: string
 
   @IsString()
   @Length(0, 500)
-  configValue: string;
+  configValue: string
 
   @IsString()
   @Length(0, 100)
-  configKey: string;
+  configKey: string
 
   @IsString()
   @IsEnum(TypeEnum)
-  configType: string;
+  configType: string
 
   @ApiProperty({
     required: true,
@@ -34,7 +34,7 @@ export class CreateConfigDto {
   @IsOptional()
   @IsString()
   @Length(0, 500)
-  remark?: string;
+  remark?: string
 
   @ApiProperty({
     required: false,
@@ -42,27 +42,27 @@ export class CreateConfigDto {
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }
 
 export class UpdateConfigDto extends CreateConfigDto {
   @IsNumber()
-  configId: number;
+  configId: number
 }
 
 export class ListConfigDto extends PagingDto {
   @IsOptional()
   @IsString()
   @Length(0, 100)
-  configName?: string;
+  configName?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 100)
-  configKey?: string;
+  configKey?: string
 
   @IsOptional()
   @IsString()
   @IsEnum(TypeEnum)
-  configType?: string;
+  configType?: string
 }

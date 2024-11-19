@@ -1,15 +1,17 @@
-import { Controller, Get, Post, Body, HttpCode } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { MainService } from './main.service';
-import { RegisterDto, LoginDto } from './dto/index';
-import { createMath } from 'src/common/utils/captcha';
-import { ResultData } from 'src/common/utils/result';
-import { GenerateUUID } from 'src/common/utils/index';
-import { RedisService } from 'src/module/common/redis/redis.service';
-import { CacheEnum } from 'src/common/enum/index';
-import { ConfigService } from 'src/module/system/config/config.service';
-import { ClientInfo, ClientInfoDto } from 'src/common/decorators/common.decorator';
-import { NotRequireAuth, User, UserDto } from 'src/module/system/user/user.decorator';
+import type { ClientInfoDto } from 'src/common/decorators/common.decorator'
+import type { RedisService } from 'src/module/common/redis/redis.service'
+import type { ConfigService } from 'src/module/system/config/config.service'
+import type { UserDto } from 'src/module/system/user/user.decorator'
+import type { MainService } from './main.service'
+import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ClientInfo } from 'src/common/decorators/common.decorator'
+import { CacheEnum } from 'src/common/enum/index'
+import { createMath } from 'src/common/utils/captcha'
+import { GenerateUUID } from 'src/common/utils/index'
+import { ResultData } from 'src/common/utils/result'
+import { NotRequireAuth, User } from 'src/module/system/user/user.decorator'
+import { LoginDto, RegisterDto } from './dto/index'
 
 @ApiTags('根目录')
 @Controller('/')
@@ -19,6 +21,7 @@ export class MainController {
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
   ) {}
+
   @ApiOperation({
     summary: '用户登录',
   })
@@ -29,7 +32,7 @@ export class MainController {
   @Post('/login')
   @HttpCode(200)
   login(@Body() user: LoginDto, @ClientInfo() clientInfo: ClientInfoDto) {
-    return this.mainService.login(user, clientInfo);
+    return this.mainService.login(user, clientInfo)
   }
 
   @ApiOperation({
@@ -44,9 +47,9 @@ export class MainController {
   @HttpCode(200)
   async logout(@User() user: UserDto, @ClientInfo() clientInfo: ClientInfoDto) {
     if (user?.token) {
-      await this.redisService.del(`${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`);
+      await this.redisService.del(`${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`)
     }
-    return this.mainService.logout(clientInfo);
+    return this.mainService.logout(clientInfo)
   }
 
   @ApiOperation({
@@ -59,7 +62,7 @@ export class MainController {
   @Post('/register')
   @HttpCode(200)
   register(@Body() user: RegisterDto) {
-    return this.mainService.register(user);
+    return this.mainService.register(user)
   }
 
   @ApiOperation({
@@ -67,24 +70,25 @@ export class MainController {
   })
   @Get('/captchaImage')
   async captchaImage() {
-    //是否开启验证码
-    const enable = await this.configService.getConfigValue('sys.account.captchaEnabled');
-    const captchaEnabled: boolean = enable === 'true';
+    // 是否开启验证码
+    const enable = await this.configService.getConfigValue('sys.account.captchaEnabled')
+    const captchaEnabled: boolean = enable === 'true'
     const data = {
       captchaEnabled,
       img: '',
       uuid: '',
-    };
+    }
     try {
       if (captchaEnabled) {
-        const captchaInfo = createMath();
-        data.img = captchaInfo.data;
-        data.uuid = GenerateUUID();
-        await this.redisService.set(CacheEnum.CAPTCHA_CODE_KEY + data.uuid, captchaInfo.text.toLowerCase(), 1000 * 60 * 5);
+        const captchaInfo = createMath()
+        data.img = captchaInfo.data
+        data.uuid = GenerateUUID()
+        await this.redisService.set(CacheEnum.CAPTCHA_CODE_KEY + data.uuid, captchaInfo.text.toLowerCase(), 1000 * 60 * 5)
       }
-      return ResultData.ok(data, '操作成功');
-    } catch (err) {
-      return ResultData.fail(500, '生成验证码错误，请重试');
+      return ResultData.ok(data, '操作成功')
+    }
+    catch {
+      return ResultData.fail(500, '生成验证码错误，请重试')
     }
   }
 
@@ -99,7 +103,7 @@ export class MainController {
       permissions: user.permissions,
       roles: user.roles,
       user: user.user,
-    };
+    }
   }
 
   @ApiOperation({
@@ -107,7 +111,7 @@ export class MainController {
   })
   @Get('/getRouters')
   getRouters(@User() user: UserDto) {
-    const userId = user.user.userId.toString();
-    return this.mainService.getRouters(+userId);
+    const userId = user.user.userId.toString()
+    return this.mainService.getRouters(+userId)
   }
 }
