@@ -33,6 +33,12 @@ export class ToolController {
     return this.toolService.synchDb(tableName);
   }
 
+  @ApiOperation({ summary: '生成代码' })
+  @Get('/gen/batchGenCode')
+  batchGenCode(@Query() tables: TableName, @Res() res: Response) {
+    return this.toolService.batchGenCode(tables, res);
+  }
+
   @ApiOperation({ summary: '查询表详细信息' })
   @Get('/gen/:id')
   gen(@Param('id') id: string) {
@@ -49,12 +55,6 @@ export class ToolController {
   @Delete('/gen/:id')
   remove(@Param('id') id: string) {
     return this.toolService.remove(+id);
-  }
-
-  @ApiOperation({ summary: '生成代码' })
-  @Get('/gen/batchGenCode/zip')
-  batchGenCode(@Query() tables: TableName, @Res() res: Response) {
-    return this.toolService.batchGenCode(tables, res);
   }
 
   @ApiOperation({ summary: '查看代码' })

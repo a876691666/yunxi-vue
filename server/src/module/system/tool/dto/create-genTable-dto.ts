@@ -49,7 +49,7 @@ export class TableName {
     required: true,
   })
   @IsString()
-  tableNames: string;
+  tableIdStr: string;
 }
 export class TableId {
   @ApiProperty({

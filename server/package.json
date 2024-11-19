@@ -45,6 +45,7 @@
     "exceljs": "^4.4.0",
     "express-rate-limit": "^7.1.5",
     "fs-extra": "^11.2.0",
+    "glob": "^11.0.0",
     "helmet": "^7.1.0",
     "iconv-lite": "^0.6.3",
     "ioredis": "^5.4.1",
@@ -63,6 +64,7 @@
     "typeorm": "^0.3.20",
     "useragent": "^2.3.0",
     "uuid": "^9.0.1",
+    "velocityjs": "^2.0.6",
     "winston": "^3.15.0",
     "winston-daily-rotate-file": "^5.0.0"
   },

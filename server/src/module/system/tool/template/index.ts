@@ -1,27 +1,51 @@
-import { apiTempalte } from './vue/api.js.js';
-import { indexVue } from './vue/indexVue.vue.js';
-import { dialogVue } from './vue/dialogVue.vue.js';
-import { entityTem } from './nestjs/entity.js';
-import { dtoTem } from './nestjs/dto.js';
-import { controllerTem } from './nestjs/controller.js';
-import { moduleTem } from './nestjs/module.js';
-import { serviceTem } from './nestjs/service.js';
+import { glob } from 'glob';
+import * as path from 'path';
+import * as fs from 'fs';
+import velocityjs from 'velocityjs';
 
-const templates = {
-  'tool/template/nestjs/entity.ts.vm': entityTem,
-  'tool/template/nestjs/dto.ts.vm': dtoTem,
-  'tool/template/nestjs/controller.ts.vm': controllerTem,
-  'tool/template/nestjs/service.ts.vm': serviceTem,
-  'tool/template/nestjs/module.ts.vm': moduleTem,
-  'tool/template/vue/api.js.vm': apiTempalte,
-  'tool/template/vue/indexVue.vue.vm': indexVue,
-  'tool/template/vue/dialogVue.vue.vm': dialogVue,
+const rootPath = path.join(process.cwd(), 'src/module/system/tool/template');
+const previewRootPath = path.join(process.cwd(), 'src/module/system/tool/template');
+
+//匹配所有换行符到#之间的内容，并且替换为空，兼容crlf和lf
+const replaceSpace = (content: string) => {
+  return content.replace(/\r?\n\s*#/g, '\n#');
 };
 
-export const index = (options) => {
-  const result = {};
-  for (const [path, templateFunc] of Object.entries(templates)) {
-    result[path] = templateFunc(options);
+// 传入：xx{aa}x{c} 和 { aa: 'bb', c: 1 } 返回 xxbbx1
+const replaceStr = (content: string, options: { [key: string]: string }) => {
+  return content.replace(/\{([^}]+)\}/g, (match, key) => {
+    return options[key] || match;
+  });
+};
+
+const templateList = glob.sync('./**/*.*.vm').map((file) => {
+  // 减去rootPath部分的路径
+  const relativePath = path.relative(rootPath, file);
+  const name = relativePath.replace('.vm', '').replace(/\\/g, '/');
+
+  // 减去rootPath部分的路径
+  const previewRelativePath = path.relative(previewRootPath, file);
+  const previewName = previewRelativePath.replace(/\\/g, '/');
+
+  return [name, previewName, replaceSpace(fs.readFileSync(file, 'utf-8'))];
+});
+
+export const gen = (options) => {
+  const result: {
+    [name: string]: string;
+  } = {};
+  for (const [name, _previewName, content] of templateList) {
+    result[replaceStr(name, options)] = velocityjs.render(content, options);
+  }
+  return result;
+};
+
+export const previewGen = (options) => {
+  const result: {
+    [name: string]: string;
+  } = {};
+  for (const [_name, previewName, content] of templateList) {
+    result[replaceStr(previewName, options)] = velocityjs.render(content, options);
   }
   return result;
 };

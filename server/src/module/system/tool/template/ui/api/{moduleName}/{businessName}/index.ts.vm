@@ -1,0 +1,59 @@
+import { defHttp } from '@/utils/http/axios';
+import { ID, IDS, commonExport } from '@/api/base';
+import { ${BusinessName}VO, ${BusinessName}Form, ${BusinessName}Query } from './model';
+
+/**
+ * 查询${functionName}列表
+ * @param params
+ * @returns
+ */
+export function ${businessName}List(params?: ${BusinessName}Query) {
+  return defHttp.get<${BusinessName}VO[]>({ url: '/${moduleName}/${businessName}/list', params });
+}
+
+#if($tplCategory != 'tree')
+/**
+ * 导出${functionName}列表
+ * @param params
+ * @returns
+ */
+export function ${businessName}Export(params?: ${BusinessName}Query) {
+  return commonExport('/${moduleName}/${businessName}/export', params ?? {});
+}
+#end
+
+/**
+ * 查询${functionName}详细
+ * @param ${primaryKey} id
+ * @returns
+ */
+export function ${businessName}Info(${primaryKey}: ID) {
+  return defHttp.get<${BusinessName}VO>({ url: '/${moduleName}/${businessName}/' + ${primaryKey} });
+}
+
+/**
+ * 新增${functionName}
+ * @param data
+ * @returns
+ */
+export function ${businessName}Add(data: ${BusinessName}Form) {
+  return defHttp.postWithMsg<void>({ url: '/${moduleName}/${businessName}', data });
+}
+
+/**
+ * 更新${functionName}
+ * @param data
+ * @returns
+ */
+export function ${businessName}Update(data: ${BusinessName}Form) {
+  return defHttp.putWithMsg<void>({ url: '/${moduleName}/${businessName}', data });
+}
+
+/**
+ * 删除${functionName}
+ * @param ${primaryKey} id
+ * @returns
+ */
+export function ${businessName}Remove(${primaryKey}: ID | IDS) {
+  return defHttp.deleteWithMsg<void>({ url: '/${moduleName}/${businessName}/' + ${primaryKey} },);
+}

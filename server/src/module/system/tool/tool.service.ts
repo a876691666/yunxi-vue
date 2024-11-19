@@ -11,7 +11,7 @@ import toolConfig from './config';
 import { GenConstants } from 'src/common/constant/gen.constant';
 import { camelCase, toLower } from 'lodash';
 import { arraysContains, getColumnLength, StringUtils, capitalize } from './utils/index';
-import { index as templateIndex } from './template/index';
+import { gen, previewGen } from './template/index';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -60,8 +60,8 @@ export class ToolService {
    * @returns
    */
   async importTable(table: TableName, user: UserDto) {
-    const tableNames = table.tableNames.split(',');
-    const tableList = await this.selectDbTableListByNames(tableNames);
+    const tableIds = table.tableIdStr.split(',');
+    const tableList = await this.selectDbTableListByNames(tableIds);
 
     for (const table of tableList) {
       const tableName = table.tableName;
@@ -206,6 +206,7 @@ export class ToolService {
    */
   async genUpdate(genTableUpdate: GenTableUpdate) {
     for (const item of genTableUpdate.columns) {
+      delete (item as any)._X_ROW_KEY;
       if (item.columnId) await this.genTableColumnEntityRep.update({ columnId: item.columnId }, item);
     }
     delete genTableUpdate.columns;
@@ -245,10 +246,10 @@ export class ToolService {
     archive.on('error', (err) => {
       throw err;
     });
-    const tableNamesList = table.tableNames.split(',');
+    const tableIdList = table.tableIdStr.split(',');
     const tableList = await Promise.all(
-      tableNamesList.map(async (item) => {
-        const data = await this.genTableEntityRep.findOne({ where: { tableName: item, delFlag: '0' } });
+      tableIdList.map(async (item) => {
+        const data = await this.genTableEntityRep.findOne({ where: { tableId: Number(item), delFlag: '0' } });
         const columns = await this.genTableColumnEntityRep.find({ where: { tableId: data.tableId, delFlag: '0' } });
         const primaryKey = await this.getPrimaryKey(columns);
         return { primaryKey, BusinessName: data.businessName, ...data, columns };
@@ -257,28 +258,17 @@ export class ToolService {
 
     archive.pipe(output);
     for (const item of tableList) {
-      const list = templateIndex(item);
-      const templates = [
-        { content: list['tool/template/nestjs/entity.ts.vm'], path: `nestjs/${item.BusinessName}/entities/${item.businessName}.entity.ts` },
-        { content: list['tool/template/nestjs/dto.ts.vm'], path: `nestjs/${item.BusinessName}/dto/${item.businessName}.dto.ts` },
-        { content: list['tool/template/nestjs/controller.ts.vm'], path: `nestjs/${item.BusinessName}/${item.businessName}.controller.ts` },
-        { content: list['tool/template/nestjs/service.ts.vm'], path: `nestjs/${item.BusinessName}/${item.businessName}.service.ts` },
-        { content: list['tool/template/nestjs/module.ts.vm'], path: `nestjs/${item.BusinessName}/${item.businessName}.module.ts` },
-        { content: list['tool/template/vue/api.js.vm'], path: `vue/${item.BusinessName}/${item.businessName}.js` },
-        { content: list['tool/template/vue/indexVue.vue.vm'], path: `vue/${item.BusinessName}/${item.businessName}/index.vue` },
-        { content: list['tool/template/vue/dialogVue.vue.vm'], path: `vue/${item.BusinessName}/${item.businessName}/components/indexDialog.vue` },
-      ];
+      const list = gen(item);
 
-      for (const template of templates) {
-        if (!template.content) throw new Error('One or more templates are undefined');
-        archive.append(Buffer.from(template.content), { name: template.path });
-      }
+      Object.keys(list).forEach((key) => {
+        archive.append(Buffer.from(list[key]), { name: key });
+      });
     }
 
     await archive.finalize();
   }
+
   /**
-   *
    * 查询主键id
    */
   async getPrimaryKey(columns: GenTableColumnEntity[]) {
@@ -300,7 +290,7 @@ export class ToolService {
     const columns = await this.genTableColumnEntityRep.find({ where: { tableId: id, delFlag: '0' } });
     const primaryKey = await this.getPrimaryKey(columns);
     const info = { primaryKey, BusinessName: capitalize(data.businessName), ...data, columns };
-    return ResultData.ok(templateIndex(info));
+    return ResultData.ok(previewGen(info));
   }
   /**
    * 查询db数据库列表
