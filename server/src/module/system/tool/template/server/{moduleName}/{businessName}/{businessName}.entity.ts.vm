@@ -1,0 +1,32 @@
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { BaseEntity } from 'src/common/entities/base';
+
+@Entity('${tableName}', {
+  comment: '${tableComment}',
+})
+export class ${BusinessName}Entity extends BaseEntity {
+    #foreach($column in $columns)
+        #set($javaType = $column.javaType)
+        #set($javaField = $column.javaField)
+        #set($isPk = $column.isPk)
+        #set($columnType = $column.columnType)
+        #set($columnComment = $column.columnComment)
+        #if($javaField == 'createBy' || $javaField == 'updateBy' || $javaField == 'delFlag' || $javaField == 'status' || $javaField == 'createTime' || $javaField == 'updateTime')
+        #elseif($isPk == '1')
+  @PrimaryGeneratedColumn({ type: '${columnType}', name: '${javaField}', comment: '${columnComment}' })
+  public ${javaField}:#if($column.javaField.indexOf("id") != -1 || $column.javaField.indexOf("Id") != -1) string | number;
+                        #elseif($column.javaType == 'Long' || $column.javaType == 'Integer' || $column.javaType == 'Double' || $column.javaType == 'Float' || $column.javaType == 'BigDecimal') number;
+                        #elseif($column.javaType == 'Boolean') boolean;
+                        #else string;
+                    #end
+        #elseif(!$GenConstants.BASE_ENTITY.contains($javaField))
+  @Column({ type: '${columnType}', name: '${javaField}', comment: '${columnComment}' })
+  public ${javaField}:#if($column.javaField.indexOf("id") != -1 || $column.javaField.indexOf("Id") != -1) string | number;
+                        #elseif($column.javaType == 'Long' || $column.javaType == 'Integer' || $column.javaType == 'Double' || $column.javaType == 'Float' || $column.javaType == 'BigDecimal') number;
+                        #elseif($column.javaType == 'Boolean') boolean;
+                        #else string;
+                    #end
+        #end
+    #end
+}

@@ -207,6 +207,7 @@ export class ToolService {
   async genUpdate(genTableUpdate: GenTableUpdate) {
     for (const item of genTableUpdate.columns) {
       delete (item as any)._X_ROW_KEY;
+      delete (item as any).query;
       if (item.columnId) await this.genTableColumnEntityRep.update({ columnId: item.columnId }, item);
     }
     delete genTableUpdate.columns;
@@ -246,13 +247,14 @@ export class ToolService {
     archive.on('error', (err) => {
       throw err;
     });
+
     const tableIdList = table.tableIdStr.split(',');
     const tableList = await Promise.all(
       tableIdList.map(async (item) => {
         const data = await this.genTableEntityRep.findOne({ where: { tableId: Number(item), delFlag: '0' } });
         const columns = await this.genTableColumnEntityRep.find({ where: { tableId: data.tableId, delFlag: '0' } });
         const primaryKey = await this.getPrimaryKey(columns);
-        return { primaryKey, BusinessName: data.businessName, ...data, columns };
+        return { primaryKey, BusinessName: capitalize(data.businessName), permissionPrefix: `${data.moduleName}:${data.businessName}`, ...data, columns };
       }),
     );
 
@@ -289,7 +291,7 @@ export class ToolService {
     const data = await this.genTableEntityRep.findOne({ where: { tableId: id, delFlag: '0' } });
     const columns = await this.genTableColumnEntityRep.find({ where: { tableId: id, delFlag: '0' } });
     const primaryKey = await this.getPrimaryKey(columns);
-    const info = { primaryKey, BusinessName: capitalize(data.businessName), ...data, columns };
+    const info = { primaryKey, BusinessName: capitalize(data.businessName), permissionPrefix: `${data.moduleName}:${data.businessName}`, ...data, columns };
     return ResultData.ok(previewGen(info));
   }
   /**

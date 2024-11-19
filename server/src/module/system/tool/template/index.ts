@@ -18,6 +18,24 @@ const replaceStr = (content: string, options: { [key: string]: string }) => {
   });
 };
 
+function getValidatorDecorator(javaType: string) {
+  if (javaType === 'Boolean') return `@IsBoolean()`;
+  if (javaType === 'String') return `@IsString()`;
+  if (javaType === 'Date') return `@IsDate()`;
+  if (javaType === 'Number') return `@IsNumber()`;
+  if ([`Long`, `Integer`, `Double`, `Float`, `BigDecimal`].includes(javaType)) return `@IsNumber()`;
+  return ``;
+}
+
+function getTsType(javaType: string) {
+  if (javaType === 'Boolean') return `boolean`;
+  if (javaType === 'String') return `string`;
+  if (javaType === 'Date') return `Date`;
+  if (javaType === 'Number') return `number`;
+  if ([`Long`, `Integer`, `Double`, `Float`, `BigDecimal`].includes(javaType)) return `number`;
+  return `any`;
+}
+
 const templateList = glob.sync('./**/*.*.vm').map((file) => {
   // 减去rootPath部分的路径
   const relativePath = path.relative(rootPath, file);
@@ -34,8 +52,9 @@ export const gen = (options) => {
   const result: {
     [name: string]: string;
   } = {};
+
   for (const [name, _previewName, content] of templateList) {
-    result[replaceStr(name, options)] = velocityjs.render(content, options);
+    result[replaceStr(name, options)] = velocityjs.render(content, { getValidatorDecorator, getTsType, ...options });
   }
   return result;
 };
@@ -45,7 +64,7 @@ export const previewGen = (options) => {
     [name: string]: string;
   } = {};
   for (const [_name, previewName, content] of templateList) {
-    result[replaceStr(previewName, options)] = velocityjs.render(content, options);
+    result[replaceStr(previewName, options)] = velocityjs.render(content, { getValidatorDecorator, getTsType, ...options });
   }
   return result;
 };
