@@ -1,13 +1,14 @@
-import { Injectable, Inject, Scope } from '@nestjs/common';
-import { IsNull, Not, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CreateOperlogDto } from './dto/create-operlog.dto';
-import { UpdateOperlogDto } from './dto/update-operlog.dto';
-import { SysOperlogEntity } from './entities/operlog.entity';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
-import { ResultData } from 'src/common/utils/result';
-import { AxiosService } from 'src/module/common/axios/axios.service';
+import type { Request } from 'express'
+import type { AxiosService } from 'src/module/common/axios/axios.service'
+import type { Repository } from 'typeorm'
+import type { CreateOperlogDto } from './dto/create-operlog.dto'
+import type { UpdateOperlogDto } from './dto/update-operlog.dto'
+import { Inject, Injectable, Scope } from '@nestjs/common'
+import { REQUEST } from '@nestjs/core'
+import { InjectRepository } from '@nestjs/typeorm'
+import { ResultData } from 'src/common/utils/result'
+import { IsNull, Not } from 'typeorm'
+import { SysOperlogEntity } from './entities/operlog.entity'
 
 @Injectable({ scope: Scope.REQUEST })
 export class OperlogService {
@@ -18,49 +19,50 @@ export class OperlogService {
     private readonly sysOperlogEntityRep: Repository<SysOperlogEntity>,
     private readonly axiosService: AxiosService,
   ) {}
+
   create(createOperlogDto: CreateOperlogDto) {
-    return 'This action adds a new operlog';
+    return 'This action adds a new operlog'
   }
 
   async findAll(query: any) {
-    const entity = this.sysOperlogEntityRep.createQueryBuilder('entity');
+    const entity = this.sysOperlogEntityRep.createQueryBuilder('entity')
 
     if (query.pageSize && query.pageNum) {
-      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize);
+      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     }
 
     const orderMap = {
       descending: 'DESC',
       ascending: 'ASC',
-    };
-
-    if (query.orderByColumn && query.isAsc) {
-      entity.orderBy(`entity.${query.orderByColumn}`, orderMap[query.isAsc]);
     }
 
-    const [list, total] = await entity.getManyAndCount();
+    if (query.orderByColumn && query.isAsc) {
+      entity.orderBy(`entity.${query.orderByColumn}`, orderMap[query.isAsc])
+    }
+
+    const [list, total] = await entity.getManyAndCount()
 
     return ResultData.ok({
       list,
       total,
-    });
+    })
   }
 
   async removeAll() {
-    await this.sysOperlogEntityRep.delete({ operId: Not(IsNull()) });
-    return ResultData.ok();
+    await this.sysOperlogEntityRep.delete({ operId: Not(IsNull()) })
+    return ResultData.ok()
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} operlog`;
+    return `This action returns a #${id} operlog`
   }
 
   update(id: number, updateOperlogDto: UpdateOperlogDto) {
-    return `This action updates a #${id} operlog`;
+    return `This action updates a #${id} operlog`
   }
 
   remove(id: number) {
-    return `This action removes a #${id} operlog`;
+    return `This action removes a #${id} operlog`
   }
 
   /**
@@ -74,16 +76,16 @@ export class OperlogService {
     errorMsg,
     businessType,
   }: {
-    resultData?: any;
-    costTime: number;
-    title: string;
-    handlerName: string;
-    errorMsg?: string;
-    businessType: number;
+    resultData?: any
+    costTime: number
+    title: string
+    handlerName: string
+    errorMsg?: string
+    businessType: number
   }) {
-    const { originalUrl, method, ip, body, query } = this.request;
-    const { user } = this.request.user;
-    const operLocation = await this.axiosService.getIpAddress(ip);
+    const { originalUrl, method, ip, body, query } = this.request
+    const { user } = this.request.user
+    const operLocation = await this.axiosService.getIpAddress(ip)
 
     const params = {
       title,
@@ -93,8 +95,8 @@ export class OperlogService {
       operUrl: originalUrl,
       requestMethod: method.toUpperCase(),
       operIp: ip,
-      costTime: costTime,
-      operLocation: operLocation,
+      costTime,
+      operLocation,
       operParam: JSON.stringify({ ...body, ...query }),
       jsonResult: JSON.stringify(resultData),
       errorMsg,
@@ -102,8 +104,8 @@ export class OperlogService {
       businessType,
       operatorType: '1',
       operTime: new Date(),
-    };
+    }
 
-    await this.sysOperlogEntityRep.save(params);
+    await this.sysOperlogEntityRep.save(params)
   }
 }

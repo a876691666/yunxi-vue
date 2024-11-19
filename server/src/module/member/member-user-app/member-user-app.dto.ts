@@ -1,5 +1,5 @@
-import { IsString, IsEnum, IsOptional, MinLength, MaxLength, Length, IsEmail } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsEmail, IsEnum, IsOptional, IsString, Length, MaxLength, MinLength } from 'class-validator'
 
 export enum StatusEnum {
   STATIC = '0',
@@ -12,7 +12,7 @@ export class LoginDto {
   })
   @IsOptional()
   @IsString()
-  code?: string;
+  code?: string
 
   @ApiProperty({
     required: true,
@@ -20,7 +20,7 @@ export class LoginDto {
   @IsString()
   @MinLength(2)
   @MaxLength(10)
-  userName: string;
+  userName: string
 
   @ApiProperty({
     required: true,
@@ -28,14 +28,14 @@ export class LoginDto {
   @IsString()
   @MinLength(5)
   @MaxLength(20)
-  password: string;
+  password: string
 
   @ApiProperty({
     required: true,
   })
   @IsOptional()
   @IsString()
-  uuid?: string;
+  uuid?: string
 }
 
 export class RegisterDto extends LoginDto {}
@@ -45,44 +45,44 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   @Length(0, 30)
-  nickName: string;
+  nickName: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsEmail()
   @Length(0, 50)
-  email: string;
+  email: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  phonenumber: string;
+  phonenumber: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  sex: string;
+  sex: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  avatar?: string;
+  avatar?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  remark?: string;
+  remark?: string
 }
 
 export class UpdatePwdDto {
   @ApiProperty({ required: true })
   @IsString()
   @Length(0, 200)
-  oldPassword: string;
+  oldPassword: string
 
   @ApiProperty({ required: true })
   @IsString()
   @Length(0, 200)
-  newPassword: string;
+  newPassword: string
 }

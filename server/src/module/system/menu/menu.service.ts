@@ -1,13 +1,15 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindManyOptions, In } from 'typeorm';
-import { ResultData } from 'src/common/utils/result';
-import { SysMenuEntity } from './entities/menu.entity';
-import { SysRoleWithMenuEntity } from '../role/entities/role-width-menu.entity';
-import { CreateMenuDto, UpdateMenuDto, ListDeptDto } from './dto/index';
-import { ListToTree, Uniq } from 'src/common/utils/index';
-import { UserService } from '../user/user.service';
-import { buildMenus } from './utils';
+import type { FindManyOptions, Repository } from 'typeorm'
+import type { CreateMenuDto, ListDeptDto, UpdateMenuDto } from './dto/index'
+import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { ListToTree, Uniq } from 'src/common/utils/index'
+import { ResultData } from 'src/common/utils/result'
+import { In } from 'typeorm'
+import { SysRoleWithMenuEntity } from '../role/entities/role-width-menu.entity'
+import { UserService } from '../user/user.service'
+import { SysMenuEntity } from './entities/menu.entity'
+import { buildMenus } from './utils'
+
 @Injectable()
 export class MenuService {
   constructor(
@@ -20,24 +22,24 @@ export class MenuService {
   ) {}
 
   async create(createMenuDto: CreateMenuDto) {
-    const res = await this.sysMenuEntityRep.save(createMenuDto);
-    return ResultData.ok(res);
+    const res = await this.sysMenuEntityRep.save(createMenuDto)
+    return ResultData.ok(res)
   }
 
   async findAll(query: ListDeptDto) {
-    const entity = this.sysMenuEntityRep.createQueryBuilder('entity');
-    entity.where('entity.delFlag = :delFlag', { delFlag: '0' });
+    const entity = this.sysMenuEntityRep.createQueryBuilder('entity')
+    entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
 
     if (query.menuName) {
-      entity.andWhere(`entity.menuName LIKE "%${query.menuName}%"`);
+      entity.andWhere(`entity.menuName LIKE "%${query.menuName}%"`)
     }
     if (query.status) {
-      entity.andWhere('entity.status = :status', { status: query.status });
+      entity.andWhere('entity.status = :status', { status: query.status })
     }
-    entity.orderBy('entity.orderNum', 'ASC');
+    entity.orderBy('entity.orderNum', 'ASC')
 
-    const res = await entity.getMany();
-    return ResultData.ok(res);
+    const res = await entity.getMany()
+    return ResultData.ok(res)
   }
 
   async treeSelect() {
@@ -48,13 +50,13 @@ export class MenuService {
       order: {
         orderNum: 'ASC',
       },
-    });
+    })
     const tree = ListToTree(
       res,
-      (m) => m.menuId,
-      (m) => m.menuName,
-    );
-    return ResultData.ok(tree);
+      m => m.menuId,
+      m => m.menuName,
+    )
+    return ResultData.ok(tree)
   }
 
   async roleMenuTreeselect(roleId: number): Promise<any> {
@@ -66,52 +68,52 @@ export class MenuService {
         orderNum: 'ASC',
         parentId: 'ASC',
       },
-    });
+    })
     const tree = ListToTree(
       res,
-      (m) => m.menuId,
-      (m) => m.menuName,
-    );
+      m => m.menuId,
+      m => m.menuName,
+    )
     const menuIds = await this.sysRoleWithMenuEntityRep.find({
-      where: { roleId: roleId },
+      where: { roleId },
       select: ['menuId'],
-    });
+    })
     const checkedKeys = menuIds.map((item) => {
-      return item.menuId;
-    });
+      return item.menuId
+    })
     return ResultData.ok({
       menus: tree,
-      checkedKeys: checkedKeys,
-    });
+      checkedKeys,
+    })
   }
 
   async findOne(menuId: number) {
     const res = await this.sysMenuEntityRep.findOne({
       where: {
         delFlag: '0',
-        menuId: menuId,
+        menuId,
       },
-    });
-    return ResultData.ok(res);
+    })
+    return ResultData.ok(res)
   }
 
   async update(updateMenuDto: UpdateMenuDto) {
-    const res = await this.sysMenuEntityRep.update({ menuId: updateMenuDto.menuId }, updateMenuDto);
-    return ResultData.ok(res);
+    const res = await this.sysMenuEntityRep.update({ menuId: updateMenuDto.menuId }, updateMenuDto)
+    return ResultData.ok(res)
   }
 
   async remove(menuId: number) {
     const data = await this.sysMenuEntityRep.update(
-      { menuId: menuId },
+      { menuId },
       {
         delFlag: '1',
       },
-    );
-    return ResultData.ok(data);
+    )
+    return ResultData.ok(data)
   }
 
   async findMany(where: FindManyOptions<SysMenuEntity>) {
-    return await this.sysMenuEntityRep.find(where);
+    return await this.sysMenuEntityRep.find(where)
   }
 
   /**
@@ -121,8 +123,8 @@ export class MenuService {
    * @return 菜单列表
    */
   async getMenuListByUserId(userId: number) {
-    let menuWidthRoleList = [];
-    const roleIds = await this.userService.getRoleIds([userId]);
+    let menuWidthRoleList = []
+    const roleIds = await this.userService.getRoleIds([userId])
     if (roleIds.includes(1)) {
       // 超管roleId=1，所有菜单权限
       menuWidthRoleList = await this.sysMenuEntityRep.find({
@@ -131,16 +133,17 @@ export class MenuService {
           status: '0',
         },
         select: ['menuId'],
-      });
-    } else {
+      })
+    }
+    else {
       // 查询角色绑定的菜单
       menuWidthRoleList = await this.sysRoleWithMenuEntityRep.find({
         where: { roleId: In(roleIds) },
         select: ['menuId'],
-      });
+      })
     }
     // 菜单Id去重
-    const menuIds = Uniq(menuWidthRoleList.map((item) => item.menuId));
+    const menuIds = Uniq(menuWidthRoleList.map(item => item.menuId))
     // 菜单列表
     const menuList = await this.sysMenuEntityRep.find({
       where: {
@@ -151,9 +154,9 @@ export class MenuService {
       order: {
         orderNum: 'ASC',
       },
-    });
+    })
     // 构建前端需要的菜单树
-    const menuTree = buildMenus(menuList);
-    return menuTree;
+    const menuTree = buildMenus(menuList)
+    return menuTree
   }
 }

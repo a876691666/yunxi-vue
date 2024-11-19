@@ -1,8 +1,9 @@
-import { Module, Global } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { LoginlogService } from './loginlog.service';
-import { LoginlogController } from './loginlog.controller';
-import { MonitorLoginlogEntity } from './entities/loginlog.entity';
+import { Global, Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { MonitorLoginlogEntity } from './entities/loginlog.entity'
+import { LoginlogController } from './loginlog.controller'
+import { LoginlogService } from './loginlog.service'
+
 @Global()
 @Module({
   imports: [TypeOrmModule.forFeature([MonitorLoginlogEntity])],

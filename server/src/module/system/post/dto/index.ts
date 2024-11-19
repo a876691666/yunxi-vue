@@ -1,6 +1,6 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, IsArray, Min, Length, IsOptional, IsBoolean, IsNumber, IsNumberString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { PagingDto } from 'src/common/dto/index';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsArray, IsBoolean, IsEnum, IsJSON, IsNumber, IsNumberString, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
+import { PagingDto } from 'src/common/dto/index'
 
 export enum StatusEnum {
   STATIC = '0',
@@ -10,16 +10,16 @@ export enum StatusEnum {
 export class CreatePostDto {
   @IsString()
   @Length(0, 50)
-  postName: string;
+  postName: string
 
   @IsString()
   @Length(0, 64)
-  postCode: string;
+  postCode: string
 
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 
   @ApiProperty({
     required: false,
@@ -27,12 +27,12 @@ export class CreatePostDto {
   @IsOptional()
   @IsString()
   @Length(0, 500)
-  remark?: string;
+  remark?: string
 
   @ApiProperty({ required: true })
   @IsOptional()
   @IsNumber()
-  postSort?: number;
+  postSort?: number
 }
 
 export class UpdatePostDto extends CreatePostDto {
@@ -40,22 +40,22 @@ export class UpdatePostDto extends CreatePostDto {
     required: true,
   })
   @IsNumber()
-  postId: number;
+  postId: number
 }
 
 export class ListPostDto extends PagingDto {
   @IsOptional()
   @IsString()
   @Length(0, 50)
-  postName?: string;
+  postName?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 64)
-  postCode?: string;
+  postCode?: string
 
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }

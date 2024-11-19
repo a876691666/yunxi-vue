@@ -1,4 +1,4 @@
-import * as svgCaptcha from 'svg-captcha';
+import * as svgCaptcha from 'svg-captcha'
 
 const options = {
   // 验证码字符集，可以是字母、数字或者组合
@@ -33,7 +33,7 @@ const options = {
   pointRadius: 2,
   // 验证码噪点的位置，可以是 'random' 或 'top' 或 'left' 或 'right' 或 'bottom'
   pointPosition: 'random',
-};
+}
 
 export function createMath() {
   return svgCaptcha.createMathExpr({
@@ -41,9 +41,9 @@ export function createMath() {
     mathMin: 1,
     mathMax: 50,
     mathOperator: '+-',
-  });
+  })
 }
 
 export function createText() {
-  return svgCaptcha.create(options);
+  return svgCaptcha.create(options)
 }

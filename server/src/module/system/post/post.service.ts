@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { ResultData } from 'src/common/utils/result';
-import { ExportTable } from 'src/common/utils/export';
-import { SysPostEntity } from './entities/post.entity';
-import { Response } from 'express';
-import { CreatePostDto, UpdatePostDto, ListPostDto } from './dto/index';
+import type { Response } from 'express'
+import type { Repository } from 'typeorm'
+import type { CreatePostDto, ListPostDto, UpdatePostDto } from './dto/index'
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { ExportTable } from 'src/common/utils/export'
+import { ResultData } from 'src/common/utils/result'
+import { In } from 'typeorm'
+import { SysPostEntity } from './entities/post.entity'
 
 @Injectable()
 export class PostService {
@@ -13,52 +14,53 @@ export class PostService {
     @InjectRepository(SysPostEntity)
     private readonly sysPostEntityRep: Repository<SysPostEntity>,
   ) {}
+
   async create(createPostDto: CreatePostDto) {
-    await this.sysPostEntityRep.save(createPostDto);
-    return ResultData.ok();
+    await this.sysPostEntityRep.save(createPostDto)
+    return ResultData.ok()
   }
 
   async findAll(query: ListPostDto) {
-    const entity = this.sysPostEntityRep.createQueryBuilder('entity');
-    entity.where('entity.delFlag = :delFlag', { delFlag: '0' });
+    const entity = this.sysPostEntityRep.createQueryBuilder('entity')
+    entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
 
     if (query.postName) {
-      entity.andWhere(`entity.postName LIKE "%${query.postName}%"`);
+      entity.andWhere(`entity.postName LIKE "%${query.postName}%"`)
     }
 
     if (query.postCode) {
-      entity.andWhere(`entity.postCode LIKE "%${query.postCode}%"`);
+      entity.andWhere(`entity.postCode LIKE "%${query.postCode}%"`)
     }
 
     if (query.status) {
-      entity.andWhere('entity.status = :status', { status: query.status });
+      entity.andWhere('entity.status = :status', { status: query.status })
     }
 
     if (query.pageSize && query.pageNum) {
-      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize);
+      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     }
 
-    const [list, total] = await entity.getManyAndCount();
+    const [list, total] = await entity.getManyAndCount()
 
     return ResultData.ok({
       list,
       total,
-    });
+    })
   }
 
   async findOne(postId: number) {
     const res = await this.sysPostEntityRep.findOne({
       where: {
-        postId: postId,
+        postId,
         delFlag: '0',
       },
-    });
-    return ResultData.ok(res);
+    })
+    return ResultData.ok(res)
   }
 
   async update(updatePostDto: UpdatePostDto) {
-    const res = await this.sysPostEntityRep.update({ postId: updatePostDto.postId }, updatePostDto);
-    return ResultData.ok(res);
+    const res = await this.sysPostEntityRep.update({ postId: updatePostDto.postId }, updatePostDto)
+    return ResultData.ok(res)
   }
 
   async remove(postIds: string[]) {
@@ -67,8 +69,8 @@ export class PostService {
       {
         delFlag: '1',
       },
-    );
-    return ResultData.ok(data);
+    )
+    return ResultData.ok(data)
   }
 
   /**
@@ -76,9 +78,9 @@ export class PostService {
    * @param res
    */
   async export(res: Response, body: ListPostDto) {
-    delete body.pageNum;
-    delete body.pageSize;
-    const list = await this.findAll(body);
+    delete body.pageNum
+    delete body.pageSize
+    const list = await this.findAll(body)
     const options = {
       sheetName: '岗位数据',
       data: list.data.list,
@@ -89,7 +91,7 @@ export class PostService {
         { title: '岗位排序', dataIndex: 'postSort' },
         { title: '状态', dataIndex: 'status' },
       ],
-    };
-    ExportTable(options, res);
+    }
+    ExportTable(options, res)
   }
 }

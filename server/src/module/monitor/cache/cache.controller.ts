@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiConsumes, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
-import { CacheService } from './cache.service';
+import type { CacheService } from './cache.service'
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('缓存管理')
 @Controller('monitor/cache')
@@ -11,7 +11,7 @@ export class CacheController {
   })
   @Get()
   getInfo() {
-    return this.cacheService.getInfo();
+    return this.cacheService.getInfo()
   }
 
   @ApiOperation({
@@ -19,7 +19,7 @@ export class CacheController {
   })
   @Get('/getNames')
   getNames() {
-    return this.cacheService.getNames();
+    return this.cacheService.getNames()
   }
 
   @ApiOperation({
@@ -27,7 +27,7 @@ export class CacheController {
   })
   @Get('/getKeys/:id')
   getKeys(@Param('id') id: string) {
-    return this.cacheService.getKeys(id);
+    return this.cacheService.getKeys(id)
   }
 
   @ApiOperation({
@@ -35,7 +35,7 @@ export class CacheController {
   })
   @Get('/getValue/:cacheName/:cacheKey')
   getValue(@Param() params: string[]) {
-    return this.cacheService.getValue(params);
+    return this.cacheService.getValue(params)
   }
 
   @ApiOperation({
@@ -43,7 +43,7 @@ export class CacheController {
   })
   @Delete('/clearCacheName/:cacheName')
   clearCacheName(@Param('cacheName') cacheName: string) {
-    return this.cacheService.clearCacheName(cacheName);
+    return this.cacheService.clearCacheName(cacheName)
   }
 
   @ApiOperation({
@@ -51,7 +51,7 @@ export class CacheController {
   })
   @Delete('/clearCacheKey/:cacheKey')
   clearCacheKey(@Param('cacheKey') cacheKey: string) {
-    return this.cacheService.clearCacheKey(cacheKey);
+    return this.cacheService.clearCacheKey(cacheKey)
   }
 
   @ApiOperation({
@@ -59,6 +59,6 @@ export class CacheController {
   })
   @Delete('/clearCacheAll')
   clearCacheAll() {
-    return this.cacheService.clearCacheAll();
+    return this.cacheService.clearCacheAll()
   }
 }

@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Response } from 'express';
-import { Repository, In, Not, IsNull } from 'typeorm';
-import { ResultData } from 'src/common/utils/result';
-import { ExportTable } from 'src/common/utils/export';
-import { MonitorLoginlogEntity } from './entities/loginlog.entity';
-import { CreateLoginlogDto, ListLoginlogDto } from './dto/index';
+import type { Response } from 'express'
+import type { Repository } from 'typeorm'
+import type { CreateLoginlogDto, ListLoginlogDto } from './dto/index'
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { ExportTable } from 'src/common/utils/export'
+import { ResultData } from 'src/common/utils/result'
+import { In, IsNull, Not } from 'typeorm'
+import { MonitorLoginlogEntity } from './entities/loginlog.entity'
 
 @Injectable()
 export class LoginlogService {
@@ -20,7 +21,7 @@ export class LoginlogService {
    * @returns
    */
   async create(createLoginlogDto: CreateLoginlogDto) {
-    return await this.monitorLoginlogEntityRep.save(createLoginlogDto);
+    return await this.monitorLoginlogEntityRep.save(createLoginlogDto)
   }
 
   /**
@@ -29,40 +30,40 @@ export class LoginlogService {
    * @returns
    */
   async findAll(query: ListLoginlogDto) {
-    const entity = this.monitorLoginlogEntityRep.createQueryBuilder('entity');
-    entity.where('entity.delFlag = :delFlag', { delFlag: '0' });
+    const entity = this.monitorLoginlogEntityRep.createQueryBuilder('entity')
+    entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
 
     if (query.ipaddr) {
-      entity.andWhere(`entity.ipaddr LIKE "%${query.ipaddr}%"`);
+      entity.andWhere(`entity.ipaddr LIKE "%${query.ipaddr}%"`)
     }
 
     if (query.userName) {
-      entity.andWhere(`entity.userName LIKE "%${query.userName}%"`);
+      entity.andWhere(`entity.userName LIKE "%${query.userName}%"`)
     }
 
     if (query.status) {
-      entity.andWhere('entity.status = :status', { status: query.status });
+      entity.andWhere('entity.status = :status', { status: query.status })
     }
 
     if (query.params?.beginTime && query.params?.endTime) {
-      entity.andWhere('entity.loginTime BETWEEN :start AND :end', { start: query.params.beginTime, end: query.params.endTime });
+      entity.andWhere('entity.loginTime BETWEEN :start AND :end', { start: query.params.beginTime, end: query.params.endTime })
     }
 
     if (query.orderByColumn && query.isAsc) {
-      const key = query.isAsc === 'ascending' ? 'ASC' : 'DESC';
-      entity.orderBy(`entity.${query.orderByColumn}`, key);
+      const key = query.isAsc === 'ascending' ? 'ASC' : 'DESC'
+      entity.orderBy(`entity.${query.orderByColumn}`, key)
     }
 
     if (query.pageSize && query.pageNum) {
-      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize);
+      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     }
 
-    const [list, total] = await entity.getManyAndCount();
+    const [list, total] = await entity.getManyAndCount()
 
     return ResultData.ok({
       list,
       total,
-    });
+    })
   }
 
   /**
@@ -75,8 +76,8 @@ export class LoginlogService {
       {
         delFlag: '1',
       },
-    );
-    return ResultData.ok(data);
+    )
+    return ResultData.ok(data)
   }
 
   /**
@@ -89,8 +90,8 @@ export class LoginlogService {
       {
         delFlag: '1',
       },
-    );
-    return ResultData.ok();
+    )
+    return ResultData.ok()
   }
 
   /**
@@ -98,9 +99,9 @@ export class LoginlogService {
    * @param res
    */
   async export(res: Response, body: ListLoginlogDto) {
-    delete body.pageNum;
-    delete body.pageSize;
-    const list = await this.findAll(body);
+    delete body.pageNum
+    delete body.pageSize
+    const list = await this.findAll(body)
     const options = {
       sheetName: '登录日志',
       data: list.data.list,
@@ -117,11 +118,11 @@ export class LoginlogService {
       ],
       dictMap: {
         status: {
-          '0': '成功',
-          '1': '失败',
+          0: '成功',
+          1: '失败',
         },
       },
-    };
-    ExportTable(options, res);
+    }
+    ExportTable(options, res)
   }
 }

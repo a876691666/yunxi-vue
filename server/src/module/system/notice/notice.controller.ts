@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, Request, Put, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiConsumes, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
-import { NoticeService } from './notice.service';
-import { CreateNoticeDto, UpdateNoticeDto, ListNoticeDto } from './dto/index';
-import { RequirePermission } from 'src/common/decorators/require-premission.decorator';
-import { GetNowDate } from 'src/common/utils';
+import type { UpdateNoticeDto } from './dto/index'
+import type { NoticeService } from './notice.service'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Request } from '@nestjs/common'
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
+import { GetNowDate } from 'src/common/utils'
+import { CreateNoticeDto, ListNoticeDto } from './dto/index'
 
 @ApiTags('通知公告')
 @Controller('system/notice')
@@ -19,8 +20,8 @@ export class NoticeController {
   @RequirePermission('system:notice:add')
   @Post()
   create(@Body() createConfigDto: CreateNoticeDto, @Request() req) {
-    createConfigDto['createBy'] = req.user.userName;
-    return this.noticeService.create(createConfigDto);
+    createConfigDto.createBy = req.user.userName
+    return this.noticeService.create(createConfigDto)
   }
 
   @ApiOperation({
@@ -33,7 +34,7 @@ export class NoticeController {
   @RequirePermission('system:notice:list')
   @Get('/list')
   findAll(@Query() query: ListNoticeDto) {
-    return this.noticeService.findAll(query);
+    return this.noticeService.findAll(query)
   }
 
   @ApiOperation({
@@ -42,7 +43,7 @@ export class NoticeController {
   @RequirePermission('system:notice:query')
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.noticeService.findOne(+id);
+    return this.noticeService.findOne(+id)
   }
 
   @ApiOperation({
@@ -51,7 +52,7 @@ export class NoticeController {
   @RequirePermission('system:notice:edit')
   @Put()
   update(@Body() updateNoticeDto: UpdateNoticeDto) {
-    return this.noticeService.update(updateNoticeDto);
+    return this.noticeService.update(updateNoticeDto)
   }
 
   @ApiOperation({
@@ -60,7 +61,7 @@ export class NoticeController {
   @RequirePermission('system:notice:remove')
   @Delete(':id')
   remove(@Param('id') ids: string) {
-    const noticeIds = ids.split(',').map((id) => +id);
-    return this.noticeService.remove(noticeIds);
+    const noticeIds = ids.split(',').map(id => +id)
+    return this.noticeService.remove(noticeIds)
   }
 }

@@ -1,7 +1,7 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ExtendsLogService } from './log.service';
-import { RequireRole } from 'src/common/decorators/require-role.decorator';
-import { PagingDto } from 'src/common/dto';
+import type { PagingDto } from 'src/common/dto'
+import type { ExtendsLogService } from './log.service'
+import { Controller, Get, Query } from '@nestjs/common'
+import { RequireRole } from 'src/common/decorators/require-role.decorator'
 
 @Controller('monitor/log')
 export class LogController {
@@ -10,6 +10,6 @@ export class LogController {
   @Get('/list')
   @RequireRole('admin')
   findAll(@Query() query: PagingDto) {
-    return this.logService.findAll(query);
+    return this.logService.findAll(query)
   }
 }

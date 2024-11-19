@@ -1,8 +1,8 @@
-import { Global, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExtendsLogService } from './log.service';
-import { LogController } from './log.controller';
-import { LogEntity } from './log.entity';
+import { Global, Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { LogController } from './log.controller'
+import { LogEntity } from './log.entity'
+import { ExtendsLogService } from './log.service'
 
 @Global()
 @Module({

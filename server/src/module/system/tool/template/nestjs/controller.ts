@@ -1,7 +1,7 @@
-export const controllerTem = (options) => {
-  const { BusinessName, businessName, functionName, moduleName } = options;
-  const serviceName = `${BusinessName}Service`;
-  const serviceInstance = `${businessName}Service`;
+export function controllerTem(options) {
+  const { BusinessName, businessName, functionName, moduleName } = options
+  const serviceName = `${BusinessName}Service`
+  const serviceInstance = `${businessName}Service`
 
   return `
     import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
@@ -52,5 +52,5 @@ export const controllerTem = (options) => {
             return this.${serviceInstance}.remove(+id);
         }
     }
-    `;
-};
+    `
+}

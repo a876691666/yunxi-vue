@@ -1,8 +1,6 @@
-
-
-export const serviceTem = (options)=>{
-    const { BusinessName,primaryKey,businessName } = options;
-    return `
+export function serviceTem(options) {
+  const { BusinessName, primaryKey, businessName } = options
+  return `
     import { Injectable } from '@nestjs/common';
     import { ResultData } from 'src/common/utils/result';
     import { Create${BusinessName}Dto,Create${BusinessName}Dto,List${BusinessName}Dto } from './dto/${businessName}.dto';

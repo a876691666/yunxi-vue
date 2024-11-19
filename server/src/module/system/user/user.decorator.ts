@@ -1,40 +1,41 @@
-import { createParamDecorator, ExecutionContext, SetMetadata } from '@nestjs/common';
-import { UserType } from 'src/module/system/user/dto/user';
+import type { ExecutionContext } from '@nestjs/common'
+import type { UserType } from 'src/module/system/user/dto/user'
+import { createParamDecorator, SetMetadata } from '@nestjs/common'
 
 export const User = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest();
-  return request.user;
-});
+  const request = ctx.switchToHttp().getRequest()
+  return request.user
+})
 
-export type UserDto = UserType;
+export type UserDto = UserType
 
-export const NotRequireAuth = () => SetMetadata('notRequireAuth', true);
+export const NotRequireAuth = () => SetMetadata('notRequireAuth', true)
 
 export const UserTool = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest();
+  const request = ctx.switchToHttp().getRequest()
 
-  const userName = request.user?.user?.userName;
+  const userName = request.user?.user?.userName
 
   const injectCreate = (data: any) => {
     if (data.createBy) {
-      return;
+      return
     }
-    data.createBy = userName;
+    data.createBy = userName
 
-    return injectUpdate(data);
-  };
+    return injectUpdate(data)
+  }
 
   const injectUpdate = (data: any) => {
     if (data.updateBy) {
-      return;
+      return
     }
-    data.updateBy = userName;
-  };
+    data.updateBy = userName
+  }
 
-  return { injectCreate, injectUpdate };
-});
+  return { injectCreate, injectUpdate }
+})
 
-export type UserToolType = {
-  injectCreate: <T extends { [key: string]: any }>(data: T) => T & { createBy?: string };
-  injectUpdate: <T extends { [key: string]: any }>(data: T) => T & { updateBy?: string };
-};
+export interface UserToolType {
+  injectCreate: <T extends { [key: string]: any }>(data: T) => T & { createBy?: string }
+  injectUpdate: <T extends { [key: string]: any }>(data: T) => T & { updateBy?: string }
+}

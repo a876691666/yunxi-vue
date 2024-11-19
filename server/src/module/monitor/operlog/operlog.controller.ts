@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { OperlogService } from './operlog.service';
-import { CreateOperlogDto } from './dto/create-operlog.dto';
-import { UpdateOperlogDto } from './dto/update-operlog.dto';
-import { ApiOperation } from '@nestjs/swagger';
-import { RequirePermission } from 'src/common/decorators/require-premission.decorator';
-import { Operlog } from 'src/common/decorators/operlog.decorator';
-import { BusinessType } from 'src/common/constant/business.constant';
+import type { CreateOperlogDto } from './dto/create-operlog.dto'
+import type { UpdateOperlogDto } from './dto/update-operlog.dto'
+import type { OperlogService } from './operlog.service'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import { ApiOperation } from '@nestjs/swagger'
+import { BusinessType } from 'src/common/constant/business.constant'
+import { Operlog } from 'src/common/decorators/operlog.decorator'
+import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
 
 @Controller('monitor/operlog')
 export class OperlogController {
@@ -13,7 +13,7 @@ export class OperlogController {
 
   @Post()
   create(@Body() createOperlogDto: CreateOperlogDto) {
-    return this.operlogService.create(createOperlogDto);
+    return this.operlogService.create(createOperlogDto)
   }
 
   @ApiOperation({
@@ -23,26 +23,26 @@ export class OperlogController {
   @Delete('/clean')
   @Operlog({ businessType: BusinessType.CLEAN })
   removeAll() {
-    return this.operlogService.removeAll();
+    return this.operlogService.removeAll()
   }
 
   @Get('/list')
   findAll(@Query() query: any) {
-    return this.operlogService.findAll(query);
+    return this.operlogService.findAll(query)
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.operlogService.findOne(+id);
+    return this.operlogService.findOne(+id)
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOperlogDto: UpdateOperlogDto) {
-    return this.operlogService.update(+id, updateOperlogDto);
+    return this.operlogService.update(+id, updateOperlogDto)
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.operlogService.remove(+id);
+    return this.operlogService.remove(+id)
   }
 }
