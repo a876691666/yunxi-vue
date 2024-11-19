@@ -1,12 +1,12 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, Min, Length, IsOptional, IsBoolean, IsNumber } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsEnum, IsJSON, IsNumber, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
 
 export enum StatusEnum {
   STATIC = '0',
   DYNAMIC = '1',
 }
 
-//菜单类型
+// 菜单类型
 export enum MenuTypeEnum {
   M = 'M',
   C = 'C',
@@ -17,75 +17,75 @@ export class CreateMenuDto {
   @ApiProperty({ required: true })
   @IsString()
   @Length(0, 50)
-  menuName: string;
+  menuName: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  orderNum: number;
+  orderNum: number
 
   @ApiProperty({ required: true })
   @IsOptional()
   @IsNumber()
-  parentId: number;
+  parentId: number
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Length(0, 200)
-  path?: string;
+  path?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Length(0, 200)
-  query: string;
+  query: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Length(0, 255)
-  component?: string;
+  component?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Length(0, 100)
-  icon?: string;
+  icon?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @IsEnum(MenuTypeEnum)
-  menuType: string;
+  menuType: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  isCache: string;
+  isCache: string
 
   @ApiProperty({ required: true })
   @IsString()
   @IsEnum(StatusEnum)
-  isFrame: string;
+  isFrame: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status: string;
+  status: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  visible: string;
+  visible: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  perms: string;
+  perms: string
 }
 
 export class UpdateMenuDto extends CreateMenuDto {
@@ -94,7 +94,7 @@ export class UpdateMenuDto extends CreateMenuDto {
     required: false,
   })
   @IsNumber()
-  menuId: number;
+  menuId: number
 }
 
 export class ListDeptDto {
@@ -103,7 +103,7 @@ export class ListDeptDto {
   })
   @IsOptional()
   @IsString()
-  menuName?: string;
+  menuName?: string
 
   @ApiProperty({
     required: false,
@@ -111,5 +111,5 @@ export class ListDeptDto {
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }

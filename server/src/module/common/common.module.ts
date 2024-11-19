@@ -1,8 +1,8 @@
-import { Module, Global } from '@nestjs/common';
-import { RedisModule } from './redis/redis.module';
-import { AxiosModule } from './axios/axios.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RedisClientOptions } from '@liaoliaots/nestjs-redis';
+import type { RedisClientOptions } from '@liaoliaots/nestjs-redis'
+import { Global, Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { AxiosModule } from './axios/axios.module'
+import { RedisModule } from './redis/redis.module'
 
 @Global()
 @Module({
@@ -17,7 +17,7 @@ import { RedisClientOptions } from '@liaoliaots/nestjs-redis';
             readyLog: true,
             errorLog: true,
             config: config.get<RedisClientOptions>('redis'),
-          };
+          }
         },
       },
       true,

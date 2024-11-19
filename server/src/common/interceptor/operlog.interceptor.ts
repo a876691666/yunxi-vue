@@ -1,44 +1,46 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { Reflector } from '@nestjs/core';
+import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common'
+import type { Observable } from 'rxjs'
+import type { OperlogService } from 'src/module/monitor/operlog/operlog.service'
+import type { OperlogConfig } from '../decorators/operlog.decorator'
+import { Injectable } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
 
-import { OperlogConfig } from '../decorators/operlog.decorator';
-import { OperlogService } from 'src/module/monitor/operlog/operlog.service';
+import { throwError } from 'rxjs'
+import { catchError, map } from 'rxjs/operators'
 
 @Injectable()
 export class OperlogInterceptor implements NestInterceptor {
-  private readonly reflector = new Reflector();
+  private readonly reflector = new Reflector()
 
   constructor(readonly logService: OperlogService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const { summary } = this.reflector.getAllAndOverride(`swagger/apiOperation`, [context.getHandler()]);
-    const logConfig: OperlogConfig = this.reflector.get('operlog', context.getHandler());
+    const { summary } = this.reflector.getAllAndOverride(`swagger/apiOperation`, [context.getHandler()])
+    const logConfig: OperlogConfig = this.reflector.get('operlog', context.getHandler())
 
-    const handlerName = context.getHandler().name;
+    const handlerName = context.getHandler().name
 
-    const now = Date.now();
+    const now = Date.now()
 
     return next
       .handle()
       .pipe(
         map((resultData) => {
-          const costTime = Date.now() - now;
+          const costTime = Date.now() - now
 
-          this.logService.logAction({ costTime, resultData, handlerName, title: summary, businessType: logConfig?.businessType });
+          this.logService.logAction({ costTime, resultData, handlerName, title: summary, businessType: logConfig?.businessType })
 
-          return resultData;
+          return resultData
         }),
       )
       .pipe(
         catchError((err) => {
-          const costTime = Date.now() - now;
+          const costTime = Date.now() - now
 
-          this.logService.logAction({ costTime, errorMsg: err.response, handlerName, title: summary, businessType: logConfig?.businessType });
+          this.logService.logAction({ costTime, errorMsg: err.response, handlerName, title: summary, businessType: logConfig?.businessType })
 
-          return throwError(() => err);
+          return throwError(() => err)
         }),
-      );
+      )
   }
 }

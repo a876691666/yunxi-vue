@@ -1,6 +1,6 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, IsArray, Min, Length, IsOptional, IsBoolean, IsNumber, IsNumberString, IsEmail } from 'class-validator';
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { PagingDto } from 'src/common/dto/index';
+import { ApiProperty, PartialType } from '@nestjs/swagger'
+import { IsArray, IsBoolean, IsEmail, IsEnum, IsJSON, IsNumber, IsNumberString, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
+import { PagingDto } from 'src/common/dto/index'
 
 export enum StatusEnum {
   STATIC = '0',
@@ -11,67 +11,67 @@ export class CreateUserDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  deptId?: number;
+  deptId?: number
 
   @ApiProperty({ required: false })
   @IsOptional()
   // @IsEmail()
   @Length(0, 50)
-  email: string;
+  email: string
 
   @ApiProperty({ required: true })
   @IsString()
   @Length(0, 30)
-  nickName: string;
+  nickName: string
 
   @ApiProperty({ required: true })
   @IsString()
   @Length(0, 30)
-  userName: string;
+  userName: string
 
   @ApiProperty({ required: true })
   @IsString()
   @Length(0, 200)
-  password: string;
+  password: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   // @IsPhoneNumber('CN')
-  phonenumber?: string;
+  phonenumber?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsArray()
-  postIds?: Array<number>;
+  postIds?: Array<number>
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsArray()
-  roleIds?: Array<number>;
+  roleIds?: Array<number>
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  sex?: string;
+  sex?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Length(0, 500)
-  remark?: string;
+  remark?: string
 
   @ApiProperty({ required: true })
   @IsOptional()
   @IsNumber()
-  postSort?: number;
+  postSort?: number
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
@@ -79,7 +79,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     required: true,
   })
   @IsNumber()
-  userId: number;
+  userId: number
 }
 
 export class ChangeStatusDto {
@@ -87,48 +87,48 @@ export class ChangeStatusDto {
     required: true,
   })
   @IsNumber()
-  userId: number;
+  userId: number
 
   @ApiProperty({ required: true })
   @IsString()
   @IsEnum(StatusEnum)
-  status: string;
+  status: string
 }
 
 export class ListUserDto extends PagingDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumberString()
-  deptId?: string;
+  deptId?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Length(0, 30)
-  nickName?: string;
+  nickName?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Length(0, 30)
-  email?: string;
+  email?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Length(0, 30)
-  userName?: string;
+  userName?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  phonenumber?: string;
+  phonenumber?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }
 
 export class ResetPwdDto {
@@ -136,14 +136,14 @@ export class ResetPwdDto {
     required: true,
   })
   @IsNumber()
-  userId: number;
+  userId: number
 
   @ApiProperty({
     required: true,
   })
   @IsString()
   @Length(5, 20)
-  password: string;
+  password: string
 }
 
 export class AllocatedListDto extends PagingDto {
@@ -151,17 +151,17 @@ export class AllocatedListDto extends PagingDto {
   @IsOptional()
   @IsString()
   @Length(0, 30)
-  userName?: string;
+  userName?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  phonenumber?: string;
+  phonenumber?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumberString()
-  roleId?: string;
+  roleId?: string
 }
 
 export class UpdateProfileDto {
@@ -169,39 +169,39 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   @Length(0, 30)
-  nickName: string;
+  nickName: string
 
   @ApiProperty({ required: true })
   @IsOptional()
   @IsEmail()
   @Length(0, 50)
-  email: string;
+  email: string
 
   @ApiProperty({ required: true })
   @IsOptional()
   @IsString()
-  phonenumber: string;
+  phonenumber: string
 
   @ApiProperty({ required: true })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  sex: string;
+  sex: string
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  avatar?: string;
+  avatar?: string
 }
 
 export class UpdatePwdDto {
   @ApiProperty({ required: true })
   @IsString()
   @Length(0, 200)
-  oldPassword: string;
+  oldPassword: string
 
   @ApiProperty({ required: true })
   @IsString()
   @Length(0, 200)
-  newPassword: string;
+  newPassword: string
 }

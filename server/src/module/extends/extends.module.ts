@@ -1,6 +1,6 @@
-import { Module, Global } from '@nestjs/common';
-import { ExtendsLogModule } from './log/log.module';
-import { ExtendsUploadModule } from './upload/upload.module';
+import { Global, Module } from '@nestjs/common'
+import { ExtendsLogModule } from './log/log.module'
+import { ExtendsUploadModule } from './upload/upload.module'
 
 @Global()
 @Module({

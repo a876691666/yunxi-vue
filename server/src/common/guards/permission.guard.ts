@@ -1,5 +1,6 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import type { CanActivate, ExecutionContext } from '@nestjs/common'
+import type { Reflector } from '@nestjs/core'
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -7,16 +8,16 @@ export class PermissionGuard implements CanActivate {
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
     // 全局配置，
-    const req = ctx.switchToHttp().getRequest();
+    const req = ctx.switchToHttp().getRequest()
 
-    const prem = this.reflector.getAllAndOverride('permission', [ctx.getClass(), ctx.getHandler()]);
+    const prem = this.reflector.getAllAndOverride('permission', [ctx.getClass(), ctx.getHandler()])
 
-    //不需要鉴权
+    // 不需要鉴权
     if (prem) {
-      return this.hasPermission(prem, req.user.permissions);
+      return this.hasPermission(prem, req.user.permissions)
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -26,7 +27,7 @@ export class PermissionGuard implements CanActivate {
    * @returns
    */
   hasPermission(permission: string, permissions: string[]) {
-    const AllPermission = '*:*:*';
-    return permissions.includes(AllPermission) || permissions.some((v) => v === permission);
+    const AllPermission = '*:*:*'
+    return permissions.includes(AllPermission) || permissions.includes(permission)
   }
 }

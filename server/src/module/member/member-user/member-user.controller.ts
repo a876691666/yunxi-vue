@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete, Query, Put } from '@nestjs/common';
-import { MemberUserService } from './member-user.service';
-import { CreateMemberUserDto, ListMemberUserDto, UpdateMemberUserDto, ResetPwdDto } from './member-user.dto';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { RequirePermission } from 'src/common/decorators/require-premission.decorator';
+import type { CreateMemberUserDto, ListMemberUserDto, UpdateMemberUserDto } from './member-user.dto'
+import type { MemberUserService } from './member-user.service'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
+import { ApiBody, ApiOperation } from '@nestjs/swagger'
+import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
+import { ResetPwdDto } from './member-user.dto'
 
 @Controller('member/member-user')
 export class MemberUserController {
@@ -12,35 +13,35 @@ export class MemberUserController {
   @RequirePermission('member:member-user:add')
   @Post()
   create(@Body() createMemberUserDto: CreateMemberUserDto) {
-    return this.MemberUserService.create(createMemberUserDto);
+    return this.MemberUserService.create(createMemberUserDto)
   }
 
   @ApiOperation({ summary: '用户表-列表' })
   @RequirePermission('member:member-user:list')
   @Get('list')
   findAll(@Query() query: ListMemberUserDto) {
-    return this.MemberUserService.findAll(query);
+    return this.MemberUserService.findAll(query)
   }
 
   @ApiOperation({ summary: '用户表-详情' })
   @RequirePermission('member:member-user:query')
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.MemberUserService.findOne(+id);
+    return this.MemberUserService.findOne(+id)
   }
 
   @ApiOperation({ summary: '用户表-修改' })
   @RequirePermission('member:member-user:edit')
   @Put()
   update(@Body() updateMemberUserDto: UpdateMemberUserDto) {
-    return this.MemberUserService.update(updateMemberUserDto);
+    return this.MemberUserService.update(updateMemberUserDto)
   }
 
   @ApiOperation({ summary: '用户表-删除' })
   @RequirePermission('member:member-user:remove')
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.MemberUserService.remove(+id);
+    return this.MemberUserService.remove(+id)
   }
 
   @ApiOperation({ summary: '用户-重置密码' })
@@ -48,6 +49,6 @@ export class MemberUserController {
   @RequirePermission('member:member-user:resetPwd')
   @Put('resetPwd')
   resetPwd(@Body() body: ResetPwdDto) {
-    return this.MemberUserService.resetPwd(body);
+    return this.MemberUserService.resetPwd(body)
   }
 }

@@ -1,5 +1,5 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, Min, IsOptional, IsBoolean, IsNumber, MinLength, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsEnum, IsJSON, IsNumber, IsOptional, IsPhoneNumber, IsString, MaxLength, Min, MinLength } from 'class-validator'
 
 export enum StatusEnum {
   STATIC = '0',
@@ -12,7 +12,7 @@ export class LoginDto {
   })
   @IsOptional()
   @IsString()
-  code?: string;
+  code?: string
 
   @ApiProperty({
     required: true,
@@ -20,7 +20,7 @@ export class LoginDto {
   @IsString()
   @MinLength(2)
   @MaxLength(10)
-  username: string;
+  username: string
 
   @ApiProperty({
     required: true,
@@ -28,14 +28,14 @@ export class LoginDto {
   @IsString()
   @MinLength(5)
   @MaxLength(20)
-  password: string;
+  password: string
 
   @ApiProperty({
     required: true,
   })
   @IsOptional()
   @IsString()
-  uuid?: string;
+  uuid?: string
 }
 
 export class RegisterDto extends LoginDto {}

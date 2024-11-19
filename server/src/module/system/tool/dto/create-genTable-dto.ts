@@ -1,47 +1,49 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, IsArray, Min, Length, IsOptional, IsBoolean, IsNumber, IsNumberString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { PagingDto } from 'src/common/dto/index';
-import { genTableCloumnUpdate } from './create-genTableCloumn-dto';
+import type { genTableCloumnUpdate } from './create-genTableCloumn-dto'
+import { ApiProperty } from '@nestjs/swagger'
+import { IsArray, IsBoolean, IsEnum, IsJSON, IsNumber, IsNumberString, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
+import { PagingDto } from 'src/common/dto/index'
+
 export class CreateGenTableDto {
   @ApiProperty({ type: String, description: '表名称' })
-  public tableName: string;
+  public tableName: string
 
   @ApiProperty({ type: String, description: '表描述' })
-  public tableComment: string;
+  public tableComment: string
 
   @ApiProperty({ type: String, description: '实体类名称' })
-  public className: string;
+  public className: string
 
   @ApiProperty({ type: String, description: '生成包路径' })
-  public packageName: string;
+  public packageName: string
 
   @ApiProperty({ type: String, description: '生成模块名' })
-  public moduleName: string;
+  public moduleName: string
 
   @ApiProperty({ type: String, description: '生成业务名' })
-  public businessName: string;
+  public businessName: string
 
   @ApiProperty({ type: String, description: '生成功能名' })
-  public functionName: string;
+  public functionName: string
 
   @ApiProperty({ type: String, description: '生成功能作者' })
-  public functionAuthor: string;
+  public functionAuthor: string
 
   @ApiProperty({ type: String, description: '创建人' })
-  public createBy: string;
+  public createBy: string
 }
 
 export class UpdateGenTableDto extends CreateGenTableDto {
   @ApiProperty({ type: Number, description: '编号' })
-  public tableId: number;
+  public tableId: number
 }
 export class GenDbTableList extends PagingDto {
   @IsString()
   @IsOptional()
-  tableName?: string;
+  tableName?: string
+
   @IsString()
   @IsOptional()
-  tableComment?: string;
+  tableComment?: string
 }
 
 export class TableName {
@@ -49,23 +51,24 @@ export class TableName {
     required: true,
   })
   @IsString()
-  tableIdStr: string;
+  tableIdStr: string
 }
 export class TableId {
   @ApiProperty({
     required: true,
   })
   @IsString()
-  tableIds: string;
+  tableIds: string
 }
 
 export class GenTableList extends PagingDto {
   @IsString()
   @IsOptional()
-  tableNames?: string;
+  tableNames?: string
+
   @IsOptional()
   @IsString()
-  tableComment?: string;
+  tableComment?: string
 }
 
 export class GenTableUpdate {
@@ -73,42 +76,55 @@ export class GenTableUpdate {
     required: true,
   })
   @IsOptional()
-  tableId: number;
+  tableId: number
+
   @IsOptional()
   @IsString()
-  tableName?: string;
+  tableName?: string
+
   @IsOptional()
   @IsString()
-  tableComment?: string;
+  tableComment?: string
+
   @IsOptional()
   @IsString()
-  className?: string;
+  className?: string
+
   @IsOptional()
   @IsString()
-  functionAuthor?: string;
+  functionAuthor?: string
+
   @IsOptional()
   @IsString()
-  remark?: string;
+  remark?: string
+
   @IsOptional()
   @IsString()
-  tplCategory?: string;
+  tplCategory?: string
+
   @IsOptional()
   @IsString()
-  packageName?: string;
+  packageName?: string
+
   @IsOptional()
   @IsString()
-  moduleName?: string;
+  moduleName?: string
+
   @IsOptional()
   @IsString()
-  businessName?: string;
+  businessName?: string
+
   @IsOptional()
   @IsString()
-  functionName?: string;
+  functionName?: string
+
   @IsOptional()
   @IsString()
-  genType?: string;
+  genType?: string
+
   @IsOptional()
-  columns?: genTableCloumnUpdate[];
+  columns?: genTableCloumnUpdate[]
+
   @IsString()
-  tplWebType?: string;
+  tplWebType?: string
 }

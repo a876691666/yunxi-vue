@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { ResultData } from 'src/common/utils/result';
-import { CreateMemberUserDto, UpdateMemberUserDto, ListMemberUserDto, ResetPwdDto } from './member-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { MemberUserEntity } from './member-user.entity';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import type { Repository } from 'typeorm'
+import type { CreateMemberUserDto, ListMemberUserDto, ResetPwdDto, UpdateMemberUserDto } from './member-user.dto'
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import * as bcrypt from 'bcrypt'
+import { ResultData } from 'src/common/utils/result'
+import { MemberUserEntity } from './member-user.entity'
 
 @Injectable()
 export class MemberUserService {
@@ -14,20 +14,20 @@ export class MemberUserService {
   ) {}
 
   async create(createMemberUserDto: CreateMemberUserDto) {
-    const res = await this.MemberUserEntityRep.save(createMemberUserDto);
-    return ResultData.ok(res);
+    const res = await this.MemberUserEntityRep.save(createMemberUserDto)
+    return ResultData.ok(res)
   }
 
   async findAll(query: ListMemberUserDto) {
-    const entity = this.MemberUserEntityRep.createQueryBuilder('entity');
-    entity.where('entity.delFlag = :delFlag', { delFlag: '0' });
-    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize);
-    const [list, total] = await entity.getManyAndCount();
+    const entity = this.MemberUserEntityRep.createQueryBuilder('entity')
+    entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
+    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
+    const [list, total] = await entity.getManyAndCount()
 
     return ResultData.ok({
       list,
       total,
-    });
+    })
   }
 
   async findOne(id: number) {
@@ -36,13 +36,13 @@ export class MemberUserService {
         delFlag: '0',
         userId: id,
       },
-    });
-    return ResultData.ok(res);
+    })
+    return ResultData.ok(res)
   }
 
   async update(updateMemberUserDto: UpdateMemberUserDto) {
-    const res = await this.MemberUserEntityRep.update({ userId: updateMemberUserDto.userId }, updateMemberUserDto);
-    return ResultData.ok(res);
+    const res = await this.MemberUserEntityRep.update({ userId: updateMemberUserDto.userId }, updateMemberUserDto)
+    return ResultData.ok(res)
   }
 
   async remove(id: number) {
@@ -51,8 +51,8 @@ export class MemberUserService {
       {
         delFlag: '1',
       },
-    );
-    return ResultData.ok(data);
+    )
+    return ResultData.ok(data)
   }
 
   /**
@@ -62,10 +62,10 @@ export class MemberUserService {
    */
   async resetPwd(body: ResetPwdDto) {
     if (body.password) {
-      body.password = await bcrypt.hashSync(body.password, bcrypt.genSaltSync(10));
+      body.password = await bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
     }
-    await this.update(body);
+    await this.update(body)
 
-    return ResultData.ok();
+    return ResultData.ok()
   }
 }

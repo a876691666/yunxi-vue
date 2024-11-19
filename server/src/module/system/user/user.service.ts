@@ -1,35 +1,36 @@
-import { Repository, In, Not } from 'typeorm';
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { RedisService } from 'src/module/common/redis/redis.service';
-import * as bcrypt from 'bcrypt';
-import { Response } from 'express';
-import { GetNowDate, GenerateUUID, Uniq } from 'src/common/utils/index';
-import { ExportTable } from 'src/common/utils/export';
+import type { JwtService } from '@nestjs/jwt'
+import type { Response } from 'express'
+import type { ClientInfoDto } from 'src/common/decorators/common.decorator'
+import type { RedisService } from 'src/module/common/redis/redis.service'
+import type { Repository } from 'typeorm'
+import type { LoginDto, RegisterDto } from '../../main/dto/index'
+import type { ConfigService } from '../config/config.service'
+import type { DeptService } from '../dept/dept.service'
+import type { SysMenuEntity } from '../menu/entities/menu.entity'
+import type { AuthUserCancelAllDto, AuthUserCancelDto, AuthUserSelectAllDto } from '../role/dto/index'
 
-import { CacheEnum, DelFlagEnum, StatusEnum, DataScopeEnum } from 'src/common/enum/index';
-import { LOGIN_TOKEN_EXPIRESIN, SYS_USER_TYPE } from 'src/common/constant/index';
-import { ResultData } from 'src/common/utils/result';
-import { CreateUserDto, UpdateUserDto, ListUserDto, ChangeStatusDto, ResetPwdDto, AllocatedListDto, UpdateProfileDto, UpdatePwdDto } from './dto/index';
-import { RegisterDto, LoginDto } from '../../main/dto/index';
-import { AuthUserCancelDto, AuthUserCancelAllDto, AuthUserSelectAllDto } from '../role/dto/index';
+import type { SysRoleEntity } from '../role/entities/role.entity'
+import type { RoleService } from '../role/role.service'
+import type { AllocatedListDto, ChangeStatusDto, CreateUserDto, ListUserDto, ResetPwdDto, UpdateProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/index'
+import type { UserType } from './dto/user'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
 
-import { UserEntity } from './entities/sys-user.entity';
-import { SysUserWithPostEntity } from './entities/user-width-post.entity';
-import { SysUserWithRoleEntity } from './entities/user-width-role.entity';
-import { SysPostEntity } from '../post/entities/post.entity';
-import { SysDeptEntity } from '../dept/entities/dept.entity';
-import { RoleService } from '../role/role.service';
-import { DeptService } from '../dept/dept.service';
+import * as bcrypt from 'bcrypt'
+import { LOGIN_TOKEN_EXPIRESIN, SYS_USER_TYPE } from 'src/common/constant/index'
+import { Captcha } from 'src/common/decorators/captcha.decorator'
+import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator'
+import { CacheEnum, DataScopeEnum, DelFlagEnum, StatusEnum } from 'src/common/enum/index'
+import { ExportTable } from 'src/common/utils/export'
+import { GenerateUUID, GetNowDate, Uniq } from 'src/common/utils/index'
 
-import { ConfigService } from '../config/config.service';
-import { SysRoleEntity } from '../role/entities/role.entity';
-import { SysMenuEntity } from '../menu/entities/menu.entity';
-import { UserType } from './dto/user';
-import { ClientInfoDto } from 'src/common/decorators/common.decorator';
-import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator';
-import { Captcha } from 'src/common/decorators/captcha.decorator';
+import { ResultData } from 'src/common/utils/result'
+import { In, Not } from 'typeorm'
+import { SysDeptEntity } from '../dept/entities/dept.entity'
+import { SysPostEntity } from '../post/entities/post.entity'
+import { UserEntity } from './entities/sys-user.entity'
+import { SysUserWithPostEntity } from './entities/user-width-post.entity'
+import { SysUserWithRoleEntity } from './entities/user-width-role.entity'
 
 @Injectable()
 export class UserService {
@@ -50,37 +51,38 @@ export class UserService {
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
   ) {}
+
   /**
    * 后台创建用户
    * @param createUserDto
    * @returns
    */
   async create(createUserDto: CreateUserDto) {
-    const salt = bcrypt.genSaltSync(10);
+    const salt = bcrypt.genSaltSync(10)
     if (createUserDto.password) {
-      createUserDto.password = await bcrypt.hashSync(createUserDto.password, salt);
+      createUserDto.password = await bcrypt.hashSync(createUserDto.password, salt)
     }
 
-    const res = await this.userRepo.save({ ...createUserDto, userType: SYS_USER_TYPE.CUSTOM });
-    const postEntity = this.sysUserWithPostEntityRep.createQueryBuilder('postEntity');
+    const res = await this.userRepo.save({ ...createUserDto, userType: SYS_USER_TYPE.CUSTOM })
+    const postEntity = this.sysUserWithPostEntityRep.createQueryBuilder('postEntity')
     const postValues = createUserDto.postIds.map((id) => {
       return {
         userId: res.userId,
         postId: id,
-      };
-    });
-    postEntity.insert().values(postValues).execute();
+      }
+    })
+    postEntity.insert().values(postValues).execute()
 
-    const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity');
+    const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity')
     const roleValues = createUserDto.roleIds.map((id) => {
       return {
         userId: res.userId,
         roleId: id,
-      };
-    });
-    roleEntity.insert().values(roleValues).execute();
+      }
+    })
+    roleEntity.insert().values(roleValues).execute()
 
-    return ResultData.ok();
+    return ResultData.ok()
   }
 
   /**
@@ -89,73 +91,77 @@ export class UserService {
    * @returns
    */
   async findAll(query: ListUserDto, user: UserType['user']) {
-    const entity = this.userRepo.createQueryBuilder('user');
-    entity.where('user.delFlag = :delFlag', { delFlag: '0' });
+    const entity = this.userRepo.createQueryBuilder('user')
+    entity.where('user.delFlag = :delFlag', { delFlag: '0' })
 
-    //数据权限过滤
+    // 数据权限过滤
     if (user) {
-      const roles = user.roles;
-      const deptIds = [];
-      let dataScopeAll = false;
-      let dataScopeSelf = false;
+      const roles = user.roles
+      const deptIds = []
+      let dataScopeAll = false
+      let dataScopeSelf = false
       for (let index = 0; index < roles.length; index++) {
-        const role = roles[index];
+        const role = roles[index]
         if (role.dataScope === DataScopeEnum.DATA_SCOPE_ALL) {
-          dataScopeAll = true;
-          break;
-        } else if (role.dataScope === DataScopeEnum.DATA_SCOPE_CUSTOM) {
-          const roleWithDeptIds = await this.roleService.findRoleWithDeptIds(role.roleId);
-          deptIds.push(...roleWithDeptIds);
-        } else if (role.dataScope === DataScopeEnum.DATA_SCOPE_DEPT || role.dataScope === DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD) {
-          const dataScopeWidthDeptIds = await this.deptService.findDeptIdsByDataScope(user.deptId, role.dataScope);
-          deptIds.push(...dataScopeWidthDeptIds);
-        } else if (role.dataScope === DataScopeEnum.DATA_SCOPE_SELF) {
-          dataScopeSelf = true;
+          dataScopeAll = true
+          break
+        }
+        else if (role.dataScope === DataScopeEnum.DATA_SCOPE_CUSTOM) {
+          const roleWithDeptIds = await this.roleService.findRoleWithDeptIds(role.roleId)
+          deptIds.push(...roleWithDeptIds)
+        }
+        else if (role.dataScope === DataScopeEnum.DATA_SCOPE_DEPT || role.dataScope === DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD) {
+          const dataScopeWidthDeptIds = await this.deptService.findDeptIdsByDataScope(user.deptId, role.dataScope)
+          deptIds.push(...dataScopeWidthDeptIds)
+        }
+        else if (role.dataScope === DataScopeEnum.DATA_SCOPE_SELF) {
+          dataScopeSelf = true
         }
       }
 
       if (!dataScopeAll) {
         if (deptIds.length > 0) {
-          entity.where('user.deptId IN (:...deptIds)', { deptIds: deptIds });
-        } else if (dataScopeSelf) {
-          entity.where('user.userId = :userId', { userId: user.userId });
+          entity.where('user.deptId IN (:...deptIds)', { deptIds })
+        }
+        else if (dataScopeSelf) {
+          entity.where('user.userId = :userId', { userId: user.userId })
         }
       }
     }
 
     if (query.deptId) {
-      const deptIds = await this.deptService.findDeptIdsByDataScope(+query.deptId, DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD);
-      entity.andWhere('user.deptId IN (:...deptIds)', { deptIds: deptIds });
+      const deptIds = await this.deptService.findDeptIdsByDataScope(+query.deptId, DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD)
+      entity.andWhere('user.deptId IN (:...deptIds)', { deptIds })
     }
 
     if (query.userName) {
-      entity.andWhere(`user.userName LIKE "%${query.userName}%"`);
+      entity.andWhere(`user.userName LIKE "%${query.userName}%"`)
     }
 
     if (query.phonenumber) {
-      entity.andWhere(`user.phonenumber LIKE "%${query.phonenumber}%"`);
+      entity.andWhere(`user.phonenumber LIKE "%${query.phonenumber}%"`)
     }
 
     if (query.status) {
-      entity.andWhere('user.status = :status', { status: query.status });
+      entity.andWhere('user.status = :status', { status: query.status })
     }
 
     if (query.params?.beginTime && query.params?.endTime) {
-      entity.andWhere('user.createTime BETWEEN :start AND :end', { start: query.params.beginTime, end: query.params.endTime });
+      entity.andWhere('user.createTime BETWEEN :start AND :end', { start: query.params.beginTime, end: query.params.endTime })
     }
 
     if (query.pageSize && query.pageNum) {
-      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize);
+      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     }
-    //联查部门详情
-    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId');
+    // 联查部门详情
+    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId')
 
-    const [list, total] = await entity.getManyAndCount();
+    const [list, total] = await entity.getManyAndCount()
 
     return ResultData.ok({
       list,
       total,
-    });
+    })
   }
 
   /**
@@ -167,17 +173,17 @@ export class UserService {
       where: {
         delFlag: '0',
       },
-    });
+    })
     const roles = await this.roleService.findRoles({
       where: {
         delFlag: '0',
       },
-    });
+    })
 
     return ResultData.ok({
       posts,
       roles,
-    });
+    })
   }
 
   @Cacheable(CacheEnum.SYS_USER_KEY, '{userId}')
@@ -185,38 +191,38 @@ export class UserService {
     const data = await this.userRepo.findOne({
       where: {
         delFlag: '0',
-        userId: userId,
+        userId,
       },
-    });
+    })
 
     const dept = await this.sysDeptEntityRep.findOne({
       where: {
         delFlag: '0',
         deptId: data.deptId,
       },
-    });
-    data['dept'] = dept;
+    })
+    data.dept = dept
 
     const postList = await this.sysUserWithPostEntityRep.find({
       where: {
-        userId: userId,
+        userId,
       },
-    });
-    const postIds = postList.map((item) => item.postId);
+    })
+    const postIds = postList.map(item => item.postId)
     const allPosts = await this.sysPostEntityRep.find({
       where: {
         delFlag: '0',
       },
-    });
+    })
 
-    const roleIds = await this.getRoleIds([userId]);
+    const roleIds = await this.getRoleIds([userId])
     const allRoles = await this.roleService.findRoles({
       where: {
         delFlag: '0',
       },
-    });
+    })
 
-    data['roles'] = allRoles.filter((item) => roleIds.includes(item.roleId));
+    data.roles = allRoles.filter(item => roleIds.includes(item.roleId))
 
     return ResultData.ok({
       data,
@@ -224,7 +230,7 @@ export class UserService {
       posts: allPosts,
       roles: allRoles,
       roleIds,
-    });
+    })
   }
 
   /**
@@ -234,78 +240,79 @@ export class UserService {
    */
   @CacheEvict(CacheEnum.SYS_USER_KEY, '{userId}')
   async update(updateUserDto: UpdateUserDto, userId: number) {
-    //不能修改超级管理员
-    if (updateUserDto.userId === 1) throw new BadRequestException('非法操作！');
+    // 不能修改超级管理员
+    if (updateUserDto.userId === 1)
+      throw new BadRequestException('非法操作！')
 
-    //过滤掉设置超级管理员角色
-    updateUserDto.roleIds = updateUserDto.roleIds.filter((v) => v !== 1);
+    // 过滤掉设置超级管理员角色
+    updateUserDto.roleIds = updateUserDto.roleIds.filter(v => v !== 1)
 
-    //当前用户不能修改自己的状态
+    // 当前用户不能修改自己的状态
     if (updateUserDto.userId === userId) {
-      delete updateUserDto.status;
+      delete updateUserDto.status
     }
 
     if (updateUserDto?.postIds?.length > 0) {
-      //用户已有岗位,先删除所有关联岗位
+      // 用户已有岗位,先删除所有关联岗位
       const hasPostId = await this.sysUserWithPostEntityRep.findOne({
         where: {
           userId: updateUserDto.userId,
         },
         select: ['postId'],
-      });
+      })
 
       if (hasPostId) {
         await this.sysUserWithPostEntityRep.delete({
           userId: updateUserDto.userId,
-        });
+        })
       }
-      const postEntity = this.sysUserWithPostEntityRep.createQueryBuilder('postEntity');
+      const postEntity = this.sysUserWithPostEntityRep.createQueryBuilder('postEntity')
       const postValues = updateUserDto.postIds.map((id) => {
         return {
           userId: updateUserDto.userId,
           postId: id,
-        };
-      });
-      postEntity.insert().values(postValues).execute();
+        }
+      })
+      postEntity.insert().values(postValues).execute()
     }
 
     if (updateUserDto?.roleIds?.length > 0) {
-      //用户已有角色,先删除所有关联角色
+      // 用户已有角色,先删除所有关联角色
       const hasRoletId = await this.sysUserWithRoleEntityRep.findOne({
         where: {
           userId: updateUserDto.userId,
         },
         select: ['roleId'],
-      });
+      })
       if (hasRoletId) {
         await this.sysUserWithRoleEntityRep.delete({
           userId: updateUserDto.userId,
-        });
+        })
       }
-      const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity');
+      const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity')
       const roleValues = updateUserDto.roleIds.map((id) => {
         return {
           userId: updateUserDto.userId,
           roleId: id,
-        };
-      });
-      roleEntity.insert().values(roleValues).execute();
+        }
+      })
+      roleEntity.insert().values(roleValues).execute()
     }
 
-    delete updateUserDto.password;
-    delete (updateUserDto as any).dept;
-    delete (updateUserDto as any).roles;
-    delete (updateUserDto as any).roleIds;
-    delete (updateUserDto as any).postIds;
+    delete updateUserDto.password
+    delete (updateUserDto as any).dept
+    delete (updateUserDto as any).roles
+    delete (updateUserDto as any).roleIds
+    delete (updateUserDto as any).postIds
 
-    //更新用户信息
-    const data = await this.userRepo.update({ userId: updateUserDto.userId }, updateUserDto);
-    return ResultData.ok(data);
+    // 更新用户信息
+    const data = await this.userRepo.update({ userId: updateUserDto.userId }, updateUserDto)
+    return ResultData.ok(data)
   }
 
   @CacheEvict(CacheEnum.SYS_USER_KEY, '{userId}')
   clearCacheByUserId(userId: number) {
-    return userId;
+    return userId
   }
 
   /**
@@ -318,51 +325,51 @@ export class UserService {
         userName: user.username,
       },
       select: ['userId', 'password'],
-    });
-    this.clearCacheByUserId(data.userId);
+    })
+    this.clearCacheByUserId(data.userId)
 
     if (!(data && bcrypt.compareSync(user.password, data.password))) {
-      return ResultData.fail(500, `帐号或密码错误`);
+      return ResultData.fail(500, `帐号或密码错误`)
     }
 
-    const userData = await this.getUserinfo(data.userId);
+    const userData = await this.getUserinfo(data.userId)
 
     if (userData.delFlag === DelFlagEnum.DELETE) {
-      return ResultData.fail(500, `您已被禁用，如需正常使用请联系管理员`);
+      return ResultData.fail(500, `您已被禁用，如需正常使用请联系管理员`)
     }
     if (userData.status === StatusEnum.STOP) {
-      return ResultData.fail(500, `您已被停用，如需正常使用请联系管理员`);
+      return ResultData.fail(500, `您已被停用，如需正常使用请联系管理员`)
     }
 
     /**
      * 更新用户登录信息
      */
-    const loginDate = new Date();
+    const loginDate = new Date()
     await this.userRepo.update(
       {
         userId: data.userId,
       },
       {
-        loginDate: loginDate,
+        loginDate,
         loginIp: clientInfo.ipaddr,
       },
-    );
+    )
 
-    const uuid = GenerateUUID();
-    const token = this.createToken({ uuid: uuid, userId: userData.userId });
-    const permissions = await this.getUserPermissions(userData.userId);
+    const uuid = GenerateUUID()
+    const token = this.createToken({ uuid, userId: userData.userId })
+    const permissions = await this.getUserPermissions(userData.userId)
     const deptData = await this.sysDeptEntityRep.findOne({
       where: {
         deptId: userData.deptId,
       },
       select: ['deptName'],
-    });
+    })
 
     /**
      * 设置公司名称
      */
-    userData['deptName'] = deptData.deptName || '';
-    const roles = userData.roles.map((item) => item.roleKey);
+    userData.deptName = deptData.deptName || ''
+    const roles = userData.roles.map(item => item.roleKey)
 
     const userInfo = {
       browser: clientInfo.browser,
@@ -370,38 +377,38 @@ export class UserService {
       loginLocation: clientInfo.loginLocation,
       loginTime: loginDate,
       os: clientInfo.os,
-      permissions: permissions,
-      roles: roles,
+      permissions,
+      roles,
       token: uuid,
       user: userData,
       userId: userData.userId,
       username: userData.userName,
       deptId: userData.deptId,
-    };
+    }
 
-    await this.updateRedisToken(uuid, userInfo);
+    await this.updateRedisToken(uuid, userInfo)
 
     return ResultData.ok(
       {
         token,
       },
       '登录成功',
-    );
+    )
   }
 
   /**
    * 更新redis中用户权限和角色信息
    */
   async updateRedisUserRolesAndPermissions(uuid: string, userId: number) {
-    const userData = await this.getUserinfo(userId);
+    const userData = await this.getUserinfo(userId)
 
-    const permissions = await this.getUserPermissions(userId);
-    const roles = userData.roles.map((item) => item.roleKey);
+    const permissions = await this.getUserPermissions(userId)
+    const roles = userData.roles.map(item => item.roleKey)
 
     await this.updateRedisToken(uuid, {
-      permissions: permissions,
-      roles: roles,
-    });
+      permissions,
+      roles,
+    })
   }
 
   /**
@@ -410,14 +417,14 @@ export class UserService {
    * @param metaData
    */
   async updateRedisToken(token: string, metaData: Partial<UserType>) {
-    const oldMetaData = await this.redisService.get(`${CacheEnum.LOGIN_TOKEN_KEY}${token}`);
+    const oldMetaData = await this.redisService.get(`${CacheEnum.LOGIN_TOKEN_KEY}${token}`)
 
-    let newMetaData = metaData;
+    let newMetaData = metaData
     if (oldMetaData) {
-      newMetaData = Object.assign(oldMetaData, metaData);
+      newMetaData = Object.assign(oldMetaData, metaData)
     }
 
-    await this.redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${token}`, newMetaData, LOGIN_TOKEN_EXPIRESIN);
+    await this.redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${token}`, newMetaData, LOGIN_TOKEN_EXPIRESIN)
   }
 
   /**
@@ -431,9 +438,9 @@ export class UserService {
         userId: In(userIds),
       },
       select: ['roleId'],
-    });
-    const roleIds = roleList.map((item) => item.roleId);
-    return Uniq(roleIds);
+    })
+    const roleIds = roleList.map(item => item.roleId)
+    return Uniq(roleIds)
   }
 
   /**
@@ -446,80 +453,80 @@ export class UserService {
     // if (userId === 1) {
     //   return ['*:*:*'];
     // }
-    const roleIds = await this.getRoleIds([userId]);
-    const list = await this.roleService.getPermissionsByRoleIds(roleIds);
+    const roleIds = await this.getRoleIds([userId])
+    const list = await this.roleService.getPermissionsByRoleIds(roleIds)
     const permissions = Uniq(list.map((item: SysMenuEntity) => item.perms)).filter((item) => {
-      return item;
-    });
-    return permissions;
+      return item
+    })
+    return permissions
   }
 
   /**
    * 获取用户信息
    */
-  async getUserinfo(userId: number): Promise<{ dept: SysDeptEntity; roles: Array<SysRoleEntity>; posts: Array<SysPostEntity> } & UserEntity> {
-    const entity = this.userRepo.createQueryBuilder('user');
+  async getUserinfo(userId: number): Promise<{ dept: SysDeptEntity, roles: Array<SysRoleEntity>, posts: Array<SysPostEntity> } & UserEntity> {
+    const entity = this.userRepo.createQueryBuilder('user')
     entity.where({
-      userId: userId,
+      userId,
       delFlag: DelFlagEnum.NORMAL,
-    });
-    //联查部门详情
-    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId');
-    const roleIds = await this.getRoleIds([userId]);
+    })
+    // 联查部门详情
+    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId')
+    const roleIds = await this.getRoleIds([userId])
 
     const roles = await this.roleService.findRoles({
       where: {
         delFlag: '0',
         roleId: In(roleIds),
       },
-    });
+    })
 
     const postIds = (
       await this.sysUserWithPostEntityRep.find({
         where: {
-          userId: userId,
+          userId,
         },
         select: ['postId'],
       })
-    ).map((item) => item.postId);
+    ).map(item => item.postId)
 
     const posts = await this.sysPostEntityRep.find({
       where: {
         delFlag: '0',
         postId: In(postIds),
       },
-    });
+    })
 
-    const data = await entity.getOne();
+    const data = await entity.getOne()
 
     const result = {
       ...data,
       roles,
       posts,
       dept: (data as any).dept,
-    };
+    }
 
-    return result;
+    return result
   }
 
   /**
    * 注册
    */
   async register(user: RegisterDto) {
-    const loginDate = GetNowDate();
+    const loginDate = GetNowDate()
     const checkUserNameUnique = await this.userRepo.findOne({
       where: {
         userName: user.username,
       },
       select: ['userName'],
-    });
+    })
     if (checkUserNameUnique) {
-      return ResultData.fail(500, `保存用户'${user.username}'失败，注册账号已存在`);
+      return ResultData.fail(500, `保存用户'${user.username}'失败，注册账号已存在`)
     }
-    user['userName'] = user.username;
-    user['nickName'] = user.username;
-    await this.userRepo.save({ ...user, loginDate });
-    return ResultData.ok();
+    user.userName = user.username
+    user.nickName = user.username
+    await this.userRepo.save({ ...user, loginDate })
+    return ResultData.ok()
   }
 
   /**
@@ -528,9 +535,9 @@ export class UserService {
    * @param payload 数据声明
    * @return 令牌
    */
-  createToken(payload: { uuid: string; userId: number }): string {
-    const accessToken = this.jwtService.sign(payload);
-    return accessToken;
+  createToken(payload: { uuid: string, userId: number }): string {
+    const accessToken = this.jwtService.sign(payload)
+    return accessToken
   }
 
   /**
@@ -541,11 +548,13 @@ export class UserService {
    */
   parseToken(token: string) {
     try {
-      if (!token) return null;
-      const payload = this.jwtService.verify(token.replace('Bearer ', ''));
-      return payload;
-    } catch (error) {
-      return null;
+      if (!token)
+        return null
+      const payload = this.jwtService.verify(token.replace('Bearer ', ''))
+      return payload
+    }
+    catch (error) {
+      return null
     }
   }
 
@@ -556,10 +565,10 @@ export class UserService {
    */
   async resetPwd(body: ResetPwdDto) {
     if (body.userId === 1) {
-      return ResultData.fail(500, '系统用户不能重置密码');
+      return ResultData.fail(500, '系统用户不能重置密码')
     }
     if (body.password) {
-      body.password = await bcrypt.hashSync(body.password, bcrypt.genSaltSync(10));
+      body.password = await bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
     }
     await this.userRepo.update(
       {
@@ -568,8 +577,8 @@ export class UserService {
       {
         password: body.password,
       },
-    );
-    return ResultData.ok();
+    )
+    return ResultData.ok()
   }
 
   /**
@@ -584,8 +593,8 @@ export class UserService {
       {
         delFlag: '1',
       },
-    );
-    return ResultData.ok(data);
+    )
+    return ResultData.ok(data)
   }
 
   /**
@@ -598,38 +607,39 @@ export class UserService {
       where: {
         delFlag: '0',
       },
-    });
+    })
 
     const user = await this.userRepo.findOne({
       where: {
         delFlag: '0',
-        userId: userId,
+        userId,
       },
-    });
+    })
 
     const dept = await this.sysDeptEntityRep.findOne({
       where: {
         delFlag: '0',
         deptId: user.deptId,
       },
-    });
-    user['dept'] = dept;
+    })
+    user.dept = dept
 
-    const roleIds = await this.getRoleIds([userId]);
-    //TODO flag用来给前端表格标记选中状态，后续优化
-    user['roles'] = allRoles.filter((item) => {
+    const roleIds = await this.getRoleIds([userId])
+    // TODO flag用来给前端表格标记选中状态，后续优化
+    user.roles = allRoles.filter((item) => {
       if (roleIds.includes(item.roleId)) {
-        item['flag'] = true;
-        return true;
-      } else {
-        return true;
+        item.flag = true
+        return true
       }
-    });
+      else {
+        return true
+      }
+    })
 
     return ResultData.ok({
       roles: allRoles,
       user,
-    });
+    })
   }
 
   /**
@@ -638,30 +648,30 @@ export class UserService {
    * @returns
    */
   async updateAuthRole(query) {
-    const roleIds = query.roleIds.split(',');
+    const roleIds = query.roleIds.split(',')
     if (roleIds?.length > 0) {
-      //用户已有角色,先删除所有关联角色
+      // 用户已有角色,先删除所有关联角色
       const hasRoletId = await this.sysUserWithRoleEntityRep.findOne({
         where: {
           userId: query.userId,
         },
         select: ['roleId'],
-      });
+      })
       if (hasRoletId) {
         await this.sysUserWithRoleEntityRep.delete({
           userId: query.userId,
-        });
+        })
       }
-      const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity');
+      const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity')
       const roleValues = roleIds.map((id) => {
         return {
           userId: query.userId,
           roleId: id,
-        };
-      });
-      roleEntity.insert().values(roleValues).execute();
+        }
+      })
+      roleEntity.insert().values(roleValues).execute()
     }
-    return ResultData.ok();
+    return ResultData.ok()
   }
 
   /**
@@ -675,9 +685,9 @@ export class UserService {
         userId: changeStatusDto.userId,
       },
       select: ['userType'],
-    });
+    })
     if (userData.userType === SYS_USER_TYPE.SYS) {
-      return ResultData.fail(500, '系统角色不可停用');
+      return ResultData.fail(500, '系统角色不可停用')
     }
 
     const res = await this.userRepo.update(
@@ -685,8 +695,8 @@ export class UserService {
       {
         status: changeStatusDto.status,
       },
-    );
-    return ResultData.ok(res);
+    )
+    return ResultData.ok(res)
   }
 
   /**
@@ -694,8 +704,8 @@ export class UserService {
    * @returns
    */
   async deptTree() {
-    const tree = await this.deptService.deptTree();
-    return ResultData.ok(tree);
+    const tree = await this.deptService.deptTree()
+    return ResultData.ok(tree)
   }
 
   /**
@@ -709,33 +719,33 @@ export class UserService {
         roleId: +query.roleId,
       },
       select: ['userId'],
-    });
+    })
     if (roleWidthRoleList.length === 0) {
       return ResultData.ok({
         list: [],
         total: 0,
-      });
+      })
     }
-    const userIds = roleWidthRoleList.map((item) => item.userId);
-    const entity = this.userRepo.createQueryBuilder('user');
-    entity.where('user.delFlag = :delFlag', { delFlag: '0' });
-    entity.andWhere('user.status = :status', { status: '0' });
-    entity.andWhere('user.userId IN (:...userIds)', { userIds: userIds });
+    const userIds = roleWidthRoleList.map(item => item.userId)
+    const entity = this.userRepo.createQueryBuilder('user')
+    entity.where('user.delFlag = :delFlag', { delFlag: '0' })
+    entity.andWhere('user.status = :status', { status: '0' })
+    entity.andWhere('user.userId IN (:...userIds)', { userIds })
     if (query.userName) {
-      entity.andWhere(`user.userName LIKE "%${query.userName}%"`);
+      entity.andWhere(`user.userName LIKE "%${query.userName}%"`)
     }
 
     if (query.phonenumber) {
-      entity.andWhere(`user.phonenumber LIKE "%${query.phonenumber}%"`);
+      entity.andWhere(`user.phonenumber LIKE "%${query.phonenumber}%"`)
     }
-    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize);
-    //联查部门详情
-    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId');
-    const [list, total] = await entity.getManyAndCount();
+    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
+    // 联查部门详情
+    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId')
+    const [list, total] = await entity.getManyAndCount()
     return ResultData.ok({
       list,
       total,
-    });
+    })
   }
 
   /**
@@ -749,30 +759,30 @@ export class UserService {
         roleId: +query.roleId,
       },
       select: ['userId'],
-    });
+    })
 
-    const userIds = roleWidthRoleList.map((item) => item.userId);
-    const entity = this.userRepo.createQueryBuilder('user');
-    entity.where('user.delFlag = :delFlag', { delFlag: '0' });
-    entity.andWhere('user.status = :status', { status: '0' });
+    const userIds = roleWidthRoleList.map(item => item.userId)
+    const entity = this.userRepo.createQueryBuilder('user')
+    entity.where('user.delFlag = :delFlag', { delFlag: '0' })
+    entity.andWhere('user.status = :status', { status: '0' })
     entity.andWhere({
       userId: Not(In(userIds)),
-    });
+    })
     if (query.userName) {
-      entity.andWhere(`user.userName LIKE "%${query.userName}%"`);
+      entity.andWhere(`user.userName LIKE "%${query.userName}%"`)
     }
 
     if (query.phonenumber) {
-      entity.andWhere(`user.phonenumber LIKE "%${query.phonenumber}%"`);
+      entity.andWhere(`user.phonenumber LIKE "%${query.phonenumber}%"`)
     }
-    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize);
-    //联查部门详情
-    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId');
-    const [list, total] = await entity.getManyAndCount();
+    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
+    // 联查部门详情
+    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId')
+    const [list, total] = await entity.getManyAndCount()
     return ResultData.ok({
       list,
       total,
-    });
+    })
   }
 
   /**
@@ -784,8 +794,8 @@ export class UserService {
     await this.sysUserWithRoleEntityRep.delete({
       userId: data.userId,
       roleId: data.roleId,
-    });
-    return ResultData.ok();
+    })
+    return ResultData.ok()
   }
 
   /**
@@ -794,12 +804,12 @@ export class UserService {
    * @returns
    */
   async authUserCancelAll(data: AuthUserCancelAllDto) {
-    const userIds = data.userIds.split(',').map((id) => +id);
+    const userIds = data.userIds.split(',').map(id => +id)
     await this.sysUserWithRoleEntityRep.delete({
       userId: In(userIds),
       roleId: +data.roleId,
-    });
-    return ResultData.ok();
+    })
+    return ResultData.ok()
   }
 
   /**
@@ -808,16 +818,16 @@ export class UserService {
    * @returns
    */
   async authUserSelectAll(data: AuthUserSelectAllDto) {
-    const userIds = data.userIds.split(',');
+    const userIds = data.userIds.split(',')
     const entitys = userIds.map((userId) => {
-      const sysDeptEntityEntity = new SysUserWithRoleEntity();
+      const sysDeptEntityEntity = new SysUserWithRoleEntity()
       return Object.assign(sysDeptEntityEntity, {
-        userId: userId,
+        userId,
         roleId: +data.roleId,
-      });
-    });
-    await this.sysUserWithRoleEntityRep.save(entitys);
-    return ResultData.ok();
+      })
+    })
+    await this.sysUserWithRoleEntityRep.save(entitys)
+    return ResultData.ok()
   }
 
   /**
@@ -826,7 +836,7 @@ export class UserService {
    * @returns
    */
   async profile(user) {
-    return ResultData.ok(user);
+    return ResultData.ok(user)
   }
 
   /**
@@ -835,11 +845,11 @@ export class UserService {
    * @returns
    */
   async updateProfile(user: UserType, updateProfileDto: Partial<UpdateProfileDto>) {
-    await this.userRepo.update({ userId: user.user.userId }, updateProfileDto);
-    const userData = await this.redisService.get(`${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`);
-    userData.user = Object.assign(userData.user, updateProfileDto);
-    await this.redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`, userData);
-    return ResultData.ok();
+    await this.userRepo.update({ userId: user.user.userId }, updateProfileDto)
+    const userData = await this.redisService.get(`${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`)
+    userData.user = Object.assign(userData.user, updateProfileDto)
+    await this.redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`, userData)
+    return ResultData.ok()
   }
 
   /**
@@ -850,15 +860,15 @@ export class UserService {
    */
   async updatePwd(user: UserType, updatePwdDto: UpdatePwdDto) {
     if (updatePwdDto.oldPassword === updatePwdDto.newPassword) {
-      return ResultData.fail(500, '新密码不能与旧密码相同');
+      return ResultData.fail(500, '新密码不能与旧密码相同')
     }
     if (bcrypt.compareSync(user.user.password, updatePwdDto.oldPassword)) {
-      return ResultData.fail(500, '修改密码失败，旧密码错误');
+      return ResultData.fail(500, '修改密码失败，旧密码错误')
     }
 
-    const password = await bcrypt.hashSync(updatePwdDto.newPassword, bcrypt.genSaltSync(10));
-    await this.userRepo.update({ userId: user.user.userId }, { password: password });
-    return ResultData.ok();
+    const password = await bcrypt.hashSync(updatePwdDto.newPassword, bcrypt.genSaltSync(10))
+    await this.userRepo.update({ userId: user.user.userId }, { password })
+    return ResultData.ok()
   }
 
   /**
@@ -866,9 +876,9 @@ export class UserService {
    * @param res
    */
   async export(res: Response, body: ListUserDto, user: UserType['user']) {
-    delete body.pageNum;
-    delete body.pageSize;
-    const list = await this.findAll(body, user);
+    delete body.pageNum
+    delete body.pageSize
+    const list = await this.findAll(body, user)
     const options = {
       sheetName: '用户数据',
       data: list.data.list,
@@ -885,7 +895,7 @@ export class UserService {
         { title: '部门', dataIndex: 'dept.deptName' },
         { title: '部门负责人', dataIndex: 'dept.leader' },
       ],
-    };
-    ExportTable(options, res);
+    }
+    ExportTable(options, res)
   }
 }

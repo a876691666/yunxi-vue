@@ -1,6 +1,8 @@
-import { RedisModule as liaoliaoRedisModule, RedisModuleAsyncOptions } from '@liaoliaots/nestjs-redis';
-import { DynamicModule, Global, Module } from '@nestjs/common';
-import { RedisService } from './redis.service';
+import type { RedisModuleAsyncOptions } from '@liaoliaots/nestjs-redis'
+import type { DynamicModule } from '@nestjs/common'
+import { RedisModule as liaoliaoRedisModule } from '@liaoliaots/nestjs-redis'
+import { Global, Module } from '@nestjs/common'
+import { RedisService } from './redis.service'
 
 @Global()
 @Module({
@@ -14,7 +16,7 @@ export class RedisModule {
       imports: [liaoliaoRedisModule.forRootAsync(options, isGlobal)],
       providers: [RedisService],
       exports: [RedisService],
-    };
+    }
   }
 
   static forRootAsync(options: RedisModuleAsyncOptions, isGlobal = true): DynamicModule {
@@ -23,6 +25,6 @@ export class RedisModule {
       imports: [liaoliaoRedisModule.forRootAsync(options, isGlobal)],
       providers: [RedisService],
       exports: [RedisService],
-    };
+    }
   }
 }

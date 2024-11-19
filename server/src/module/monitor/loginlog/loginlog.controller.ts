@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Res, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiConsumes, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
-import { Response } from 'express';
-import { LoginlogService } from './loginlog.service';
-import { ListLoginlogDto } from './dto/index';
-import { RequirePermission } from 'src/common/decorators/require-premission.decorator';
+import type { Response } from 'express'
+import type { LoginlogService } from './loginlog.service'
+import { Body, Controller, Delete, Get, Param, Post, Query, Res } from '@nestjs/common'
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
+import { ListLoginlogDto } from './dto/index'
 
 @ApiTags('登录日志')
 @Controller('monitor/logininfor')
@@ -19,7 +19,7 @@ export class LoginlogController {
   @RequirePermission('monitor:logininfor:list')
   @Get('/list')
   findAll(@Query() query: ListLoginlogDto) {
-    return this.loginlogService.findAll(query);
+    return this.loginlogService.findAll(query)
   }
 
   @ApiOperation({
@@ -28,7 +28,7 @@ export class LoginlogController {
   @RequirePermission('monitor:logininfor:remove')
   @Delete('/clean')
   removeAll() {
-    return this.loginlogService.removeAll();
+    return this.loginlogService.removeAll()
   }
 
   @ApiOperation({
@@ -37,14 +37,14 @@ export class LoginlogController {
   @RequirePermission('monitor:logininfor:remove')
   @Delete(':id')
   remove(@Param('id') ids: string) {
-    const infoIds = ids.split(',').map((id) => id);
-    return this.loginlogService.remove(infoIds);
+    const infoIds = ids.split(',').map(id => id)
+    return this.loginlogService.remove(infoIds)
   }
 
   @ApiOperation({ summary: '导出登录日志为xlsx文件' })
   @RequirePermission('system:config:export')
   @Post('/export')
   async export(@Res() res: Response, @Body() body: ListLoginlogDto): Promise<void> {
-    return this.loginlogService.export(res, body);
+    return this.loginlogService.export(res, body)
   }
 }

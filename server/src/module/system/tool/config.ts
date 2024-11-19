@@ -9,4 +9,4 @@ export default {
   autoRemovePre: false,
   /** 表前缀（生成类名不会包含表前缀，多个用逗号分隔） */
   tablePrefix: ['sys_'],
-};
+}

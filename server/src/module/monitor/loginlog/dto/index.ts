@@ -1,6 +1,6 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, Min, Length, IsOptional, IsBoolean, IsNumber } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { PagingDto } from 'src/common/dto/index';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsEnum, IsJSON, IsNumber, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
+import { PagingDto } from 'src/common/dto/index'
 
 export enum StatusEnum {
   STATIC = '0',
@@ -11,42 +11,42 @@ export class CreateLoginlogDto {
   @IsOptional()
   @IsString()
   @Length(0, 128)
-  ipaddr?: string;
+  ipaddr?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 50)
-  userName?: string;
+  userName?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 255)
-  loginLocation?: string;
+  loginLocation?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 50)
-  browser?: string;
+  browser?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 50)
-  os?: string;
+  os?: string
 
   @IsOptional()
   @IsString()
   @Length(0, 255)
-  msg?: string;
+  msg?: string
 
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }
 
 export class UpdateLoginlogDto extends CreateLoginlogDto {
   @IsNumber()
-  infoId: number;
+  infoId: number
 }
 
 export class ListLoginlogDto extends PagingDto {
@@ -56,7 +56,7 @@ export class ListLoginlogDto extends PagingDto {
   @IsOptional()
   @IsString()
   @Length(0, 128)
-  ipaddr?: string;
+  ipaddr?: string
 
   @ApiProperty({
     required: false,
@@ -64,7 +64,7 @@ export class ListLoginlogDto extends PagingDto {
   @IsOptional()
   @IsString()
   @Length(0, 50)
-  userName?: string;
+  userName?: string
 
   @ApiProperty({
     required: false,
@@ -72,5 +72,5 @@ export class ListLoginlogDto extends PagingDto {
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }

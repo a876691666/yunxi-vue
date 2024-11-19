@@ -1,5 +1,5 @@
-import { IsString, IsJSON, IsEnum, IsPhoneNumber, Min, Length, IsOptional, IsBoolean, IsNumber, IsEmail } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsEmail, IsEnum, IsJSON, IsNumber, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
 
 export enum StatusEnum {
   STATIC = '0',
@@ -10,28 +10,28 @@ export class CreateDeptDto {
     required: true,
   })
   @IsNumber()
-  parentId: number;
+  parentId: number
 
   @ApiProperty({
     required: true,
   })
   @IsString()
   @Length(0, 30)
-  deptName: string;
+  deptName: string
 
   @ApiProperty({
     required: true,
   })
   @IsNumber()
   @Min(0)
-  orderNum: number;
+  orderNum: number
 
   @ApiProperty({
     required: false,
   })
   @IsOptional()
   @IsString()
-  leader?: string;
+  leader?: string
 
   @ApiProperty({
     required: false,
@@ -39,7 +39,7 @@ export class CreateDeptDto {
   @IsOptional()
   @IsString()
   @Length(0, 11)
-  phone?: string;
+  phone?: string
 
   @ApiProperty({
     required: false,
@@ -47,7 +47,7 @@ export class CreateDeptDto {
   @IsOptional()
   @IsString()
   @IsEmail()
-  email?: string;
+  email?: string
 
   @ApiProperty({
     required: false,
@@ -55,7 +55,7 @@ export class CreateDeptDto {
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }
 
 export class UpdateDeptDto extends CreateDeptDto {
@@ -63,7 +63,7 @@ export class UpdateDeptDto extends CreateDeptDto {
     required: false,
   })
   @IsNumber()
-  deptId: number;
+  deptId: number
 }
 
 export class ListDeptDto {
@@ -72,7 +72,7 @@ export class ListDeptDto {
   })
   @IsOptional()
   @IsString()
-  deptName?: string;
+  deptName?: string
 
   @ApiProperty({
     required: false,
@@ -80,5 +80,5 @@ export class ListDeptDto {
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
-  status?: string;
+  status?: string
 }

@@ -7,7 +7,7 @@
  */
 
 export function arraysContains(array: string[], value: string): boolean {
-  return array.includes(value);
+  return array.includes(value)
 }
 
 /**
@@ -18,8 +18,8 @@ export function arraysContains(array: string[], value: string): boolean {
  */
 
 export function getColumnLength(columnType: string): number {
-  const match = columnType.match(/\((\d+)\)/);
-  return match ? parseInt(match[1], 10) : 0;
+  const match = columnType.match(/\((\d+)\)/)
+  return match ? Number.parseInt(match[1], 10) : 0
 }
 
 export class StringUtils {
@@ -29,7 +29,7 @@ export class StringUtils {
    * @returns {string} - 转换后的小驼峰命名法字符串
    */
   static toCamelCase(str: string): string {
-    return str.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+    return str.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase())
   }
 
   /**
@@ -38,7 +38,7 @@ export class StringUtils {
    * @returns {string} - 转换后的大驼峰命名法字符串
    */
   static toPascalCase(str: string) {
-    return str[0].toUpperCase() + this.toCamelCase(str).slice(1);
+    return str[0].toUpperCase() + this.toCamelCase(str).slice(1)
   }
 }
 /**
@@ -47,7 +47,7 @@ export class StringUtils {
  * @returns {string} - 转换后的驼峰命名法字符串
  */
 export function convertToCamelCase(str) {
-  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
 }
 /**
  * 将字符串的首字母大写
@@ -55,5 +55,5 @@ export function convertToCamelCase(str) {
  * @returns {string} - 首字母大写后的字符串
  */
 export function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
