@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-
+import { stringDateTransformer } from 'src/common/entities/transformer'
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm'
-import { stringDateTransformer } from './transformer'
 
 // 删除
 export abstract class DeleteStatusEntity {

@@ -1,6 +1,7 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { glob } from 'glob'
+import { GenConstants } from 'src/common/constant/gen.constant'
 import velocityjs from 'velocityjs'
 
 const rootPath = path.join(process.cwd(), 'src/module/system/tool/template')
@@ -66,7 +67,7 @@ const templateList = glob.sync('./**/*.*.vm').map((file) => {
   // 减去rootPath部分的路径
   const relativePath = path.relative(rootPath, file)
   const name = relativePath.replace('.vm', '').replace(/\\/g, '/')
-  // 12
+  // 123
   // 减去rootPath部分的路径
   const previewRelativePath = path.relative(previewRootPath, file)
   const previewName = previewRelativePath.replace(/\\/g, '/')
@@ -80,7 +81,14 @@ export function gen(options) {
   } = {}
 
   for (const [name, _previewName, content] of templateList) {
-    result[replaceStr(name, options)] = velocityjs.render(content, { getValidatorDecorator, getUiTsType, ignoreField, getTsType, ...options })
+    result[replaceStr(name, options)] = velocityjs.render(content, {
+      GenConstants,
+      getValidatorDecorator,
+      getUiTsType,
+      ignoreField,
+      getTsType,
+      ...options,
+    })
   }
   return result
 }
@@ -90,7 +98,14 @@ export function previewGen(options) {
     [name: string]: string
   } = {}
   for (const [_name, previewName, content] of templateList) {
-    result[replaceStr(previewName, options)] = velocityjs.render(content, { getValidatorDecorator, getUiTsType, ignoreField, getTsType, ...options })
+    result[replaceStr(previewName, options)] = velocityjs.render(content, {
+      GenConstants,
+      getValidatorDecorator,
+      getUiTsType,
+      ignoreField,
+      getTsType,
+      ...options,
+    })
   }
   return result
 }
