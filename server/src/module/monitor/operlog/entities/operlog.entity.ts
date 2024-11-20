@@ -48,8 +48,8 @@ export class SysOperlogEntity {
   @CreateDateColumn({ type: 'timestamp', name: 'oper_time', comment: '操作时间' })
   public operTime: Date
 
-  // 登录状态:0正常 1失败
-  @Column({ type: 'char', name: 'status', length: 1, default: '0', comment: '登录状态' })
+  // 操作状态:0正常 1失败
+  @Column({ type: 'char', name: 'status', length: 1, default: '0', comment: '操作状态' })
   public status: string
 
   // 提示消息

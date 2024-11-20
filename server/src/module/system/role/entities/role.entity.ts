@@ -28,4 +28,7 @@ export class SysRoleEntity extends BaseEntity {
 
   @Column({ type: 'boolean', name: 'dept_check_strictly', default: false, comment: '部门树选择项是否关联显示' })
   public deptCheckStrictly: boolean
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '角色状态（0正常 1停用）' })
+  public status: string
 }

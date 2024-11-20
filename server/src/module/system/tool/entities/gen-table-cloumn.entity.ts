@@ -77,4 +77,7 @@ export class GenTableColumnEntity extends BaseEntity {
   @ApiProperty({ type: Number, description: '排序' })
   @Column({ type: 'int', name: 'sort', comment: '排序' })
   public sort: number
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '状态（0正常 1关闭）' })
+  public status: string
 }

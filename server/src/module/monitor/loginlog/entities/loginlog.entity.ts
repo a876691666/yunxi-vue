@@ -1,10 +1,10 @@
-import { BaseStatusEntity } from 'src/common/entities/base'
+import { BaseEntity } from 'src/common/entities/base'
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('sys_logininfor', {
   comment: '系统访问记录',
 })
-export class MonitorLoginlogEntity extends BaseStatusEntity {
+export class MonitorLoginlogEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int', name: 'info_id', comment: '访问ID' })
   public infoId: number
 
@@ -29,4 +29,7 @@ export class MonitorLoginlogEntity extends BaseStatusEntity {
   // 提示消息
   @Column({ type: 'varchar', name: 'msg', length: 255, default: '', comment: '提示消息' })
   public msg: string
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '登录状态（0成功 1失败）' })
+  public status: string
 }

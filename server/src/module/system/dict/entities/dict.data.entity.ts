@@ -35,4 +35,7 @@ export class SysDictDataEntity extends BaseEntity {
   // 是否默认（Y是 N否）
   @Column({ type: 'char', name: 'is_default', length: 1, default: 'N', comment: '是否默认' })
   public isDefault: string
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '状态（0正常 1停用）' })
+  public status: string
 }

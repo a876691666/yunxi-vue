@@ -44,4 +44,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({ type: 'timestamp', name: 'login_date', nullable: true, comment: '最后登录时间' })
   public loginDate: Date
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '账号状态（0正常 1停用）' })
+  public status: string
 }

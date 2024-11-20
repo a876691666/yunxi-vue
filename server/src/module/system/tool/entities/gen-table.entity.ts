@@ -73,4 +73,7 @@ export class GenTableEntity extends BaseEntity {
   @ApiProperty({ type: String, description: '上级菜单Id' })
   @Column({ type: 'int', name: 'parent_menu_id', comment: '上级菜单Id' })
   public parentMenuId: number
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '状态（0正常 1关闭）' })
+  public status: string
 }

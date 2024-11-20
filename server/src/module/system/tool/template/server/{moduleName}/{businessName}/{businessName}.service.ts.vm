@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Response } from 'express'
+import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
 import { Repository } from 'typeorm'
 import { Create${BusinessName}Dto, List${BusinessName}Dto, Update${BusinessName}Dto } from './${businessName}.dto'
@@ -10,7 +12,7 @@ export class ${BusinessName}Service {
   constructor(
     @InjectRepository(${BusinessName}Entity)
     private readonly ${businessName}EntityRep: Repository<${BusinessName}Entity>,
-  ) {}
+  ) { }
 
   async create(create${BusinessName}Dto: Create${BusinessName}Dto) {
     const res = await this.${businessName}EntityRep.save(create${BusinessName}Dto)
@@ -63,7 +65,10 @@ export class ${BusinessName}Service {
   #end
 #end
 
-    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
+    if (query.pageNum && query.pageSize) {
+      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
+    }
+
     const [list, total] = await entity.getManyAndCount()
 
     return ResultData.ok({
@@ -93,5 +98,19 @@ export class ${BusinessName}Service {
       { delFlag: '1' }
     )
     return ResultData.ok(data)
+  }
+
+  async export(res: Response, body: ListTagDto) {
+    delete body.pageNum
+    delete body.pageSize
+    const list = await this.findAll(body)
+    const options = {
+      sheetName: '${tableComment}',
+      data: list.data.list,
+      header: [#foreach($column in $columns)#if($column.isList == '1')
+        { title: '$column.columnComment', dataIndex: '$column.javaField' },#end#end
+      ],
+    }
+    ExportTable(options, res)
   }
 }

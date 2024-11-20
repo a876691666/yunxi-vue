@@ -57,4 +57,7 @@ export class SysMenuEntity extends NewBaseEntity {
 
   @Column({ type: 'varchar', name: 'icon', length: 100, default: '', comment: '菜单图标' })
   public icon: string
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '菜单状态（0正常 1停用）' })
+  public status: string
 }

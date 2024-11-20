@@ -18,4 +18,7 @@ export class SysPostEntity extends BaseEntity {
 
   @Column({ type: 'int', name: 'post_sort', default: 0, comment: '显示顺序' })
   public postSort: number
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '状态（0正常 1停用）' })
+  public status: string
 }

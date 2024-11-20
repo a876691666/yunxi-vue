@@ -49,3 +49,5 @@ export class BusinessType {
    */
   public static readonly CLEAN = 9
 }
+
+export const BusinessTypeMap = ['其它', '新增', '修改', '删除', '授权', '导出', '导入', '强退', '生成代码', '清空数据']

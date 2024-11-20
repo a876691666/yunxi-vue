@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Response } from 'express'
+import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
 import { Repository } from 'typeorm'
 import { CreateTagDto, ListTagDto, UpdateTagDto } from './tag.dto'
@@ -10,7 +12,7 @@ export class TagService {
   constructor(
     @InjectRepository(TagEntity)
     private readonly tagEntityRep: Repository<TagEntity>,
-  ) {}
+  ) { }
 
   async create(createTagDto: CreateTagDto) {
     const res = await this.tagEntityRep.save(createTagDto)
@@ -64,7 +66,10 @@ export class TagService {
       })
     }
 
-    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
+    if (query.pageNum && query.pageSize) {
+      entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
+    }
+
     const [list, total] = await entity.getManyAndCount()
 
     return ResultData.ok({
@@ -94,5 +99,23 @@ export class TagService {
       { delFlag: '1' },
     )
     return ResultData.ok(data)
+  }
+
+  async export(res: Response, body: ListTagDto) {
+    delete body.pageNum
+    delete body.pageSize
+    const list = await this.findAll(body)
+    const options = {
+      sheetName: '用户标签表',
+      data: list.data.list,
+      header: [
+        { title: '状态', dataIndex: 'status' },
+        { title: '备注', dataIndex: 'remark' },
+        { title: '标签显示名', dataIndex: 'name' },
+        { title: '标签code', dataIndex: 'code' },
+        { title: '模块标志', dataIndex: 'module' },
+      ],
+    }
+    ExportTable(options, res)
   }
 }

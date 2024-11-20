@@ -1,12 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from '@nestjs/common'
 import { ApiOperation } from '@nestjs/swagger'
+import { Response } from 'express'
+import { BusinessType } from 'src/common/constant/business.constant'
+import { Operlog } from 'src/common/decorators/operlog.decorator'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
 import { Create${BusinessName}Dto, List${BusinessName}Dto, Update${BusinessName}Dto } from './${businessName}.dto'
 import { ${BusinessName}Service } from './${businessName}.service'
 
 @Controller('${moduleName}/${businessName}')
 export class ${BusinessName}Controller {
-  constructor(private readonly ${businessName}Service: ${BusinessName}Service) {}
+  constructor(private readonly ${businessName}Service: ${BusinessName}Service) { }
 
   @ApiOperation({
     summary: '查询${functionName}列表',
@@ -22,6 +25,7 @@ export class ${BusinessName}Controller {
   })
   @RequirePermission('${moduleName}:${businessName}:add')
   @Post()
+  @Operlog({ businessType: BusinessType.INSERT })
   create(@Body() create${BusinessName}Dto: Create${BusinessName}Dto) {
     return this.${businessName}Service.create(create${BusinessName}Dto)
   }
@@ -41,6 +45,7 @@ export class ${BusinessName}Controller {
   })
   @RequirePermission('${moduleName}:${businessName}:edit')
   @Put()
+  @Operlog({ businessType: BusinessType.UPDATE })
   update(@Body() update${BusinessName}Dto: Update${BusinessName}Dto) {
     return this.${businessName}Service.update(update${BusinessName}Dto)
   }
@@ -50,8 +55,19 @@ export class ${BusinessName}Controller {
   })
   @RequirePermission('${moduleName}:${businessName}:remove')
   @Delete(':id')
+  @Operlog({ businessType: BusinessType.DELETE })
   remove(@Param('id') id: string) {#if($primaryColumn.columnType == 'bigint')
     return this.${businessName}Service.remove(id)#else
     return this.${businessName}Service.remove(+id)#end
+  }
+
+  @ApiOperation({
+    summary: '${functionName}-导出xlsx文件',
+  })
+  @RequirePermission('${moduleName}:${businessName}:export')
+  @Post('/export')
+  @Operlog({ businessType: BusinessType.EXPORT })
+  async export(@Res() res: Response, @Body() body: ListTagDto) {
+    return this.tagService.export(res, body)
   }
 }

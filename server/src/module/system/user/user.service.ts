@@ -535,7 +535,7 @@ export class UserService {
       dept: SysDeptEntity
       roles: Array<SysRoleEntity>
       posts: Array<SysPostEntity>
-    } & UserEntity
+    } & Partial<UserEntity>
     > {
     const entity = this.userRepo.createQueryBuilder('user')
     entity.where({

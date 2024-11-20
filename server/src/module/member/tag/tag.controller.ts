@@ -1,17 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from '@nestjs/common'
 import { ApiOperation } from '@nestjs/swagger'
+import { Response } from 'express'
+import { BusinessType } from 'src/common/constant/business.constant'
+import { Operlog } from 'src/common/decorators/operlog.decorator'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
 import { CreateTagDto, ListTagDto, UpdateTagDto } from './tag.dto'
 import { TagService } from './tag.service'
 
 @Controller('member/tag')
 export class TagController {
-  constructor(private readonly tagService: TagService) {}
+  constructor(private readonly tagService: TagService) { }
 
   @ApiOperation({
     summary: '查询用户标签表列表',
   })
-  @RequirePermission('member:tag:list')
+  @RequirePermission('member:tag:query')
   @Get('list')
   findAll(@Query() query: ListTagDto) {
     return this.tagService.findAll(query)
@@ -22,6 +25,7 @@ export class TagController {
   })
   @RequirePermission('member:tag:add')
   @Post()
+  @Operlog({ businessType: BusinessType.INSERT })
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagService.create(createTagDto)
   }
@@ -40,6 +44,7 @@ export class TagController {
   })
   @RequirePermission('member:tag:edit')
   @Put()
+  @Operlog({ businessType: BusinessType.UPDATE })
   update(@Body() updateTagDto: UpdateTagDto) {
     return this.tagService.update(updateTagDto)
   }
@@ -49,7 +54,18 @@ export class TagController {
   })
   @RequirePermission('member:tag:remove')
   @Delete(':id')
+  @Operlog({ businessType: BusinessType.DELETE })
   remove(@Param('id') id: string) {
     return this.tagService.remove(id)
+  }
+
+  @ApiOperation({
+    summary: '用户标签表-导出xlsx文件',
+  })
+  @RequirePermission('member:tag:export')
+  @Post('/export')
+  @Operlog({ businessType: BusinessType.EXPORT })
+  async export(@Res() res: Response, @Body() body: ListTagDto) {
+    return this.tagService.export(res, body)
   }
 }

@@ -16,7 +16,7 @@ export interface UserType {
     dept: SysDeptEntity
     roles: Array<SysRoleEntity>
     posts: Array<SysPostEntity>
-  } & UserEntity
+  } & Partial<UserEntity>
   userId: number
   username: string
   deptId: number

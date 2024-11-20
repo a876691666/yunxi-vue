@@ -6,12 +6,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
   comment: '用户标签表',
 })
 export class TagEntity extends BaseEntity {
-  @Column({ type: 'char', name: 'delFlag', comment: '删除标志' })
-  public delFlag: string
-
-  @Column({ type: 'char', name: 'status', comment: '状态' })
-  public status: string
-
   @Column({ type: 'varchar', name: 'name', comment: '标签显示名' })
   public name: string
 
@@ -23,4 +17,10 @@ export class TagEntity extends BaseEntity {
 
   @Column({ type: 'varchar', name: 'module', comment: '模块标志' })
   public module: string
+
+  @Column({ type: 'char', name: 'delFlag', comment: '删除标志' })
+  public delFlag: string
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '禁用状态' })
+  public status: string
 }

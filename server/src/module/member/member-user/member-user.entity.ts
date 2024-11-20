@@ -37,4 +37,7 @@ export class MemberUserEntity extends BaseEntity {
 
   @Column({ type: 'timestamp', name: 'login_date', nullable: true, comment: '最后登录时间' })
   public loginDate: Date
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '状态（0正常 1关闭）' })
+  public status: string
 }

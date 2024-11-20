@@ -17,4 +17,7 @@ export class SysNoticeEntity extends BaseEntity {
 
   @Column({ type: 'longtext', name: 'notice_content', default: null, comment: '公告内容' })
   public noticeContent: string
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '公告状态（0正常 1关闭）' })
+  public status: string
 }
