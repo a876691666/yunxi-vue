@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm'
+import { stringDateTransformer } from './transformer'
 
 // 删除
 export abstract class DeleteStatusEntity {
@@ -26,16 +27,16 @@ export abstract class BaseEntity extends BaseStatusEntity {
   public createBy: string
 
   @ApiProperty({ type: Date, description: '创建时间' })
-  @CreateDateColumn({ type: 'datetime', name: 'create_time', default: null, comment: '创建时间' })
-  public createTime: Date
+  @CreateDateColumn({ type: 'datetime', name: 'create_time', default: null, comment: '创建时间', transformer: stringDateTransformer })
+  public createTime: string
 
   @ApiProperty({ type: String, description: '更新者' })
   @Column({ type: 'varchar', name: 'update_by', length: 64, default: '', comment: '更新者' })
   public updateBy: string
 
   @ApiProperty({ type: Date, description: '更新时间' })
-  @UpdateDateColumn({ type: 'datetime', name: 'update_time', default: null, comment: '更新时间' })
-  public updateTime: Date
+  @UpdateDateColumn({ type: 'datetime', name: 'update_time', default: null, comment: '更新时间', transformer: stringDateTransformer })
+  public updateTime: string
 
   @ApiProperty({ type: String, description: '备注' })
   @Column({ type: 'varchar', name: 'remark', length: 500, default: null, comment: '备注' })

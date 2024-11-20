@@ -216,6 +216,7 @@ export class ToolService {
       delete (item as any).insert
       delete (item as any).edit
       delete (item as any).list
+      delete (item as any).required
 
       if (item.columnId)
         await this.genTableColumnEntityRep.update({ columnId: item.columnId }, item)
@@ -265,7 +266,15 @@ export class ToolService {
         const data = await this.genTableEntityRep.findOne({ where: { tableId: Number(item), delFlag: '0' } })
         const columns = await this.genTableColumnEntityRep.find({ where: { tableId: data.tableId, delFlag: '0' } })
         const primaryKey = await this.getPrimaryKey(columns)
-        return { primaryKey, BusinessName: capitalize(data.businessName), permissionPrefix: `${data.moduleName}:${data.businessName}`, ...data, columns }
+        const primaryColumn = columns.find(v => v.isPk === '1')
+        return {
+          primaryKey,
+          primaryColumn,
+          BusinessName: capitalize(data.businessName),
+          permissionPrefix: `${data.moduleName}:${data.businessName}`,
+          ...data,
+          columns,
+        }
       }),
     )
 
@@ -302,7 +311,15 @@ export class ToolService {
     const data = await this.genTableEntityRep.findOne({ where: { tableId: id, delFlag: '0' } })
     const columns = await this.genTableColumnEntityRep.find({ where: { tableId: id, delFlag: '0' } })
     const primaryKey = await this.getPrimaryKey(columns)
-    const info = { primaryKey, BusinessName: capitalize(data.businessName), permissionPrefix: `${data.moduleName}:${data.businessName}`, ...data, columns }
+    const primaryColumn = columns.find(v => v.isPk === '1')
+    const info = {
+      primaryColumn,
+      primaryKey,
+      BusinessName: capitalize(data.businessName),
+      permissionPrefix: `${data.moduleName}:${data.businessName}`,
+      ...data,
+      columns,
+    }
     return ResultData.ok(previewGen(info))
   }
 

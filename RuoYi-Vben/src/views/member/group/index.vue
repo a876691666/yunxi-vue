@@ -4,7 +4,7 @@
       <template #toolbar>
         <a-button
           @click="downloadExcel(groupExport, '用户分组表数据', getForm().getFieldsValue())"
-          v-auth="'${permissionPrefix}:export'"
+          v-auth="'member:group:export'"
           >导出</a-button
         >
         <a-button
@@ -12,13 +12,13 @@
           danger
           @click="multipleRemove(groupRemove)"
           :disabled="!selected"
-          v-auth="'${permissionPrefix}:remove'"
+          v-auth="'member:group:remove'"
           >删除</a-button
         >
         <a-button
           type="primary"
           @click="handleAdd"
-          v-auth="'${permissionPrefix}:add'"
+          v-auth="'member:group:add'"
           >新增</a-button
         >
       </template>
@@ -32,7 +32,7 @@
                 icon: IconEnum.EDIT,
                 type: 'primary',
                 ghost: true,
-                auth: '${permissionPrefix}:edit',
+                auth: 'member:group:edit',
                 onClick: handleEdit.bind(null, record),
               },
               {
@@ -41,7 +41,7 @@
                 type: 'primary',
                 danger: true,
                 ghost: true,
-                auth: '${permissionPrefix}:remove',
+                auth: 'member:group:remove',
                 popConfirm: {
                   placement: 'left',
                   title: '是否删除用户分组表[' + record.id + ']?',
@@ -53,7 +53,7 @@
         </template>
       </template>
     </BasicTable>
-    <groupModal @register="registerModal" @reload="reload" />
+    <GroupModal @register="registerModal" @reload="reload" />
   </PageWrapper>
 </template>
 
@@ -63,11 +63,11 @@
   import { groupList, groupExport, groupRemove } from '@/api/member/group';
   import { downloadExcel } from '@/utils/file/download';
   import { useModal } from '@/components/Modal';
-  import groupModal from './groupModal.vue';
+  import GroupModal from './groupModal.vue';
   import { formSchemas, columns } from './group.data';
   import { IconEnum } from '@/enums/appEnum';
 
-  defineOptions({ name: 'group' });
+  defineOptions({ name: 'Group' });
 
   const [registerTable, { reload, multipleRemove, selected, getForm }] = useTable({
     rowSelection: {

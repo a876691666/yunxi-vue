@@ -2,12 +2,12 @@ import { BaseEntity, PageQuery } from '@/api/base';
 
 export interface ${BusinessName}VO {
 #foreach ($column in $columns)
-#if($column.isList)
+#if($column.isList == '1')
   /**
    * $column.columnComment
    */
-  $column.javaField:#if($column.javaField.indexOf("id") != -1 || $column.javaField.indexOf("Id") != -1) string | number;
-                    #else $getTsType($column.javaType);
+  $column.javaField:#if($column.columnType == 'bigint') string;
+                    #else $getUiTsType($column.javaType);
                     #end
 #end
 #end
@@ -21,12 +21,13 @@ export interface ${BusinessName}VO {
 
 export interface ${BusinessName}Form extends BaseEntity {
 #foreach ($column in $columns)
-#if($column.isInsert || $column.isEdit)
+#if($ignoreField($column.javaField) || $column.javaField == $primaryKey)
+#elseif($column.isInsert == '1' || $column.isEdit == '1')
   /**
    * $column.columnComment
    */
-  $column.javaField?:#if($column.javaField.indexOf("id") != -1 || $column.javaField.indexOf("Id") != -1) string | number;
-                     #else $getTsType($column.javaType);
+  $column.javaField?:#if($column.columnType == 'bigint') string;
+                     #else $getUiTsType($column.javaType);
                      #end
 #end
 #end
@@ -35,13 +36,13 @@ export interface ${BusinessName}Form extends BaseEntity {
 export interface ${BusinessName}Query #if(!${treeCode})extends PageQuery #end{
 
 #foreach ($column in $columns)
-#if($column.isQuery)
+#if($column.isQuery == '1')
   /**
    * $column.columnComment
    */
-  $column.javaField?:#if($column.javaField.indexOf("id") != -1 || $column.javaField.indexOf("Id") != -1) string | number;
-                      #else $getTsType($column.javaType);
-                      #end
+  $column.javaField?:#if($column.columnType == 'bigint') string;
+                     #else $getUiTsType($column.javaType);
+                     #end
 #end
 #end
   /**

@@ -6,7 +6,7 @@ import { useRender } from '@/hooks/component/useRender';
 #end
 export const formSchemas: FormSchema[] = [
   #foreach($column in $columns)
-    #if($column.isQuery)
+    #if($column.isQuery == '1')
       #if($column.dictType)
         #set($dictType=$column.dictType)
       #else
@@ -58,7 +58,7 @@ const { renderDict } = useRender();
 #end
 export const columns: BasicColumn[] = [
   #foreach($column in $columns)
-    #if($column.isList)
+    #if($column.isList == '1')
       #if($column.dictType)
         #set($dictType=$column.dictType)
       #else
@@ -83,7 +83,8 @@ export const columns: BasicColumn[] = [
 
 export const modalSchemas: FormSchema[] = [
   #foreach($column in $columns)
-    #if($column.isEdit)
+    #if($ignoreField($column.javaField))
+    #elseif($column.isEdit == '1' || $column.isInsert == '1')
       #if($column.dictType)
         #set($dictType=$column.dictType)
       #else
@@ -95,7 +96,9 @@ export const modalSchemas: FormSchema[] = [
       #else
         #set($comment=$column.columnComment)
       #end
-      #if($column.htmlType == "input")
+      #if($column.javaType == "Number")
+        #set($component="InputNumber")
+      #elseif($column.htmlType == "input")
         #set($component="Input")
       #elseif($column.htmlType == "textarea")
         #set($component="InputTextArea")
@@ -110,7 +113,7 @@ export const modalSchemas: FormSchema[] = [
       #else
         #set($component="Input")
       #end
-      #if($column.required)
+      #if($column.isRequired == '1')
         #set($required='true')
       #else
         #set($required='false')
@@ -135,7 +138,7 @@ export const modalSchemas: FormSchema[] = [
       valueFormat: 'YYYY-MM-DD HH:mm:ss',
     },
     #end
-    #if(${column.isPk})
+    #if($column.isPk == '1')
     show: false,
     #end
   },

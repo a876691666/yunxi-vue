@@ -19,7 +19,50 @@ export class ${BusinessName}Service {
 
   async findAll(query: List${BusinessName}Dto) {
     const entity = this.${businessName}EntityRep.createQueryBuilder('entity')
+
     entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
+
+#foreach($column in $columns)
+  #if($column.isQuery == '1')
+    #if($column.queryType.toLowerCase() == 'like')
+    if (query.${column.javaField}) {
+      entity.andWhere('entity.${column.javaField} like :${column.javaField}', { ${column.javaField}: `%\${query.${column.javaField}}%` })
+    }
+    #elseif($column.queryType.toLowerCase() == 'eq')
+    if (query.${column.javaField}) {
+      entity.andWhere('entity.${column.javaField} = :${column.javaField}', { ${column.javaField}: query.${column.javaField} })
+    }
+    #elseif($column.queryType.toLowerCase() == 'between')
+    if (query.${column.javaField} && query.${column.javaField}.length === 2) {
+      entity.andWhere('entity.${column.javaField} between :${column.javaField}0 and :${column.javaField}1', {
+        ${column.javaField}0: query.${column.javaField}[0],
+        ${column.javaField}1: query.${column.javaField}[1],
+      })
+    }
+    #elseif($column.queryType.toLowerCase() == 'ne')
+    if (query.${column.javaField}) {
+      entity.andWhere('entity.${column.javaField} != :${column.javaField}', { ${column.javaField}: query.${column.javaField} })
+    }
+    #elseif($column.queryType.toLowerCase() == 'gt')
+    if (query.${column.javaField}) {
+      entity.andWhere('entity.${column.javaField} > :${column.javaField}', { ${column.javaField}: query.${column.javaField} })
+    }
+    #elseif($column.queryType.toLowerCase() == 'lt')
+    if (query.${column.javaField}) {
+      entity.andWhere('entity.${column.javaField} < :${column.javaField}', { ${column.javaField}: query.${column.javaField} })
+    }
+    #elseif($column.queryType.toLowerCase() == 'ge')
+    if (query.${column.javaField}) {
+      entity.andWhere('entity.${column.javaField} >= :${column.javaField}', { ${column.javaField}: query.${column.javaField} })
+    }
+    #elseif($column.queryType.toLowerCase() == 'le')
+    if (query.${column.javaField}) {
+      entity.andWhere('entity.${column.javaField} <= :${column.javaField}', { ${column.javaField}: query.${column.javaField} })
+    }
+    #end
+  #end
+#end
+
     entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     const [list, total] = await entity.getManyAndCount()
 

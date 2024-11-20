@@ -54,6 +54,13 @@
   const { setTitle } = useTabs();
   onMounted(async () => {
     const ret = await genInfo(tableId as string);
+    ret.info.columns.forEach((column) => {
+      column.insert = column.isInsert === '1';
+      column.edit = column.isEdit === '1';
+      column.list = column.isList === '1';
+      column.query = column.isQuery === '1';
+      column.required = column.isRequired === '1';
+    });
     genInfoData.value = ret.info;
     setTitle('修改生成配置: ' + ret.info.tableName);
   });

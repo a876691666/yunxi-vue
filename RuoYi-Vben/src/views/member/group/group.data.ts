@@ -4,38 +4,16 @@ import { getDictOptions } from '@/utils/dict';
 import { useRender } from '@/hooks/component/useRender';
 export const formSchemas: FormSchema[] = [
   {
-    label: '删除标志',
-    field: 'delFlag',
-    component: 'Input',
-  },
-  {
     label: '状态',
     field: 'status',
     component: 'RadioButtonGroup',
-  },
-  {
-    label: '备注',
-    field: 'remark',
-    component: 'Input',
-  },
-  {
-    label: '模块标志',
-    field: 'module',
-    component: 'Input',
+    componentProps: {
+      options: getDictOptions('sys_normal_disable')
+    },
   },
   {
     label: '分组ID',
     field: 'id',
-    component: 'Input',
-  },
-  {
-    label: '分组显示名',
-    field: 'name',
-    component: 'Input',
-  },
-  {
-    label: '分组最大人数',
-    field: 'max',
     component: 'Input',
   },
   {
@@ -72,12 +50,9 @@ export const formSchemas: FormSchema[] = [
 const { renderDict } = useRender();
 export const columns: BasicColumn[] = [
   {
-    title: '删除标志',
-    dataIndex: 'delFlag',
-  },
-  {
     title: '状态',
     dataIndex: 'status',
+    customRender: ({ value }) => renderDict(value, 'sys_normal_disable'),
   },
   {
     title: '备注',
@@ -86,10 +61,6 @@ export const columns: BasicColumn[] = [
   {
     title: '模块标志',
     dataIndex: 'module',
-  },
-  {
-    title: '分组ID',
-    dataIndex: 'id',
   },
   {
     title: '分组显示名',
@@ -119,90 +90,27 @@ export const columns: BasicColumn[] = [
 
 export const modalSchemas: FormSchema[] = [
   {
-    label: '删除标志',
-    field: 'delFlag',
-    required: false,
-    component: 'Input',
-    show: false,
-  },
-  {
-    label: '状态',
-    field: 'status',
-    required: false,
-    component: 'RadioButtonGroup',
-    show: false,
-  },
-  {
     label: '备注',
     field: 'remark',
     required: false,
     component: 'Input',
-    show: false,
   },
   {
     label: '模块标志',
     field: 'module',
-    required: false,
+    required: true,
     component: 'Input',
-    show: false,
-  },
-  {
-    label: '分组ID',
-    field: 'id',
-    required: false,
-    component: 'Input',
-    show: false,
   },
   {
     label: '分组显示名',
     field: 'name',
-    required: false,
+    required: true,
     component: 'Input',
-    show: false,
   },
   {
     label: '分组最大人数',
     field: 'max',
-    required: false,
-    component: 'Input',
-    show: false,
-  },
-  {
-    label: '创建者',
-    field: 'createBy',
-    required: false,
-    component: 'Input',
-    show: false,
-  },
-  {
-    label: '创建时间',
-    field: 'createTime',
-    required: false,
-    component: 'RangePicker',
-    componentProps: {
-      showTime: true,
-      format: 'YYYY-MM-DD HH:mm:ss',
-      valueFormat: 'YYYY-MM-DD HH:mm:ss',
-    },
-    show: false,
-  },
-  {
-    label: '更新者',
-    field: 'updateBy',
-    required: false,
-    component: 'Input',
-    show: false,
-  },
-  {
-    label: '更新时间',
-    field: 'updateTime',
-    required: false,
-    component: 'RangePicker',
-    componentProps: {
-      showTime: true,
-      format: 'YYYY-MM-DD HH:mm:ss',
-      valueFormat: 'YYYY-MM-DD HH:mm:ss',
-    },
-    show: false,
+    required: true,
+    component: 'InputNumber',
   },
 ];

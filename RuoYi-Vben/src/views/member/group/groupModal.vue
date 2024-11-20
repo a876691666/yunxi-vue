@@ -17,7 +17,7 @@
   import { groupInfo, groupAdd, groupUpdate } from '@/api/member/group';
   import { modalSchemas } from './group.data';
 
-  defineOptions({ name: 'groupModal' });
+  defineOptions({ name: 'GroupModal' });
 
   const emit = defineEmits(['register', 'reload']);
 

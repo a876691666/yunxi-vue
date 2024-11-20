@@ -18,6 +18,10 @@ function replaceStr(content: string, options: { [key: string]: string }) {
   })
 };
 
+function ignoreField(field: string) {
+  return ['delFlag', 'createBy', 'createTime', 'updateBy', 'updateTime'].includes(field)
+}
+
 function getValidatorDecorator(javaType: string) {
   if (javaType === 'Boolean')
     return `@IsBoolean()`
@@ -46,11 +50,23 @@ function getTsType(javaType: string) {
   return `any`
 }
 
+function getUiTsType(javaType: string) {
+  if (javaType === 'Boolean')
+    return `boolean`
+  if (javaType === 'String' || javaType === 'Date')
+    return `string`
+  if (javaType === 'Number')
+    return `number`
+  if ([`Long`, `Integer`, `Double`, `Float`, `BigDecimal`].includes(javaType))
+    return `number`
+  return `any`
+}
+
 const templateList = glob.sync('./**/*.*.vm').map((file) => {
   // 减去rootPath部分的路径
   const relativePath = path.relative(rootPath, file)
   const name = relativePath.replace('.vm', '').replace(/\\/g, '/')
-
+  // 12
   // 减去rootPath部分的路径
   const previewRelativePath = path.relative(previewRootPath, file)
   const previewName = previewRelativePath.replace(/\\/g, '/')
@@ -64,7 +80,7 @@ export function gen(options) {
   } = {}
 
   for (const [name, _previewName, content] of templateList) {
-    result[replaceStr(name, options)] = velocityjs.render(content, { getValidatorDecorator, getTsType, ...options })
+    result[replaceStr(name, options)] = velocityjs.render(content, { getValidatorDecorator, getUiTsType, ignoreField, getTsType, ...options })
   }
   return result
 }
@@ -74,7 +90,7 @@ export function previewGen(options) {
     [name: string]: string
   } = {}
   for (const [_name, previewName, content] of templateList) {
-    result[replaceStr(previewName, options)] = velocityjs.render(content, { getValidatorDecorator, getTsType, ...options })
+    result[replaceStr(previewName, options)] = velocityjs.render(content, { getValidatorDecorator, getUiTsType, ignoreField, getTsType, ...options })
   }
   return result
 }

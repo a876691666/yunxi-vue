@@ -1,10 +1,6 @@
 import { BaseEntity, PageQuery } from '@/api/base';
 
-export interface groupVO {
-  /**
-   * 删除标志
-   */
-  delFlag: string;
+export interface GroupVO {
   /**
    * 状态
    */
@@ -18,17 +14,13 @@ export interface groupVO {
    */
   module: string;
   /**
-   * 分组ID
-   */
-  id: string | number;
-  /**
    * 分组显示名
    */
   name: string;
   /**
    * 分组最大人数
    */
-  max: string;
+  max: number;
   /**
    * 创建者
    */
@@ -47,15 +39,7 @@ export interface groupVO {
   updateTime: string;
 }
 
-export interface groupForm extends BaseEntity {
-  /**
-   * 删除标志
-   */
-  delFlag?: string;
-  /**
-   * 状态
-   */
-  status?: string;
+export interface GroupForm extends BaseEntity {
   /**
    * 备注
    */
@@ -65,64 +49,24 @@ export interface groupForm extends BaseEntity {
    */
   module?: string;
   /**
-   * 分组ID
-   */
-  id?: string | number;
-  /**
    * 分组显示名
    */
   name?: string;
   /**
    * 分组最大人数
    */
-  max?: string;
-  /**
-   * 创建者
-   */
-  createBy?: string;
-  /**
-   * 创建时间
-   */
-  createTime?: string;
-  /**
-   * 更新者
-   */
-  updateBy?: string;
-  /**
-   * 更新时间
-   */
-  updateTime?: string;
+  max?: number;
 }
 
-export interface groupQuery extends PageQuery {
-  /**
-   * 删除标志
-   */
-  delFlag?: string;
+export interface GroupQuery extends PageQuery {
   /**
    * 状态
    */
   status?: string;
   /**
-   * 备注
-   */
-  remark?: string;
-  /**
-   * 模块标志
-   */
-  module?: string;
-  /**
    * 分组ID
    */
-  id?: string | number;
-  /**
-   * 分组显示名
-   */
-  name?: string;
-  /**
-   * 分组最大人数
-   */
-  max?: string;
+  id?: string;
   /**
    * 创建者
    */

@@ -63,7 +63,7 @@
   import { ${businessName}List, ${businessName}Export, ${businessName}Remove } from '@/api/${moduleName}/${businessName}';
   import { downloadExcel } from '@/utils/file/download';
   import { useModal } from '@/components/Modal';
-  import ${BusinessName}Modal from './${BusinessName}Modal.vue';
+  import ${BusinessName}Modal from './${businessName}Modal.vue';
   import { formSchemas, columns } from './${businessName}.data';
   import { IconEnum } from '@/enums/appEnum';
 

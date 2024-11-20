@@ -47,7 +47,7 @@ export class CreateMemberUserDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  createTime?: Date
+  createTime?: string
 
   @ApiProperty({ required: true })
   @IsString()
@@ -56,7 +56,7 @@ export class CreateMemberUserDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDate()
-  updateTime?: Date
+  updateTime?: string
 
   @ApiProperty({ required: false })
   @IsOptional()
