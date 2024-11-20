@@ -1,12 +1,12 @@
-import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common'
-import type { Observable } from 'rxjs'
-import type { OperlogService } from 'src/module/monitor/operlog/operlog.service'
-import type { OperlogConfig } from '../decorators/operlog.decorator'
-import { Injectable } from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
 
-import { throwError } from 'rxjs'
+import { Reflector } from '@nestjs/core'
+import { Observable, throwError } from 'rxjs'
+
 import { catchError, map } from 'rxjs/operators'
+
+import { OperlogService } from 'src/module/monitor/operlog/operlog.service'
+import { OperlogConfig } from '../decorators/operlog.decorator'
 
 @Injectable()
 export class OperlogInterceptor implements NestInterceptor {

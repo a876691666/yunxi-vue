@@ -1,9 +1,9 @@
-import type { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import path from 'node:path'
 import { Global, Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
-import { TypeOrmModule } from '@nestjs/typeorm'
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm'
+
 import { JwtAuthGuard } from 'src/common/guards/auth.guard'
 import { PermissionGuard } from 'src/common/guards/permission.guard'
 import { RolesGuard } from './common/guards/roles.guard'
@@ -42,10 +42,10 @@ import { UploadModule } from './module/upload/upload.module'
       },
     }),
 
+    CommonModule,
     MainModule,
     UploadModule,
 
-    CommonModule,
     SystemModule,
     MonitorModule,
 
@@ -67,4 +67,4 @@ import { UploadModule } from './module/upload/upload.module'
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

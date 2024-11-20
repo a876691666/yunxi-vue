@@ -1,7 +1,7 @@
-import type { MemberUserEntity } from './member-user.entity'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsDate, IsNumber, IsOptional, IsString, Length, MaxLength } from 'class-validator'
 import { PagingDto } from 'src/common/dto'
+import { MemberUserEntity } from './member-user.entity'
 
 export class CreateMemberUserDto {
   @ApiProperty({ required: true })

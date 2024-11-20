@@ -1,12 +1,12 @@
-import type { FindManyOptions, Repository } from 'typeorm'
-import type { CreateMenuDto, ListDeptDto, UpdateMenuDto } from './dto/index'
 import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ListToTree, Uniq } from 'src/common/utils/index'
 import { ResultData } from 'src/common/utils/result'
-import { In } from 'typeorm'
+import { FindManyOptions, In, Repository } from 'typeorm'
+
 import { SysRoleWithMenuEntity } from '../role/entities/role-width-menu.entity'
 import { UserService } from '../user/user.service'
+import { CreateMenuDto, ListDeptDto, UpdateMenuDto } from './dto/index'
 import { SysMenuEntity } from './entities/menu.entity'
 import { buildMenus } from './utils'
 

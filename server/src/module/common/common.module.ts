@@ -1,4 +1,4 @@
-import type { RedisClientOptions } from '@liaoliaots/nestjs-redis'
+import { RedisClientOptions } from '@liaoliaots/nestjs-redis'
 import { Global, Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AxiosModule } from './axios/axios.module'

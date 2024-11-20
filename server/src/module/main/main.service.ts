@@ -1,11 +1,11 @@
-import type { ClientInfoDto } from 'src/common/decorators/common.decorator'
-import type { AxiosService } from 'src/module/common/axios/axios.service'
-import type { LoginlogService } from '../monitor/loginlog/loginlog.service'
-import type { MenuService } from '../system/menu/menu.service'
-import type { UserService } from '../system/user/user.service'
-import type { LoginDto, RegisterDto } from './dto/index'
 import { Injectable } from '@nestjs/common'
+import { ClientInfoDto } from 'src/common/decorators/common.decorator'
 import { ResultData, SUCCESS_CODE } from 'src/common/utils/result'
+import { AxiosService } from 'src/module/common/axios/axios.service'
+import { LoginlogService } from '../monitor/loginlog/loginlog.service'
+import { MenuService } from '../system/menu/menu.service'
+import { UserService } from '../system/user/user.service'
+import { LoginDto, RegisterDto } from './dto/index'
 
 @Injectable()
 export class MainService {
@@ -14,7 +14,7 @@ export class MainService {
     private readonly loginlogService: LoginlogService,
     private readonly axiosService: AxiosService,
     private readonly menuService: MenuService,
-  ) {}
+  ) { }
 
   /**
    * 登陆
@@ -32,7 +32,7 @@ export class MainService {
       const loginLocation = await this.axiosService.getIpAddress(clientInfo.ipaddr)
       loginLog.loginLocation = loginLocation
     }
-    catch {}
+    catch { }
     const loginRes = await this.userService.login(user, loginLog)
     loginLog.status = loginRes.code === SUCCESS_CODE ? '0' : '1'
     loginLog.msg = loginRes.msg
@@ -54,7 +54,7 @@ export class MainService {
       const loginLocation = await this.axiosService.getIpAddress(clientInfo.ipaddr)
       loginLog.loginLocation = loginLocation
     }
-    catch {}
+    catch { }
     this.loginlogService.create(loginLog)
     return ResultData.ok()
   }
@@ -71,7 +71,7 @@ export class MainService {
   /**
    * 登陆记录
    */
-  loginRecord() {}
+  loginRecord() { }
 
   /**
    * 获取路由菜单

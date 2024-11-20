@@ -19,7 +19,7 @@ export class LoginDto {
   })
   @IsString()
   @MinLength(2)
-  @MaxLength(10)
+  @MaxLength(30)
   userName: string
 
   @ApiProperty({
@@ -38,7 +38,15 @@ export class LoginDto {
   uuid?: string
 }
 
-export class RegisterDto extends LoginDto {}
+export class RegisterDto extends LoginDto {
+  @ApiProperty({
+    required: true,
+  })
+  @IsString()
+  @MinLength(2)
+  @MaxLength(30)
+  nickName: string
+}
 
 export class UpdateProfileDto {
   @ApiProperty({ required: true })

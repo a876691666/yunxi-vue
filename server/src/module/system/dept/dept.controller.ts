@@ -1,9 +1,8 @@
-import type { DeptService } from './dept.service'
-import type { ListDeptDto } from './dto/index'
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
-import { CreateDeptDto, UpdateDeptDto } from './dto/index'
+import { DeptService } from './dept.service'
+import { CreateDeptDto, ListDeptDto, UpdateDeptDto } from './dto/index'
 
 @ApiTags('部门管理')
 @Controller('system/dept')

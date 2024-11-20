@@ -1,10 +1,14 @@
-import type Redis from 'ioredis'
-import { InjectRedis } from '@liaoliaots/nestjs-redis'
+import { RedisService as liaoliaoRedisService } from '@liaoliaots/nestjs-redis'
 import { Injectable } from '@nestjs/common'
+import Redis from 'ioredis'
 
 @Injectable()
 export class RedisService {
-  constructor(@InjectRedis() private readonly client: Redis) {}
+  private readonly client: Redis
+
+  constructor(private readonly rs: liaoliaoRedisService) {
+    this.client = this.rs.getOrThrow()
+  }
 
   getClient(): Redis {
     return this.client

@@ -10,6 +10,24 @@ export default antfu({
     'node/prefer-global/process': 'off',
     // 关闭对在Node.js中优先使用全局buffer对象的检查
     'node/prefer-global/buffer': 'off',
+    'jsdoc/require-returns-description': 'off',
+    'jsdoc/check-param-names': 'off',
+
+    'unused-imports/no-unused-vars': 'off',
+    'no-unused-vars': 'off',
+    'no-console': 'off',
+    'ts/no-use-before-define': 'off',
+
+    'ts/no-unused-vars': 'off',
+    // 忽略不存在属性的检查
+    'no-prototype-builtins': 'off',
+
+    'ts/consistent-type-imports': [
+      'warn',
+      {
+        prefer: 'no-type-imports',
+      },
+    ],
   },
   // 忽略的文件
   ignores: ['**/prisma-client/*'],

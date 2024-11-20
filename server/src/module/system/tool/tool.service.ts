@@ -1,6 +1,3 @@
-import type { UserDto } from 'src/module/system/user/user.decorator'
-import type { DataSource, Repository } from 'typeorm'
-import type { CreateGenTableDto, GenDbTableList, GenTableList, GenTableUpdate, TableName } from './dto/create-genTable-dto'
 import * as path from 'node:path'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
@@ -11,7 +8,10 @@ import { camelCase, toLower } from 'lodash'
 import { GenConstants } from 'src/common/constant/gen.constant'
 import { FormatDate, GetNowDate } from 'src/common/utils/index'
 import { ResultData } from 'src/common/utils/result'
+import { UserDto } from 'src/module/system/user/user.decorator'
+import { DataSource, Repository } from 'typeorm'
 import toolConfig from './config'
+import { CreateGenTableDto, GenDbTableList, GenTableList, GenTableUpdate, TableName } from './dto/create-genTable-dto'
 import { GenTableEntity } from './entities/gen-table.entity'
 import { GenTableColumnEntity } from './entities/gen-table-cloumn.entity'
 import { gen, previewGen } from './template/index'
@@ -211,9 +211,10 @@ export class ToolService {
    */
   async genUpdate(genTableUpdate: GenTableUpdate) {
     for (const item of genTableUpdate.columns) {
-      delete (item as any)._X_ROW_KEY;
-      delete (item as any).query;
-      if (item.columnId) await this.genTableColumnEntityRep.update({ columnId: item.columnId }, item);
+      delete (item as any)._X_ROW_KEY
+      delete (item as any).query
+      if (item.columnId)
+        await this.genTableColumnEntityRep.update({ columnId: item.columnId }, item)
     }
     delete genTableUpdate.columns
     await this.genTableEntityRep.update({ tableId: +genTableUpdate.tableId }, genTableUpdate)
@@ -251,16 +252,16 @@ export class ToolService {
     })
 
     archive.on('error', (err) => {
-      throw err;
-    });
+      throw err
+    })
 
-    const tableIdList = table.tableIdStr.split(',');
+    const tableIdList = table.tableIdStr.split(',')
     const tableList = await Promise.all(
       tableIdList.map(async (item) => {
-        const data = await this.genTableEntityRep.findOne({ where: { tableId: Number(item), delFlag: '0' } });
-        const columns = await this.genTableColumnEntityRep.find({ where: { tableId: data.tableId, delFlag: '0' } });
-        const primaryKey = await this.getPrimaryKey(columns);
-        return { primaryKey, BusinessName: capitalize(data.businessName), permissionPrefix: `${data.moduleName}:${data.businessName}`, ...data, columns };
+        const data = await this.genTableEntityRep.findOne({ where: { tableId: Number(item), delFlag: '0' } })
+        const columns = await this.genTableColumnEntityRep.find({ where: { tableId: data.tableId, delFlag: '0' } })
+        const primaryKey = await this.getPrimaryKey(columns)
+        return { primaryKey, BusinessName: capitalize(data.businessName), permissionPrefix: `${data.moduleName}:${data.businessName}`, ...data, columns }
       }),
     )
 
@@ -294,11 +295,11 @@ export class ToolService {
    * @returns
    */
   async preview(id: number) {
-    const data = await this.genTableEntityRep.findOne({ where: { tableId: id, delFlag: '0' } });
-    const columns = await this.genTableColumnEntityRep.find({ where: { tableId: id, delFlag: '0' } });
-    const primaryKey = await this.getPrimaryKey(columns);
-    const info = { primaryKey, BusinessName: capitalize(data.businessName), permissionPrefix: `${data.moduleName}:${data.businessName}`, ...data, columns };
-    return ResultData.ok(previewGen(info));
+    const data = await this.genTableEntityRep.findOne({ where: { tableId: id, delFlag: '0' } })
+    const columns = await this.genTableColumnEntityRep.find({ where: { tableId: id, delFlag: '0' } })
+    const primaryKey = await this.getPrimaryKey(columns)
+    const info = { primaryKey, BusinessName: capitalize(data.businessName), permissionPrefix: `${data.moduleName}:${data.businessName}`, ...data, columns }
+    return ResultData.ok(previewGen(info))
   }
 
   /**

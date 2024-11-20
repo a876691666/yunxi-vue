@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsArray, IsBoolean, IsEnum, IsJSON, IsNumber, IsNumberString, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Length } from 'class-validator'
 import { PagingDto } from 'src/common/dto/index'
 
 export enum StatusEnum {

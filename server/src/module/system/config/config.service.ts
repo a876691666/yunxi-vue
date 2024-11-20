@@ -1,14 +1,14 @@
-import type { Response } from 'express'
-import type { RedisService } from 'src/module/common/redis/redis.service'
-import type { Repository } from 'typeorm'
-import type { CreateConfigDto, ListConfigDto, UpdateConfigDto } from './dto/index'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Response } from 'express'
 import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator'
 import { CacheEnum } from 'src/common/enum/index'
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
-import { In } from 'typeorm'
+import { RedisService } from 'src/module/common/redis/redis.service'
+import { In, Repository } from 'typeorm'
+
+import { CreateConfigDto, ListConfigDto, UpdateConfigDto } from './dto/index'
 import { SysConfigEntity } from './entities/config.entity'
 
 @Injectable()

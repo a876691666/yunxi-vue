@@ -1,11 +1,11 @@
-import type { CreateOperlogDto } from './dto/create-operlog.dto'
-import type { UpdateOperlogDto } from './dto/update-operlog.dto'
-import type { OperlogService } from './operlog.service'
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { ApiOperation } from '@nestjs/swagger'
 import { BusinessType } from 'src/common/constant/business.constant'
 import { Operlog } from 'src/common/decorators/operlog.decorator'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
+import { CreateOperlogDto } from './dto/create-operlog.dto'
+import { UpdateOperlogDto } from './dto/update-operlog.dto'
+import { OperlogService } from './operlog.service'
 
 @Controller('monitor/operlog')
 export class OperlogController {

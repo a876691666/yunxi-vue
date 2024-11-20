@@ -1,8 +1,8 @@
-import type { CreateTagDto, ListTagDto, UpdateTagDto } from './tag.dto'
-import type { TagService } from './tag.service'
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { ApiOperation } from '@nestjs/swagger'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
+import { CreateTagDto, ListTagDto, UpdateTagDto } from './tag.dto'
+import { TagService } from './tag.service'
 
 @Controller('member/tag')
 export class TagController {

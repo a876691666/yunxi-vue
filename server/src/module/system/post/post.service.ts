@@ -1,11 +1,11 @@
-import type { Response } from 'express'
-import type { Repository } from 'typeorm'
-import type { CreatePostDto, ListPostDto, UpdatePostDto } from './dto/index'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Response } from 'express'
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
-import { In } from 'typeorm'
+import { In, Repository } from 'typeorm'
+
+import { CreatePostDto, ListPostDto, UpdatePostDto } from './dto/index'
 import { SysPostEntity } from './entities/post.entity'
 
 @Injectable()

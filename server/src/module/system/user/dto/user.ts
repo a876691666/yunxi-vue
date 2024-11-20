@@ -1,7 +1,7 @@
-import type { SysDeptEntity } from '../../dept/entities/dept.entity'
-import type { SysPostEntity } from '../../post/entities/post.entity'
-import type { SysRoleEntity } from '../../role/entities/role.entity'
-import type { UserEntity } from '../entities/sys-user.entity'
+import { SysDeptEntity } from '../../dept/entities/dept.entity'
+import { SysPostEntity } from '../../post/entities/post.entity'
+import { SysRoleEntity } from '../../role/entities/role.entity'
+import { UserEntity } from '../entities/sys-user.entity'
 
 export interface UserType {
   browser: string

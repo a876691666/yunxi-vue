@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsBoolean, IsEnum, IsNumber, IsNumberString, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
+import { IsNumberString, IsOptional, IsString, Length } from 'class-validator'
 
 export class OnlineListDto {
   @ApiProperty({ required: false })

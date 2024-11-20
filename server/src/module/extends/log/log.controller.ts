@@ -1,7 +1,7 @@
-import type { PagingDto } from 'src/common/dto'
-import type { ExtendsLogService } from './log.service'
 import { Controller, Get, Query } from '@nestjs/common'
 import { RequireRole } from 'src/common/decorators/require-role.decorator'
+import { PagingDto } from 'src/common/dto'
+import { ExtendsLogService } from './log.service'
 
 @Controller('monitor/log')
 export class LogController {

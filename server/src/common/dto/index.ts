@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
-import { IsDateString, IsNumber, IsNumberString, IsObject, IsOptional, IsString } from 'class-validator'
+import { IsDateString, IsNumberString, IsObject, IsOptional, IsString } from 'class-validator'
 
 /**
  * 时间区间对象

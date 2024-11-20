@@ -1,21 +1,21 @@
-import type { JwtService } from '@nestjs/jwt'
-import type { ClientInfoDto } from 'src/common/decorators/common.decorator'
-import type { PagingDto } from 'src/common/dto'
-import type { RedisService } from 'src/module/common/redis/redis.service'
-import type { ExtendsLogService } from 'src/module/extends/log/log.service'
-import type { Repository } from 'typeorm'
-import type { MemberUserType } from '../member-user/member-user.dto'
-import type { LoginDto, RegisterDto, UpdateProfileDto, UpdatePwdDto } from './member-user-app.dto'
 import { Injectable } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import { Captcha } from 'src/common/decorators/captcha.decorator'
+import { ClientInfoDto } from 'src/common/decorators/common.decorator'
 import { CacheEvict } from 'src/common/decorators/redis.decorator'
+import { PagingDto } from 'src/common/dto'
 import { CacheEnum } from 'src/common/enum'
 import { GenerateUUID, mergeDeep } from 'src/common/utils'
 import { ResultData } from 'src/common/utils/result'
+import { RedisService } from 'src/module/common/redis/redis.service'
+import { ExtendsLogService } from 'src/module/extends/log/log.service'
+import { Repository } from 'typeorm'
 import { DelFlagEnum, LOGIN_TOKEN_EXPIRESIN, MEMBER_ENUM, StatusEnum } from '../member.enum'
+import { MemberUserType } from '../member-user/member-user.dto'
 import { MemberUserEntity } from '../member-user/member-user.entity'
+import { LoginDto, RegisterDto, UpdateProfileDto, UpdatePwdDto } from './member-user-app.dto'
 
 type DeepPartial<T> = T extends any[] ? T : { [P in keyof T]?: DeepPartial<T[P]> }
 
@@ -27,7 +27,7 @@ export class MemberUserService {
     private readonly redisService: RedisService,
     private readonly jwtService: JwtService,
     private readonly logService: ExtendsLogService,
-  ) {}
+  ) { }
 
   @CacheEvict(MEMBER_ENUM.USER, '{userId}')
   clearCacheByUserId(userId: number) {
@@ -101,6 +101,7 @@ export class MemberUserService {
       return payload
     }
     catch (error) {
+      ((_e) => { })(error)
       return null
     }
   }
@@ -123,18 +124,16 @@ export class MemberUserService {
 
   /**
    * 退出登陆
-   * @param clientInfo
    */
   @CacheEvict(MEMBER_ENUM.USER, '{user.userId}')
   @CacheEvict(CacheEnum.LOGIN_TOKEN_KEY, '{user.token}')
-  async logout(user: MemberUserType) {
+  async logout(_user: MemberUserType) {
     return ResultData.ok()
   }
 
   /**
    * 注册
    * @param user
-   * @returns
    */
   async register(user: RegisterDto) {
     const checkUserNameUnique = await this.userRepo.findOne({
@@ -144,8 +143,6 @@ export class MemberUserService {
     if (checkUserNameUnique) {
       return ResultData.fail(500, `保存用户'${user.userName}'失败，注册账号已存在`)
     }
-    user.userName = user.userName
-    user.nickName = user.userName
     await this.userRepo.save({ ...user, loginDate: new Date() })
     return ResultData.ok()
   }
@@ -153,12 +150,11 @@ export class MemberUserService {
   /**
    * 登陆记录
    */
-  loginRecord() {}
+  loginRecord() { }
 
   /**
    * 个人中心-用户信息
    * @param user
-   * @returns
    */
   async profile(user) {
     return ResultData.ok(user)
@@ -166,8 +162,8 @@ export class MemberUserService {
 
   /**
    * 个人中心-用户信息
+   * @param query
    * @param user
-   * @returns
    */
   async loginLog(query: PagingDto, user: MemberUserType) {
     const result = await this.logService.findAll(query, { createBy: user.user.userName })

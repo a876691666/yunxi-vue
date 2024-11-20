@@ -1,5 +1,5 @@
-import type { Response } from 'express'
 import * as ExcelJS from 'exceljs'
+import { Response } from 'express'
 import * as Lodash from 'lodash'
 import { DelFlagEnum, SexEnum, StatusEnum } from 'src/common/enum/index'
 

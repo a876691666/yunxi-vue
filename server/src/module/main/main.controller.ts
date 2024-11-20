@@ -1,17 +1,17 @@
-import type { ClientInfoDto } from 'src/common/decorators/common.decorator'
-import type { RedisService } from 'src/module/common/redis/redis.service'
-import type { ConfigService } from 'src/module/system/config/config.service'
-import type { UserDto } from 'src/module/system/user/user.decorator'
-import type { MainService } from './main.service'
 import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { ClientInfo } from 'src/common/decorators/common.decorator'
+import { ClientInfo, ClientInfoDto } from 'src/common/decorators/common.decorator'
+
 import { CacheEnum } from 'src/common/enum/index'
 import { createMath } from 'src/common/utils/captcha'
 import { GenerateUUID } from 'src/common/utils/index'
 import { ResultData } from 'src/common/utils/result'
-import { NotRequireAuth, User } from 'src/module/system/user/user.decorator'
+import { RedisService } from 'src/module/common/redis/redis.service'
+import { ConfigService } from 'src/module/system/config/config.service'
+import { NotRequireAuth, User, UserDto } from 'src/module/system/user/user.decorator'
+
 import { LoginDto, RegisterDto } from './dto/index'
+import { MainService } from './main.service'
 
 @ApiTags('根目录')
 @Controller('/')

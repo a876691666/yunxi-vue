@@ -14,26 +14,36 @@ function replaceSpace(content: string) {
 // 传入：xx{aa}x{c} 和 { aa: 'bb', c: 1 } 返回 xxbbx1
 function replaceStr(content: string, options: { [key: string]: string }) {
   return content.replace(/\{([^}]+)\}/g, (match, key) => {
-    return options[key] || match;
-  });
+    return options[key] || match
+  })
 };
 
 function getValidatorDecorator(javaType: string) {
-  if (javaType === 'Boolean') return `@IsBoolean()`;
-  if (javaType === 'String') return `@IsString()`;
-  if (javaType === 'Date') return `@IsDate()`;
-  if (javaType === 'Number') return `@IsNumber()`;
-  if ([`Long`, `Integer`, `Double`, `Float`, `BigDecimal`].includes(javaType)) return `@IsNumber()`;
-  return ``;
+  if (javaType === 'Boolean')
+    return `@IsBoolean()`
+  if (javaType === 'String')
+    return `@IsString()`
+  if (javaType === 'Date')
+    return `@IsDate()`
+  if (javaType === 'Number')
+    return `@IsNumber()`
+  if ([`Long`, `Integer`, `Double`, `Float`, `BigDecimal`].includes(javaType))
+    return `@IsNumber()`
+  return ``
 }
 
 function getTsType(javaType: string) {
-  if (javaType === 'Boolean') return `boolean`;
-  if (javaType === 'String') return `string`;
-  if (javaType === 'Date') return `Date`;
-  if (javaType === 'Number') return `number`;
-  if ([`Long`, `Integer`, `Double`, `Float`, `BigDecimal`].includes(javaType)) return `number`;
-  return `any`;
+  if (javaType === 'Boolean')
+    return `boolean`
+  if (javaType === 'String')
+    return `string`
+  if (javaType === 'Date')
+    return `Date`
+  if (javaType === 'Number')
+    return `number`
+  if ([`Long`, `Integer`, `Double`, `Float`, `BigDecimal`].includes(javaType))
+    return `number`
+  return `any`
 }
 
 const templateList = glob.sync('./**/*.*.vm').map((file) => {
@@ -50,11 +60,11 @@ const templateList = glob.sync('./**/*.*.vm').map((file) => {
 
 export function gen(options) {
   const result: {
-    [name: string]: string;
-  } = {};
+    [name: string]: string
+  } = {}
 
   for (const [name, _previewName, content] of templateList) {
-    result[replaceStr(name, options)] = velocityjs.render(content, { getValidatorDecorator, getTsType, ...options });
+    result[replaceStr(name, options)] = velocityjs.render(content, { getValidatorDecorator, getTsType, ...options })
   }
   return result
 }
@@ -64,7 +74,7 @@ export function previewGen(options) {
     [name: string]: string
   } = {}
   for (const [_name, previewName, content] of templateList) {
-    result[replaceStr(previewName, options)] = velocityjs.render(content, { getValidatorDecorator, getTsType, ...options });
+    result[replaceStr(previewName, options)] = velocityjs.render(content, { getValidatorDecorator, getTsType, ...options })
   }
   return result
 }

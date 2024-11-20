@@ -1,9 +1,9 @@
-import type { ConfigService } from '@nestjs/config'
-import type { RedisService } from 'src/module/common/redis/redis.service'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { CacheEnum } from 'src/common/enum/index'
+import { RedisService } from 'src/module/common/redis/redis.service'
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(Strategy) {

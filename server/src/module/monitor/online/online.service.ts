@@ -1,8 +1,8 @@
-import type { RedisService } from 'src/module/common/redis/redis.service'
 import { Injectable } from '@nestjs/common'
 import { CacheEnum } from 'src/common/enum/index'
 import { Paginate } from 'src/common/utils/index'
 import { ResultData } from 'src/common/utils/result'
+import { RedisService } from 'src/module/common/redis/redis.service'
 
 @Injectable()
 export class OnlineService {

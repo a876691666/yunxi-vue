@@ -1,9 +1,9 @@
-import type { Repository } from 'typeorm'
-import type { CreateNoticeDto, ListNoticeDto, UpdateNoticeDto } from './dto/index'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ResultData } from 'src/common/utils/result'
-import { In } from 'typeorm'
+import { In, Repository } from 'typeorm'
+
+import { CreateNoticeDto, ListNoticeDto, UpdateNoticeDto } from './dto/index'
 import { SysNoticeEntity } from './entities/notice.entity'
 
 @Injectable()

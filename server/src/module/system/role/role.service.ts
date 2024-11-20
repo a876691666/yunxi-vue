@@ -1,16 +1,16 @@
-import type { Response } from 'express'
-import type { FindManyOptions, Repository } from 'typeorm'
-import type { MenuService } from '../menu/menu.service'
-import type { ChangeStatusDto, CreateRoleDto, ListRoleDto, UpdateRoleDto } from './dto/index'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Response } from 'express'
 import { DataScopeEnum } from 'src/common/enum/index'
-
 import { ExportTable } from 'src/common/utils/export'
 import { ListToTree } from 'src/common/utils/index'
 import { ResultData } from 'src/common/utils/result'
-import { In } from 'typeorm'
+
+import { FindManyOptions, In, Repository } from 'typeorm'
+
 import { SysDeptEntity } from '../dept/entities/dept.entity'
+import { MenuService } from '../menu/menu.service'
+import { ChangeStatusDto, CreateRoleDto, ListRoleDto, UpdateRoleDto } from './dto/index'
 import { SysRoleEntity } from './entities/role.entity'
 import { SysRoleWithDeptEntity } from './entities/role-width-dept.entity'
 import { SysRoleWithMenuEntity } from './entities/role-width-menu.entity'

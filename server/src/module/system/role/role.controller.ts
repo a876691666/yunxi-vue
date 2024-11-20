@@ -1,14 +1,14 @@
-import type { Response } from 'express'
-import type { UserDto } from 'src/module/system/user/user.decorator'
-import type { UserService } from '../user/user.service'
-import type { RoleService } from './role.service'
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Response } from 'express'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
-import { User } from 'src/module/system/user/user.decorator'
+import { User, UserDto } from 'src/module/system/user/user.decorator'
 
 import { AllocatedListDto } from '../user/dto/index'
+import { UserService } from '../user/user.service'
+
 import { AuthUserCancelAllDto, AuthUserCancelDto, AuthUserSelectAllDto, ChangeStatusDto, CreateRoleDto, ListRoleDto, UpdateRoleDto } from './dto/index'
+import { RoleService } from './role.service'
 
 @ApiTags('角色管理')
 @Controller('system/role')

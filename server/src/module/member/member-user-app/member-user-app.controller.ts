@@ -1,22 +1,22 @@
-import type { ClientInfoDto } from 'src/common/decorators/common.decorator'
-import type { PagingDto } from 'src/common/dto'
-import type { RedisService } from 'src/module/common/redis/redis.service'
-import type { ExtendsUploadService } from 'src/module/extends/upload/upload.service'
-import type { ConfigService } from 'src/module/system/config/config.service'
-import type { MemberUserType } from '../member-user/member-user.dto'
-import type { UpdateProfileDto, UpdatePwdDto } from './member-user-app.dto'
-import type { MemberUserService } from './member-user-app.service'
 import { Body, Controller, Get, HttpCode, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { ClientInfo } from 'src/common/decorators/common.decorator'
+import { ClientInfo, ClientInfoDto } from 'src/common/decorators/common.decorator'
+
+import { PagingDto } from 'src/common/dto'
 import { CacheEnum } from 'src/common/enum/index'
 import { createMath } from 'src/common/utils/captcha'
 import { GenerateUUID } from 'src/common/utils/index'
 import { ResultData } from 'src/common/utils/result'
+import { RedisService } from 'src/module/common/redis/redis.service'
 import { ExtendsLog } from 'src/module/extends/log/log.interceptor'
+import { ExtendsUploadService } from 'src/module/extends/upload/upload.service'
+import { ConfigService } from 'src/module/system/config/config.service'
 import { NotRequireAuth, User } from 'src/module/system/user/user.decorator'
-import { LoginDto, RegisterDto } from './member-user-app.dto'
+import { MemberUserType } from '../member-user/member-user.dto'
+import { LoginDto, RegisterDto, UpdateProfileDto, UpdatePwdDto } from './member-user-app.dto'
+
+import { MemberUserService } from './member-user-app.service'
 
 @ApiTags('App 用户模块')
 @Controller('app-api/user')

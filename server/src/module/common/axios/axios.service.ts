@@ -1,10 +1,10 @@
-import type { HttpService } from '@nestjs/axios'
+import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
 import iconv from 'iconv-lite'
 
 @Injectable()
 export class AxiosService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) { }
   /**
    * 获取ip地址信息
    * @param ip

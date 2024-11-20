@@ -1,13 +1,13 @@
-import type { Response } from 'express'
-import type { RedisService } from 'src/module/common/redis/redis.service'
-import type { Repository } from 'typeorm'
-import type { CreateDictDataDto, CreateDictTypeDto, ListDictData, ListDictType, UpdateDictDataDto, UpdateDictTypeDto } from './dto/index'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Response } from 'express'
 import { CacheEnum } from 'src/common/enum/index'
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
-import { In } from 'typeorm'
+import { RedisService } from 'src/module/common/redis/redis.service'
+import { In, Repository } from 'typeorm'
+
+import { CreateDictDataDto, CreateDictTypeDto, ListDictData, ListDictType, UpdateDictDataDto, UpdateDictTypeDto } from './dto/index'
 import { SysDictDataEntity } from './entities/dict.data.entity'
 import { SysDictTypeEntity } from './entities/dict.type.entity'
 

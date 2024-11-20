@@ -1,33 +1,53 @@
-import type { JwtService } from '@nestjs/jwt'
-import type { Response } from 'express'
-import type { ClientInfoDto } from 'src/common/decorators/common.decorator'
-import type { RedisService } from 'src/module/common/redis/redis.service'
-import type { Repository } from 'typeorm'
-import type { LoginDto, RegisterDto } from '../../main/dto/index'
-import type { ConfigService } from '../config/config.service'
-import type { DeptService } from '../dept/dept.service'
-import type { SysMenuEntity } from '../menu/entities/menu.entity'
-import type { AuthUserCancelAllDto, AuthUserCancelDto, AuthUserSelectAllDto } from '../role/dto/index'
-
-import type { SysRoleEntity } from '../role/entities/role.entity'
-import type { RoleService } from '../role/role.service'
-import type { AllocatedListDto, ChangeStatusDto, CreateUserDto, ListUserDto, ResetPwdDto, UpdateProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/index'
-import type { UserType } from './dto/user'
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
-
 import * as bcrypt from 'bcrypt'
-import { LOGIN_TOKEN_EXPIRESIN, SYS_USER_TYPE } from 'src/common/constant/index'
+import { Response } from 'express'
+import {
+  LOGIN_TOKEN_EXPIRESIN,
+  SYS_USER_TYPE,
+} from 'src/common/constant/index'
 import { Captcha } from 'src/common/decorators/captcha.decorator'
+import { ClientInfoDto } from 'src/common/decorators/common.decorator'
 import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator'
-import { CacheEnum, DataScopeEnum, DelFlagEnum, StatusEnum } from 'src/common/enum/index'
+import {
+  CacheEnum,
+  DataScopeEnum,
+  DelFlagEnum,
+  StatusEnum,
+} from 'src/common/enum/index'
+
 import { ExportTable } from 'src/common/utils/export'
 import { GenerateUUID, GetNowDate, Uniq } from 'src/common/utils/index'
-
 import { ResultData } from 'src/common/utils/result'
-import { In, Not } from 'typeorm'
+import { RedisService } from 'src/module/common/redis/redis.service'
+import { In, Not, Repository } from 'typeorm'
+
+import { LoginDto, RegisterDto } from '../../main/dto/index'
+import { ConfigService } from '../config/config.service'
+import { DeptService } from '../dept/dept.service'
 import { SysDeptEntity } from '../dept/entities/dept.entity'
+import { SysMenuEntity } from '../menu/entities/menu.entity'
 import { SysPostEntity } from '../post/entities/post.entity'
+import {
+  AuthUserCancelAllDto,
+  AuthUserCancelDto,
+  AuthUserSelectAllDto,
+} from '../role/dto/index'
+
+import { SysRoleEntity } from '../role/entities/role.entity'
+import { RoleService } from '../role/role.service'
+import {
+  AllocatedListDto,
+  ChangeStatusDto,
+  CreateUserDto,
+  ListUserDto,
+  ResetPwdDto,
+  UpdateProfileDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+} from './dto/index'
+import { UserType } from './dto/user'
 import { UserEntity } from './entities/sys-user.entity'
 import { SysUserWithPostEntity } from './entities/user-width-post.entity'
 import { SysUserWithRoleEntity } from './entities/user-width-role.entity'
@@ -35,22 +55,29 @@ import { SysUserWithRoleEntity } from './entities/user-width-role.entity'
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepo: Repository<UserEntity>,
-    @InjectRepository(SysDeptEntity)
-    private readonly sysDeptEntityRep: Repository<SysDeptEntity>,
-    @InjectRepository(SysPostEntity)
-    private readonly sysPostEntityRep: Repository<SysPostEntity>,
-    @InjectRepository(SysUserWithPostEntity)
-    private readonly sysUserWithPostEntityRep: Repository<SysUserWithPostEntity>,
-    @InjectRepository(SysUserWithRoleEntity)
-    private readonly sysUserWithRoleEntityRep: Repository<SysUserWithRoleEntity>,
+    @InjectRepository(UserEntity) private readonly userRepo: Repository<
+      UserEntity
+    >,
+    @InjectRepository(SysDeptEntity) private readonly sysDeptEntityRep:
+    Repository<SysDeptEntity>,
+    @InjectRepository(SysPostEntity) private readonly sysPostEntityRep:
+    Repository<SysPostEntity>,
+    @InjectRepository(
+      SysUserWithPostEntity,
+    ) private readonly sysUserWithPostEntityRep: Repository<
+      SysUserWithPostEntity
+    >,
+    @InjectRepository(
+      SysUserWithRoleEntity,
+    ) private readonly sysUserWithRoleEntityRep: Repository<
+      SysUserWithRoleEntity
+    >,
     private readonly roleService: RoleService,
     private readonly deptService: DeptService,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   /**
    * 后台创建用户
@@ -60,11 +87,19 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const salt = bcrypt.genSaltSync(10)
     if (createUserDto.password) {
-      createUserDto.password = await bcrypt.hashSync(createUserDto.password, salt)
+      createUserDto.password = await bcrypt.hashSync(
+        createUserDto.password,
+        salt,
+      )
     }
 
-    const res = await this.userRepo.save({ ...createUserDto, userType: SYS_USER_TYPE.CUSTOM })
-    const postEntity = this.sysUserWithPostEntityRep.createQueryBuilder('postEntity')
+    const res = await this.userRepo.save({
+      ...createUserDto,
+      userType: SYS_USER_TYPE.CUSTOM,
+    })
+    const postEntity = this.sysUserWithPostEntityRep.createQueryBuilder(
+      'postEntity',
+    )
     const postValues = createUserDto.postIds.map((id) => {
       return {
         userId: res.userId,
@@ -73,7 +108,9 @@ export class UserService {
     })
     postEntity.insert().values(postValues).execute()
 
-    const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity')
+    const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder(
+      'roleEntity',
+    )
     const roleValues = createUserDto.roleIds.map((id) => {
       return {
         userId: res.userId,
@@ -107,11 +144,17 @@ export class UserService {
           break
         }
         else if (role.dataScope === DataScopeEnum.DATA_SCOPE_CUSTOM) {
-          const roleWithDeptIds = await this.roleService.findRoleWithDeptIds(role.roleId)
+          const roleWithDeptIds = await this.roleService.findRoleWithDeptIds(
+            role.roleId,
+          )
           deptIds.push(...roleWithDeptIds)
         }
-        else if (role.dataScope === DataScopeEnum.DATA_SCOPE_DEPT || role.dataScope === DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD) {
-          const dataScopeWidthDeptIds = await this.deptService.findDeptIdsByDataScope(user.deptId, role.dataScope)
+        else if (
+          role.dataScope === DataScopeEnum.DATA_SCOPE_DEPT
+          || role.dataScope === DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD
+        ) {
+          const dataScopeWidthDeptIds = await this.deptService
+            .findDeptIdsByDataScope(user.deptId, role.dataScope)
           deptIds.push(...dataScopeWidthDeptIds)
         }
         else if (role.dataScope === DataScopeEnum.DATA_SCOPE_SELF) {
@@ -130,7 +173,10 @@ export class UserService {
     }
 
     if (query.deptId) {
-      const deptIds = await this.deptService.findDeptIdsByDataScope(+query.deptId, DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD)
+      const deptIds = await this.deptService.findDeptIdsByDataScope(
+        +query.deptId,
+        DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD,
+      )
       entity.andWhere('user.deptId IN (:...deptIds)', { deptIds })
     }
 
@@ -147,14 +193,22 @@ export class UserService {
     }
 
     if (query.params?.beginTime && query.params?.endTime) {
-      entity.andWhere('user.createTime BETWEEN :start AND :end', { start: query.params.beginTime, end: query.params.endTime })
+      entity.andWhere('user.createTime BETWEEN :start AND :end', {
+        start: query.params.beginTime,
+        end: query.params.endTime,
+      })
     }
 
     if (query.pageSize && query.pageNum) {
       entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     }
     // 联查部门详情
-    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId')
+    entity.leftJoinAndMapOne(
+      'user.dept',
+      SysDeptEntity,
+      'dept',
+      'dept.deptId = user.deptId',
+    )
 
     const [list, total] = await entity.getManyAndCount()
 
@@ -201,7 +255,6 @@ export class UserService {
         deptId: data.deptId,
       },
     })
-    data.dept = dept
 
     const postList = await this.sysUserWithPostEntityRep.find({
       where: {
@@ -222,10 +275,10 @@ export class UserService {
       },
     })
 
-    data.roles = allRoles.filter(item => roleIds.includes(item.roleId))
+    const roles = allRoles.filter(item => roleIds.includes(item.roleId))
 
     return ResultData.ok({
-      data,
+      data: { ...data, dept, roles },
       postIds,
       posts: allPosts,
       roles: allRoles,
@@ -241,8 +294,9 @@ export class UserService {
   @CacheEvict(CacheEnum.SYS_USER_KEY, '{userId}')
   async update(updateUserDto: UpdateUserDto, userId: number) {
     // 不能修改超级管理员
-    if (updateUserDto.userId === 1)
+    if (updateUserDto.userId === 1) {
       throw new BadRequestException('非法操作！')
+    }
 
     // 过滤掉设置超级管理员角色
     updateUserDto.roleIds = updateUserDto.roleIds.filter(v => v !== 1)
@@ -266,7 +320,9 @@ export class UserService {
           userId: updateUserDto.userId,
         })
       }
-      const postEntity = this.sysUserWithPostEntityRep.createQueryBuilder('postEntity')
+      const postEntity = this.sysUserWithPostEntityRep.createQueryBuilder(
+        'postEntity',
+      )
       const postValues = updateUserDto.postIds.map((id) => {
         return {
           userId: updateUserDto.userId,
@@ -289,7 +345,9 @@ export class UserService {
           userId: updateUserDto.userId,
         })
       }
-      const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity')
+      const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder(
+        'roleEntity',
+      )
       const roleValues = updateUserDto.roleIds.map((id) => {
         return {
           userId: updateUserDto.userId,
@@ -306,7 +364,10 @@ export class UserService {
     delete (updateUserDto as any).postIds
 
     // 更新用户信息
-    const data = await this.userRepo.update({ userId: updateUserDto.userId }, updateUserDto)
+    const data = await this.userRepo.update(
+      { userId: updateUserDto.userId },
+      updateUserDto,
+    )
     return ResultData.ok(data)
   }
 
@@ -358,17 +419,13 @@ export class UserService {
     const uuid = GenerateUUID()
     const token = this.createToken({ uuid, userId: userData.userId })
     const permissions = await this.getUserPermissions(userData.userId)
-    const deptData = await this.sysDeptEntityRep.findOne({
-      where: {
-        deptId: userData.deptId,
-      },
-      select: ['deptName'],
-    })
+    // const deptData = await this.sysDeptEntityRep.findOne({
+    //   where: {
+    //     deptId: userData.deptId,
+    //   },
+    //   select: ['deptName'],
+    // })
 
-    /**
-     * 设置公司名称
-     */
-    userData.deptName = deptData.deptName || ''
     const roles = userData.roles.map(item => item.roleKey)
 
     const userInfo = {
@@ -417,14 +474,20 @@ export class UserService {
    * @param metaData
    */
   async updateRedisToken(token: string, metaData: Partial<UserType>) {
-    const oldMetaData = await this.redisService.get(`${CacheEnum.LOGIN_TOKEN_KEY}${token}`)
+    const oldMetaData = await this.redisService.get(
+      `${CacheEnum.LOGIN_TOKEN_KEY}${token}`,
+    )
 
     let newMetaData = metaData
     if (oldMetaData) {
       newMetaData = Object.assign(oldMetaData, metaData)
     }
 
-    await this.redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${token}`, newMetaData, LOGIN_TOKEN_EXPIRESIN)
+    await this.redisService.set(
+      `${CacheEnum.LOGIN_TOKEN_KEY}${token}`,
+      newMetaData,
+      LOGIN_TOKEN_EXPIRESIN,
+    )
   }
 
   /**
@@ -455,23 +518,37 @@ export class UserService {
     // }
     const roleIds = await this.getRoleIds([userId])
     const list = await this.roleService.getPermissionsByRoleIds(roleIds)
-    const permissions = Uniq(list.map((item: SysMenuEntity) => item.perms)).filter((item) => {
-      return item
-    })
+    const permissions = Uniq(list.map((item: SysMenuEntity) => item.perms))
+      .filter((item) => {
+        return item
+      })
     return permissions
   }
 
   /**
    * 获取用户信息
    */
-  async getUserinfo(userId: number): Promise<{ dept: SysDeptEntity, roles: Array<SysRoleEntity>, posts: Array<SysPostEntity> } & UserEntity> {
+  async getUserinfo(
+    userId: number,
+  ): Promise<
+    {
+      dept: SysDeptEntity
+      roles: Array<SysRoleEntity>
+      posts: Array<SysPostEntity>
+    } & UserEntity
+    > {
     const entity = this.userRepo.createQueryBuilder('user')
     entity.where({
       userId,
       delFlag: DelFlagEnum.NORMAL,
     })
     // 联查部门详情
-    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId')
+    entity.leftJoinAndMapOne(
+      'user.dept',
+      SysDeptEntity,
+      'dept',
+      'dept.deptId = user.deptId',
+    )
     const roleIds = await this.getRoleIds([userId])
 
     const roles = await this.roleService.findRoles({
@@ -521,10 +598,12 @@ export class UserService {
       select: ['userName'],
     })
     if (checkUserNameUnique) {
-      return ResultData.fail(500, `保存用户'${user.username}'失败，注册账号已存在`)
+      return ResultData.fail(
+        500,
+        `保存用户'${user.username}'失败，注册账号已存在`,
+      )
     }
-    user.userName = user.username
-    user.nickName = user.username
+
     await this.userRepo.save({ ...user, loginDate })
     return ResultData.ok()
   }
@@ -548,8 +627,9 @@ export class UserService {
    */
   parseToken(token: string) {
     try {
-      if (!token)
+      if (!token) {
         return null
+      }
       const payload = this.jwtService.verify(token.replace('Bearer ', ''))
       return payload
     }
@@ -568,7 +648,10 @@ export class UserService {
       return ResultData.fail(500, '系统用户不能重置密码')
     }
     if (body.password) {
-      body.password = await bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
+      body.password = await bcrypt.hashSync(
+        body.password,
+        bcrypt.genSaltSync(10),
+      )
     }
     await this.userRepo.update(
       {
@@ -604,41 +687,34 @@ export class UserService {
    */
   async authRole(userId: number) {
     const allRoles = await this.roleService.findRoles({
-      where: {
-        delFlag: '0',
-      },
+      where: { delFlag: '0' },
     })
 
     const user = await this.userRepo.findOne({
-      where: {
-        delFlag: '0',
-        userId,
-      },
+      where: { delFlag: '0', userId },
     })
-
     const dept = await this.sysDeptEntityRep.findOne({
       where: {
         delFlag: '0',
         deptId: user.deptId,
       },
     })
-    user.dept = dept
 
     const roleIds = await this.getRoleIds([userId])
-    // TODO flag用来给前端表格标记选中状态，后续优化
-    user.roles = allRoles.filter((item) => {
-      if (roleIds.includes(item.roleId)) {
-        item.flag = true
-        return true
-      }
-      else {
-        return true
-      }
+
+    const roles = allRoles.filter((item) => {
+      return roleIds.includes(item.roleId)
     })
+
+    const detail = {
+      ...user,
+      dept,
+      roles,
+    }
 
     return ResultData.ok({
       roles: allRoles,
-      user,
+      user: detail,
     })
   }
 
@@ -662,7 +738,9 @@ export class UserService {
           userId: query.userId,
         })
       }
-      const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder('roleEntity')
+      const roleEntity = this.sysUserWithRoleEntityRep.createQueryBuilder(
+        'roleEntity',
+      )
       const roleValues = roleIds.map((id) => {
         return {
           userId: query.userId,
@@ -740,7 +818,12 @@ export class UserService {
     }
     entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     // 联查部门详情
-    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId')
+    entity.leftJoinAndMapOne(
+      'user.dept',
+      SysDeptEntity,
+      'dept',
+      'dept.deptId = user.deptId',
+    )
     const [list, total] = await entity.getManyAndCount()
     return ResultData.ok({
       list,
@@ -777,7 +860,12 @@ export class UserService {
     }
     entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     // 联查部门详情
-    entity.leftJoinAndMapOne('user.dept', SysDeptEntity, 'dept', 'dept.deptId = user.deptId')
+    entity.leftJoinAndMapOne(
+      'user.dept',
+      SysDeptEntity,
+      'dept',
+      'dept.deptId = user.deptId',
+    )
     const [list, total] = await entity.getManyAndCount()
     return ResultData.ok({
       list,
@@ -844,11 +932,19 @@ export class UserService {
    * @param user
    * @returns
    */
-  async updateProfile(user: UserType, updateProfileDto: Partial<UpdateProfileDto>) {
+  async updateProfile(
+    user: UserType,
+    updateProfileDto: Partial<UpdateProfileDto>,
+  ) {
     await this.userRepo.update({ userId: user.user.userId }, updateProfileDto)
-    const userData = await this.redisService.get(`${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`)
+    const userData = await this.redisService.get(
+      `${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`,
+    )
     userData.user = Object.assign(userData.user, updateProfileDto)
-    await this.redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`, userData)
+    await this.redisService.set(
+      `${CacheEnum.LOGIN_TOKEN_KEY}${user.token}`,
+      userData,
+    )
     return ResultData.ok()
   }
 
@@ -866,7 +962,10 @@ export class UserService {
       return ResultData.fail(500, '修改密码失败，旧密码错误')
     }
 
-    const password = await bcrypt.hashSync(updatePwdDto.newPassword, bcrypt.genSaltSync(10))
+    const password = await bcrypt.hashSync(
+      updatePwdDto.newPassword,
+      bcrypt.genSaltSync(10),
+    )
     await this.userRepo.update({ userId: user.user.userId }, { password })
     return ResultData.ok()
   }

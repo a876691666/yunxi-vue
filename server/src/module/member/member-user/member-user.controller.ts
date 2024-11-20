@@ -1,9 +1,9 @@
-import type { CreateMemberUserDto, ListMemberUserDto, UpdateMemberUserDto } from './member-user.dto'
-import type { MemberUserService } from './member-user.service'
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { ApiBody, ApiOperation } from '@nestjs/swagger'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
-import { ResetPwdDto } from './member-user.dto'
+import { CreateMemberUserDto, ListMemberUserDto, ResetPwdDto, UpdateMemberUserDto } from './member-user.dto'
+
+import { MemberUserService } from './member-user.service'
 
 @Controller('member/member-user')
 export class MemberUserController {

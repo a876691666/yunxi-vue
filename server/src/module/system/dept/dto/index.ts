@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsBoolean, IsEmail, IsEnum, IsJSON, IsNumber, IsOptional, IsPhoneNumber, IsString, Length, Min } from 'class-validator'
+import { IsEmail, IsEnum, IsNumber, IsOptional, IsString, Length, Min } from 'class-validator'
 
 export enum StatusEnum {
   STATIC = '0',

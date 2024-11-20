@@ -1,18 +1,18 @@
-import type { Response } from 'express'
-import type { UserDto, UserToolType } from 'src/module/system/user/user.decorator'
-import type { UploadService } from 'src/module/upload/upload.service'
-import type { ListUserDto, UpdateProfileDto, UpdatePwdDto } from './dto/index'
-import type { UserService } from './user.service'
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, Res, UploadedFile, UseInterceptors } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Response } from 'express'
 import { BusinessType } from 'src/common/constant/business.constant'
 import { Operlog } from 'src/common/decorators/operlog.decorator'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
 import { RequireRole } from 'src/common/decorators/require-role.decorator'
 import { ResultData } from 'src/common/utils/result'
-import { User, UserTool } from 'src/module/system/user/user.decorator'
-import { ChangeStatusDto, CreateUserDto, ResetPwdDto, UpdateUserDto } from './dto/index'
+import { User, UserDto, UserTool, UserToolType } from 'src/module/system/user/user.decorator'
+
+import { UploadService } from 'src/module/upload/upload.service'
+import { ChangeStatusDto, CreateUserDto, ListUserDto, ResetPwdDto, UpdateProfileDto, UpdatePwdDto, UpdateUserDto } from './dto/index'
+
+import { UserService } from './user.service'
 
 @ApiTags('用户管理')
 @ApiBearerAuth()

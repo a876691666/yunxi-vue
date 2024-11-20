@@ -1,11 +1,11 @@
-import type { Repository, SelectQueryBuilder } from 'typeorm'
-import type { CreateDeptDto, ListDeptDto, UpdateDeptDto } from './dto/index'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator'
 import { CacheEnum, DataScopeEnum } from 'src/common/enum/index'
 import { ListToTree } from 'src/common/utils/index'
 import { ResultData } from 'src/common/utils/result'
+import { Repository, SelectQueryBuilder } from 'typeorm'
+import { CreateDeptDto, ListDeptDto, UpdateDeptDto } from './dto/index'
 import { SysDeptEntity } from './entities/dept.entity'
 
 @Injectable()

@@ -1,9 +1,9 @@
-import type { Response } from 'express'
-import type { PostService } from './post.service'
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Response } from 'express'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
 import { CreatePostDto, ListPostDto, UpdatePostDto } from './dto/index'
+import { PostService } from './post.service'
 
 @ApiTags('岗位管理')
 @Controller('system/post')

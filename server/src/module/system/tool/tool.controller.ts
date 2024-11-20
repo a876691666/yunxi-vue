@@ -1,10 +1,10 @@
-import type { Response } from 'express'
-import type { UserDto } from 'src/module/system/user/user.decorator'
-import type { GenDbTableList, GenTableList, GenTableUpdate, TableName } from './dto/create-genTable-dto'
-import type { ToolService } from './tool.service'
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, Res } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { User } from 'src/module/system/user/user.decorator'
+import { Response } from 'express'
+import { User, UserDto } from 'src/module/system/user/user.decorator'
+
+import { GenDbTableList, GenTableList, GenTableUpdate, TableName } from './dto/create-genTable-dto'
+import { ToolService } from './tool.service'
 
 @ApiTags('系统工具')
 @Controller('tool')

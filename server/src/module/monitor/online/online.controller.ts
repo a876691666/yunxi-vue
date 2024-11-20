@@ -1,8 +1,8 @@
-import type { OnlineService } from './online.service'
 import { Controller, Delete, Get, Param, Query } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
 import { OnlineListDto } from './dto/index'
+import { OnlineService } from './online.service'
 
 @ApiTags('系统监控-在线用户')
 @Controller('monitor/online')

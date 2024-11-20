@@ -8,4 +8,4 @@ import { AxiosService } from './axios.service'
   providers: [AxiosService],
   exports: [AxiosService],
 })
-export class AxiosModule {}
+export class AxiosModule { }

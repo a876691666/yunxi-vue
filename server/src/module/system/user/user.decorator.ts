@@ -1,6 +1,6 @@
-import type { ExecutionContext } from '@nestjs/common'
-import type { UserType } from 'src/module/system/user/dto/user'
-import { createParamDecorator, SetMetadata } from '@nestjs/common'
+import { createParamDecorator, ExecutionContext, SetMetadata } from '@nestjs/common'
+
+import { UserType } from 'src/module/system/user/dto/user'
 
 export const User = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest()

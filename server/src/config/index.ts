@@ -10,7 +10,6 @@ const configFileNameObj = {
 
 const env = process.env.NODE_ENV
 
-// eslint-disable-next-line no-console
 console.log(env)
 
 export default () => {

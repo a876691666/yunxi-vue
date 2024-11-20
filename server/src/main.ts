@@ -1,8 +1,8 @@
-import type { NestExpressApplication } from '@nestjs/platform-express'
 import { join } from 'node:path'
 import { ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
+import { NestExpressApplication } from '@nestjs/platform-express'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
@@ -61,7 +61,6 @@ async function bootstrap() {
   const port = config.get<number>('app.port') || 8080
   await app.listen(port)
 
-  // eslint-disable-next-line no-console
   console.log(`Nest-Admin 服务启动成功`, '\n', '服务地址', `http://localhost:${port}${prefix}/`, '\n', 'swagger 文档地址', `http://localhost:${port}${prefix}/swagger-ui/`)
 }
 bootstrap()

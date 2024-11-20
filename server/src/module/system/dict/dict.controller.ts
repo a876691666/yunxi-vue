@@ -1,11 +1,9 @@
-import type { Response } from 'express'
-import type { DictService } from './dict.service'
-import type { CreateDictDataDto, ListDictData, ListDictType, UpdateDictDataDto, UpdateDictTypeDto } from './dto/index'
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, Request, Res } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, Res } from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Response } from 'express'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
-import { GetNowDate } from 'src/common/utils'
-import { CreateDictTypeDto } from './dto/index'
+import { DictService } from './dict.service'
+import { CreateDictDataDto, CreateDictTypeDto, ListDictData, ListDictType, UpdateDictDataDto, UpdateDictTypeDto } from './dto/index'
 
 @ApiTags('字典管理')
 @Controller('system/dict')
@@ -23,8 +21,7 @@ export class DictController {
   @RequirePermission('system:dict:add')
   @HttpCode(200)
   @Post('/type')
-  createType(@Body() createDictTypeDto: CreateDictTypeDto, @Request() req) {
-    createDictTypeDto.createBy = req.user.userName
+  createType(@Body() createDictTypeDto: CreateDictTypeDto) {
     return this.dictService.createType(createDictTypeDto)
   }
 
@@ -90,8 +87,7 @@ export class DictController {
   @RequirePermission('system:dict:add')
   @HttpCode(200)
   @Post('/data')
-  createDictData(@Body() createDictDataDto: CreateDictDataDto, @Request() req) {
-    createDictDataDto.createBy = req.user.userName
+  createDictData(@Body() createDictDataDto: CreateDictDataDto) {
     return this.dictService.createDictData(createDictDataDto)
   }
 

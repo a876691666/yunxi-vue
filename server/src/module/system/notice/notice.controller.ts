@@ -1,10 +1,9 @@
-import type { UpdateNoticeDto } from './dto/index'
-import type { NoticeService } from './notice.service'
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Request } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
-import { GetNowDate } from 'src/common/utils'
-import { CreateNoticeDto, ListNoticeDto } from './dto/index'
+import { CreateNoticeDto, ListNoticeDto, UpdateNoticeDto } from './dto/index'
+
+import { NoticeService } from './notice.service'
 
 @ApiTags('通知公告')
 @Controller('system/notice')
@@ -19,8 +18,7 @@ export class NoticeController {
   })
   @RequirePermission('system:notice:add')
   @Post()
-  create(@Body() createConfigDto: CreateNoticeDto, @Request() req) {
-    createConfigDto.createBy = req.user.userName
+  create(@Body() createConfigDto: CreateNoticeDto) {
     return this.noticeService.create(createConfigDto)
   }
 

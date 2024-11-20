@@ -1,8 +1,8 @@
-import type { Repository } from 'typeorm'
-import type { CreateTagDto, ListTagDto, UpdateTagDto } from './tag.dto'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ResultData } from 'src/common/utils/result'
+import { Repository } from 'typeorm'
+import { CreateTagDto, ListTagDto, UpdateTagDto } from './tag.dto'
 import { TagEntity } from './tag.entity'
 
 @Injectable()

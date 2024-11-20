@@ -1,9 +1,9 @@
-import type { ListDeptDto } from './dto/index'
-import type { MenuService } from './menu.service'
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
-import { CreateMenuDto, UpdateMenuDto } from './dto/index'
+import { CreateMenuDto, ListDeptDto, UpdateMenuDto } from './dto/index'
+
+import { MenuService } from './menu.service'
 
 @ApiTags('菜单管理')
 @Controller('system/menu')

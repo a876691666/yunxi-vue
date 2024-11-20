@@ -99,6 +99,7 @@ function setMeta(menu) {
     title: menu.menuName,
     icon: menu.icon,
     noCache: menu.isCache === '1',
+    link: undefined,
   }
 
   if (isURL(menu.link)) {

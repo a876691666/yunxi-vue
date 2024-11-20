@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 
 import { BaseEntity } from 'src/common/entities/base'
-import { Column, Entity } from 'typeorm'
+import { Column } from 'typeorm'
 
 export abstract class BaseMembarEntity extends BaseEntity {
   @ApiProperty({ type: String, description: '模块标志' })
