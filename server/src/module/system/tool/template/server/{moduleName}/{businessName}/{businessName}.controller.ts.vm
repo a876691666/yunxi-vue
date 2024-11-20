@@ -31,8 +31,9 @@ export class ${BusinessName}Controller {
   })
   @RequirePermission('${moduleName}:${businessName}:query')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.${businessName}Service.findOne(+id)
+  findOne(@Param('id') id: string) {#if($primaryColumn.columnType == 'bigint')
+    return this.${businessName}Service.findOne(id)#else
+    return this.${businessName}Service.findOne(+id)#end
   }
 
   @ApiOperation({
@@ -49,7 +50,8 @@ export class ${BusinessName}Controller {
   })
   @RequirePermission('${moduleName}:${businessName}:remove')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.${businessName}Service.remove(+id)
+  remove(@Param('id') id: string) {#if($primaryColumn.columnType == 'bigint')
+    return this.${businessName}Service.remove(id)#else
+    return this.${businessName}Service.remove(+id)#end
   }
 }

@@ -1,56 +1,56 @@
 import { defHttp } from '@/utils/http/axios';
-import { ID, IDS, PageQuery, commonExport } from '@/api/base';
-import { Tag } from './model';
-// import { Result } from '/#/axios';
+import { ID, IDS, commonExport } from '@/api/base';
+import { TagVO, TagForm, TagQuery } from './model';
 
-enum Api {
-  root = '/member/tag',
-  tagList = '/member/tag/list',
-  tagExport = '/member/tag/export',
-  tagRefreshCache = '/member/tag/refreshCache',
-  tagInfoByKey = '/member/tag/configKey',
+/**
+ * 查询用户标签表列表
+ * @param params
+ * @returns
+ */
+export function tagList(params?: TagQuery) {
+  return defHttp.get<TagVO[]>({ url: '/member/tag/list', params });
 }
-
-export function tagList(params?: PageQuery) {
-  return defHttp.get<Tag>({ url: Api.tagList, params });
-}
-
-export function tagInfo(configId: ID) {
-  return defHttp.get<Tag>({ url: Api.root + '/' + configId });
-}
-
-export function tagExport(data: any) {
-  return commonExport(Api.tagExport, data);
-}
-
-export function tagRefreshCache() {
-  return defHttp.deleteWithMsg<void>({ url: Api.tagRefreshCache });
-}
-
-export function tagUpdate(data: any) {
-  return defHttp.putWithMsg<void>({ url: Api.root, data });
-}
-
-export function tagAdd(data: any) {
-  return defHttp.postWithMsg<void>({ url: Api.root, data });
-}
-
-export function tagRemove(configIds: IDS) {
-  return defHttp.deleteWithMsg<void>({ url: Api.root + '/' + configIds });
-}
-
-export function tagStatusChange(id: string, status: string) {
-  return defHttp.putWithMsg<void>({
-    url: Api.root,
-    data: { id: id, status: status },
-  });
+/**
+ * 导出用户标签表列表
+ * @param params
+ * @returns
+ */
+export function tagExport(params?: TagQuery) {
+  return commonExport('/member/tag/export', params ?? {});
 }
 
 /**
- * 返回结果是在msg里???
- * @param configKey configKey
+ * 查询用户标签表详细
+ * @param id id
  * @returns
  */
-export function tagInfoByKey(configKey: string) {
-  return defHttp.get<Tag>({ url: Api.tagInfoByKey + '/' + configKey });
+export function tagInfo(id: ID) {
+  return defHttp.get<TagVO>({ url: '/member/tag/' + id });
+}
+
+/**
+ * 新增用户标签表
+ * @param data
+ * @returns
+ */
+export function tagAdd(data: TagForm) {
+  return defHttp.postWithMsg<void>({ url: '/member/tag', data });
+}
+
+/**
+ * 更新用户标签表
+ * @param data
+ * @returns
+ */
+export function tagUpdate(data: TagForm) {
+  return defHttp.putWithMsg<void>({ url: '/member/tag', data });
+}
+
+/**
+ * 删除用户标签表
+ * @param id id
+ * @returns
+ */
+export function tagRemove(id: ID | IDS) {
+  return defHttp.deleteWithMsg<void>({ url: '/member/tag/' + id },);
 }

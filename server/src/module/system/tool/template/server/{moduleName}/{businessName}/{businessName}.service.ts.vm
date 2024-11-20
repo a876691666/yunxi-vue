@@ -72,7 +72,7 @@ export class ${BusinessName}Service {
     })
   }
 
-  async findOne(id: number) {
+  async findOne(id: $getBigintType($primaryColumn.columnType)) {
     const res = await this.${businessName}EntityRep.findOne({
       where: { delFlag: '0', ${primaryKey}: id, },
     })
@@ -87,7 +87,7 @@ export class ${BusinessName}Service {
     return ResultData.ok(res)
   }
 
-  async remove(id: number) {
+  async remove(id: $getBigintType($primaryColumn.columnType)) {
     const data = await this.${businessName}EntityRep.update(
       { ${primaryKey}: id },
       { delFlag: '1' }

@@ -84,7 +84,7 @@ export const columns: BasicColumn[] = [
 export const modalSchemas: FormSchema[] = [
   #foreach($column in $columns)
     #if($ignoreField($column.javaField))
-    #elseif($column.isEdit == '1' || $column.isInsert == '1')
+    #elseif($column.isEdit == '1' || $column.isInsert == '1' || $column.javaField == $primaryKey)
       #if($column.dictType)
         #set($dictType=$column.dictType)
       #else

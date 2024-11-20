@@ -2,34 +2,27 @@
   <PageWrapper dense>
     <BasicTable @register="registerTable">
       <template #toolbar>
-        <Space>
-          <a-button @click="handleRefresh" v-auth="'member:tag:query'">刷新缓存</a-button>
-          <a-button
-            class="<sm:hidden"
-            v-auth="'member:tag:export'"
-            @click="downloadExcel(tagExport, '参数数据', getForm().getFieldsValue())"
-            >导出</a-button
-          >
-          <a-button
-            class="<sm:hidden"
-            type="primary"
-            danger
-            @click="multipleRemove(tagRemove)"
-            :disabled="!selected"
-            v-auth="'member:tag:remove'"
-            >删除</a-button
-          >
-          <a-button type="primary" @click="handleAdd" v-auth="'member:tag:add'">新增</a-button>
-        </Space>
+        <a-button
+          @click="downloadExcel(tagExport, '用户标签表数据', getForm().getFieldsValue())"
+          v-auth="'member:tag:export'"
+          >导出</a-button
+        >
+        <a-button
+          type="primary"
+          danger
+          @click="multipleRemove(tagRemove)"
+          :disabled="!selected"
+          v-auth="'member:tag:remove'"
+          >删除</a-button
+        >
+        <a-button
+          type="primary"
+          @click="handleAdd"
+          v-auth="'member:tag:add'"
+          >新增</a-button
+        >
       </template>
       <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'avatar'">
-          <avatar v-if="record.avatar" :src="apiUrl + record.avatar" />
-          <avatar
-            v-else
-            src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
-          />
-        </template>
         <template v-if="column.key === 'action'">
           <TableAction
             stopButtonPropagation
@@ -51,19 +44,11 @@
                 auth: 'member:tag:remove',
                 popConfirm: {
                   placement: 'left',
-                  title: `是否删除[${record.name}]?`,
+                  title: '是否删除用户标签表[' + record.id + ']?',
                   confirm: handleDelete.bind(null, record),
                 },
               },
             ]"
-          />
-        </template>
-        <template v-if="column.dataIndex === 'status'">
-          <TableSwitch
-            v-model="record.status"
-            :disabled="!hasPermission('member:tag:edit')"
-            :api="() => tagStatusChange(record.id, record.status)"
-            :reload="reload"
           />
         </template>
       </template>
@@ -75,25 +60,12 @@
 <script setup lang="ts">
   import { PageWrapper } from '@/components/Page';
   import { BasicTable, useTable, TableAction } from '@/components/Table';
-  import { Space } from 'ant-design-vue';
-  import {
-    tagList,
-    tagExport,
-    tagRefreshCache,
-    tagRemove,
-    tagStatusChange,
-  } from '@/api/member/tag';
-  import TagModal from './TagModal.vue';
-  import { useModal } from '@/components/Modal';
+  import { tagList, tagExport, tagRemove } from '@/api/member/tag';
   import { downloadExcel } from '@/utils/file/download';
+  import { useModal } from '@/components/Modal';
+  import TagModal from './tagModal.vue';
   import { formSchemas, columns } from './tag.data';
   import { IconEnum } from '@/enums/appEnum';
-  import { usePermission } from '@/hooks/web/usePermission';
-  import TableSwitch from '@/components/Table/src/components/TableSwitch.vue';
-  import { useGlobSetting } from '@/hooks/setting';
-
-  const { hasPermission } = usePermission();
-  const { apiUrl } = useGlobSetting();
 
   defineOptions({ name: 'Tag' });
 
@@ -101,29 +73,19 @@
     rowSelection: {
       type: 'checkbox',
     },
-    title: '用户列表',
-    showIndexColumn: false,
+    title: '用户标签表列表',
     api: tagList,
+    showIndexColumn: false,
     rowKey: 'id',
     useSearchForm: true,
     formConfig: {
       schemas: formSchemas,
-      labelWidth: 80,
-      name: 'tag',
       baseColProps: {
         xs: 24,
         sm: 24,
         md: 24,
         lg: 6,
       },
-      // 日期选择格式化
-      fieldMapToTime: [
-        [
-          'createTime',
-          ['params[beginTime]', 'params[endTime]'],
-          ['YYYY-MM-DD 00:00:00', 'YYYY-MM-DD 23:59:59'],
-        ],
-      ],
     },
     columns: columns,
     actionColumn: {
@@ -135,11 +97,6 @@
   });
 
   const [registerModal, { openModal }] = useModal();
-
-  async function handleRefresh() {
-    await tagRefreshCache();
-    await reload();
-  }
 
   function handleEdit(record: Recordable) {
     openModal(true, { record, update: true });

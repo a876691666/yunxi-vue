@@ -14,7 +14,7 @@
   import { BasicModal, useModalInner } from '@/components/Modal';
   import { BasicForm, useForm } from '@/components/Form';
   import { computed, ref, unref } from 'vue';
-  import { tagUpdate, tagAdd, tagInfo } from '@/api/member/tag';
+  import { tagInfo, tagAdd, tagUpdate } from '@/api/member/tag';
   import { modalSchemas } from './tag.data';
 
   defineOptions({ name: 'TagModal' });
@@ -22,9 +22,8 @@
   const emit = defineEmits(['register', 'reload']);
 
   const isUpdate = ref<boolean>(false);
-
   const title = computed<string>(() => {
-    return isUpdate.value ? '编辑参数' : '新增参数';
+    return isUpdate.value ? '编辑用户标签表' : '新增用户标签表';
   });
 
   const [registerInnerModal, { modalLoading, closeModal }] = useModalInner(
@@ -41,12 +40,9 @@
   );
 
   const [registerForm, { setFieldsValue, resetForm, validate }] = useForm({
-    baseColProps: {
-      span: 24,
-    },
-    labelWidth: 80,
-    name: 'tag_modal',
+    labelWidth: 100,
     showActionButtonGroup: false,
+    baseColProps: { span: 24 },
     schemas: modalSchemas,
   });
 
@@ -63,7 +59,6 @@
       closeModal();
       await resetForm();
     } catch (e) {
-      console.log(e);
     } finally {
       modalLoading(false);
     }

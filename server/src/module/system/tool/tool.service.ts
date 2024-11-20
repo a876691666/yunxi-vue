@@ -11,7 +11,7 @@ import { ResultData } from 'src/common/utils/result'
 import { UserDto } from 'src/module/system/user/user.decorator'
 import { DataSource, Repository } from 'typeorm'
 import toolConfig from './config'
-import { CreateGenTableDto, GenDbTableList, GenTableList, GenTableUpdate, TableName } from './dto/create-genTable-dto'
+import { CreateGenTableDto, GenDbTableList, GenTableList, GenTableUpdate, TableIds, TableNames } from './dto/create-genTable-dto'
 import { GenTableEntity } from './entities/gen-table.entity'
 import { GenTableColumnEntity } from './entities/gen-table-cloumn.entity'
 import { gen, previewGen } from './template/index'
@@ -60,9 +60,9 @@ export class ToolService {
    * @param req
    * @returns
    */
-  async importTable(table: TableName, user: UserDto) {
-    const tableIds = table.tableIdStr.split(',')
-    const tableList = await this.selectDbTableListByNames(tableIds)
+  async importTable(table: TableNames, user: UserDto) {
+    const tableNames = table.tables.split(',')
+    const tableList = await this.selectDbTableListByNames(tableNames)
 
     for (const table of tableList) {
       const tableName = table.tableName
@@ -242,7 +242,7 @@ export class ToolService {
    * @param table
    * @param res
    */
-  async batchGenCode(table: TableName, res) {
+  async batchGenCode(table: TableIds, res) {
     const zipFilePath = path.join(__dirname, 'temp.zip')
     const output = fs.createWriteStream(zipFilePath)
     const archive = archiver('zip', {

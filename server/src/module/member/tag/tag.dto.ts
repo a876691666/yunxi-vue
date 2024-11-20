@@ -1,56 +1,80 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsOptional, IsString } from 'class-validator'
+import { IsBoolean, IsDate, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import { PagingDto } from 'src/common/dto'
 
 export class CreateTagDto {
-  @ApiProperty({ required: true })
-  @IsString()
-  readonly name: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  readonly code: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  readonly module: string
-
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '状态' })
   @IsOptional()
   @IsString()
-  readonly remark?: string
+  status?: string
+
+  @ApiProperty({ required: false, description: '备注' })
+  @IsOptional()
+  @IsString()
+  remark?: string
+
+  @ApiProperty({ required: true, description: '标签显示名' })
+  @IsString()
+  name: string
+
+  @ApiProperty({ required: true, description: '标签code' })
+  @IsString()
+  code: string
+
+  @ApiProperty({ required: true, description: '模块标志' })
+  @IsString()
+  module: string
 }
 
-export class UpdateTagDto {
-  @ApiProperty({ required: false })
-  @IsOptional()
+export class UpdateTagDto extends CreateTagDto {
+  @ApiProperty({ required: true, description: '主键' })
   @IsString()
-  readonly id: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  readonly name?: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  readonly code?: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  readonly module?: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  readonly remark?: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  readonly status?: string
+  id: string
 }
 
-export class ListTagDto extends PagingDto {}
+export class ListTagDto extends PagingDto {
+  @ApiProperty({ required: false, description: '状态' })
+  @IsOptional()
+  @IsString()
+  status?: string
+
+  @ApiProperty({ required: false, description: '备注' })
+  @IsOptional()
+  @IsString()
+  remark?: string
+
+  @ApiProperty({ required: false, description: '标签显示名' })
+  @IsOptional()
+  @IsString()
+  name?: string
+
+  @ApiProperty({ required: false, description: '标签code' })
+  @IsOptional()
+  @IsString()
+  code?: string
+
+  @ApiProperty({ required: false, description: '模块标志' })
+  @IsOptional()
+  @IsString()
+  module?: string
+
+  @ApiProperty({ required: false, description: '创建者' })
+  @IsOptional()
+  @IsString()
+  createBy?: string
+
+  @ApiProperty({ required: false, description: '创建时间' })
+  @IsOptional()
+  @IsString({ each: true })
+  createTime?: string[]
+
+  @ApiProperty({ required: false, description: '更新者' })
+  @IsOptional()
+  @IsString()
+  updateBy?: string
+
+  @ApiProperty({ required: false, description: '更新时间' })
+  @IsOptional()
+  @IsString({ each: true })
+  updateTime?: string[]
+}

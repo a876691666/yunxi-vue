@@ -46,13 +46,22 @@ export class GenDbTableList extends PagingDto {
   tableComment?: string
 }
 
-export class TableName {
+export class TableNames {
+  @ApiProperty({
+    required: true,
+  })
+  @IsString()
+  tables: string
+}
+
+export class TableIds {
   @ApiProperty({
     required: true,
   })
   @IsString()
   tableIdStr: string
 }
+
 export class TableId {
   @ApiProperty({
     required: true,

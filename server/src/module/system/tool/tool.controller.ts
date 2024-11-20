@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { User, UserDto } from 'src/module/system/user/user.decorator'
 
-import { GenDbTableList, GenTableList, GenTableUpdate, TableName } from './dto/create-genTable-dto'
+import { GenDbTableList, GenTableList, GenTableUpdate, TableIds, TableNames } from './dto/create-genTable-dto'
 import { ToolService } from './tool.service'
 
 @ApiTags('系统工具')
@@ -25,7 +25,7 @@ export class ToolController {
 
   @ApiOperation({ summary: '导入表' })
   @Post('/gen/importTable')
-  genImportTable(@Body() table: TableName, @User() user: UserDto) {
+  genImportTable(@Body() table: TableNames, @User() user: UserDto) {
     return this.toolService.importTable(table, user)
   }
 
@@ -37,7 +37,7 @@ export class ToolController {
 
   @ApiOperation({ summary: '生成代码' })
   @Get('/gen/batchGenCode')
-  batchGenCode(@Query() tables: TableName, @Res() res: Response) {
+  batchGenCode(@Query() tables: TableIds, @Res() res: Response) {
     return this.toolService.batchGenCode(tables, res)
   }
 

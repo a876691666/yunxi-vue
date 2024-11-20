@@ -63,11 +63,17 @@ function getUiTsType(javaType: string) {
   return `any`
 }
 
+function getBigintType(ColumnType) {
+  if (ColumnType === 'bigint')
+    return 'string'
+  return 'number'
+}
+
 const templateList = glob.sync('./**/*.*.vm').map((file) => {
   // 减去rootPath部分的路径
   const relativePath = path.relative(rootPath, file)
   const name = relativePath.replace('.vm', '').replace(/\\/g, '/')
-  // 123
+  // 12345
   // 减去rootPath部分的路径
   const previewRelativePath = path.relative(previewRootPath, file)
   const previewName = previewRelativePath.replace(/\\/g, '/')
@@ -85,6 +91,7 @@ export function gen(options) {
       GenConstants,
       getValidatorDecorator,
       getUiTsType,
+      getBigintType,
       ignoreField,
       getTsType,
       ...options,
@@ -102,6 +109,7 @@ export function previewGen(options) {
       GenConstants,
       getValidatorDecorator,
       getUiTsType,
+      getBigintType,
       ignoreField,
       getTsType,
       ...options,
