@@ -26,7 +26,7 @@ export class ToolService {
     private readonly genTableEntityRep: Repository<GenTableEntity>,
     @InjectRepository(GenTableColumnEntity)
     private readonly genTableColumnEntityRep: Repository<GenTableColumnEntity>,
-  ) {}
+  ) { }
 
   /**
    * 查询生成表数据
@@ -213,6 +213,10 @@ export class ToolService {
     for (const item of genTableUpdate.columns) {
       delete (item as any)._X_ROW_KEY
       delete (item as any).query
+      delete (item as any).insert
+      delete (item as any).edit
+      delete (item as any).list
+
       if (item.columnId)
         await this.genTableColumnEntityRep.update({ columnId: item.columnId }, item)
     }

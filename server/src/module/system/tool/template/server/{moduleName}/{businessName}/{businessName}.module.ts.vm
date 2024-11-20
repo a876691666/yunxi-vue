@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ${BusinessName}Service } from './${businessName}.service';
-import { ${BusinessName}Controller } from './${businessName}.controller';
-import { ${BusinessName}Entity } from './entities/${businessName}.entity';
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { ${BusinessName}Controller } from './${businessName}.controller'
+import { ${BusinessName}Entity } from './${businessName}.entity'
+import { ${BusinessName}Service } from './${businessName}.service'
 
 @Module({
   imports: [TypeOrmModule.forFeature([${BusinessName}Entity])],
@@ -10,4 +10,3 @@ import { ${BusinessName}Entity } from './entities/${businessName}.entity';
   providers: [${BusinessName}Service],
 })
 export class ${BusinessName}Module {}
-

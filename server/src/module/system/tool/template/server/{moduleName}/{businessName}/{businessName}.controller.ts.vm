@@ -1,53 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ${BusinessName}Service } from './${businessName}.service';
-import { List${BusinessName}Dto, Create${BusinessName}Dto, Update${BusinessName}Dto } from './dto/${businessName}.dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common'
+import { ApiOperation } from '@nestjs/swagger'
+import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
+import { Create${BusinessName}Dto, List${BusinessName}Dto, Update${BusinessName}Dto } from './${businessName}.dto'
+import { ${BusinessName}Service } from './${businessName}.service'
 
 @Controller('${moduleName}/${businessName}')
 export class ${BusinessName}Controller {
-    constructor(private readonly ${businessName}Service: ${BusinessName}Service) {}
+  constructor(private readonly ${businessName}Service: ${BusinessName}Service) {}
 
-    @ApiOperation({
-        summary: '查询${functionName}列表',
-    })
-    @RequirePermission('${moduleName}:${businessName}:list')
-    @Get('list')
-    findAll(@Query() query: List${BusinessName}Dto) {
-        return this.${businessName}Service.findAll(query);
-    }
+  @ApiOperation({
+    summary: '查询${functionName}列表',
+  })
+  @RequirePermission('${moduleName}:${businessName}:list')
+  @Get('list')
+  findAll(@Query() query: List${BusinessName}Dto) {
+    return this.${businessName}Service.findAll(query)
+  }
 
-    @ApiOperation({
-        summary: '${functionName}-创建',
-    })
-    @RequirePermission('${moduleName}:${businessName}:add')
-    @Post()
-    create(@Body() create${BusinessName}Dto: Create${BusinessName}Dto) {
-        return this.${businessName}Service.create(create${BusinessName}Dto);
-    }
+  @ApiOperation({
+    summary: '${functionName}-创建',
+  })
+  @RequirePermission('${moduleName}:${businessName}:add')
+  @Post()
+  create(@Body() create${BusinessName}Dto: Create${BusinessName}Dto) {
+    return this.${businessName}Service.create(create${BusinessName}Dto)
+  }
 
-    @ApiOperation({
-        summary: '${functionName}-详情',
-    })
-    @RequirePermission('${moduleName}:${businessName}:query')
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.${businessName}Service.findOne(+id);
-    }
+  @ApiOperation({
+    summary: '${functionName}-详情',
+  })
+  @RequirePermission('${moduleName}:${businessName}:query')
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.${businessName}Service.findOne(+id)
+  }
 
-    @ApiOperation({
-        summary: '${functionName}-修改',
-    })
-    @RequirePermission('${moduleName}:${businessName}:edit')
-    @Put()
-    update(@Body() update${BusinessName}Dto: Update${BusinessName}Dto) {
-        return this.${businessName}Service.update(update${BusinessName}Dto);
-    }
+  @ApiOperation({
+    summary: '${functionName}-修改',
+  })
+  @RequirePermission('${moduleName}:${businessName}:edit')
+  @Put()
+  update(@Body() update${BusinessName}Dto: Update${BusinessName}Dto) {
+    return this.${businessName}Service.update(update${BusinessName}Dto)
+  }
 
-    @ApiOperation({
-        summary: '${functionName}-删除',
-    })
-    @RequirePermission('${moduleName}:${businessName}:remove')
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.${businessName}Service.remove(+id);
-    }
+  @ApiOperation({
+    summary: '${functionName}-删除',
+  })
+  @RequirePermission('${moduleName}:${businessName}:remove')
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.${businessName}Service.remove(+id)
+  }
 }
