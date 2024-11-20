@@ -10,7 +10,7 @@
   defineOptions({ name: 'Swagger' });
 
   const { apiUrl } = useGlobSetting();
-  const url = ref<string>(apiUrl + '/swagger-ui/index.html');
+  const url = ref<string>(apiUrl + '/swagger-ui');
 </script>
 
 <style scoped></style>
