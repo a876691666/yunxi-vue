@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsOptional, IsString } from 'class-validator'
+import { IsNumber, IsOptional, IsString } from 'class-validator'
 import { PagingDto } from 'src/common/dto/index'
 import { genTableCloumnUpdate } from './create-genTableCloumn-dto'
 
@@ -136,4 +136,7 @@ export class GenTableUpdate {
 
   @IsString()
   tplWebType?: string
+
+  @IsNumber()
+  parentMenuId?: number
 }

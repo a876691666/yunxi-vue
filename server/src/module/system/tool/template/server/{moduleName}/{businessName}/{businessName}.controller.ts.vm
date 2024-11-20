@@ -11,7 +11,7 @@ export class ${BusinessName}Controller {
   @ApiOperation({
     summary: '查询${functionName}列表',
   })
-  @RequirePermission('${moduleName}:${businessName}:list')
+  @RequirePermission('${moduleName}:${businessName}:query')
   @Get('list')
   findAll(@Query() query: List${BusinessName}Dto) {
     return this.${businessName}Service.findAll(query)
