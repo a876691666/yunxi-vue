@@ -131,7 +131,7 @@ export class MemberUserService {
     const list = await this.findAll(body)
     const options = {
       sheetName: 'App 用户信息表',
-      data: list.data.list,
+      data: list.data.rows,
       header: [
         { title: '用户账号', dataIndex: 'userName' },
         { title: '用户昵称', dataIndex: 'nickName' },

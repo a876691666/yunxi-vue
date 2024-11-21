@@ -67,7 +67,7 @@ export class ${BusinessName}Controller {
   @RequirePermission('${moduleName}:${_businessName}:export')
   @Post('/export')
   @Operlog({ businessType: BusinessType.EXPORT })
-  async export(@Res() res: Response, @Body() body: ListTagDto) {
-    return this.tagService.export(res, body)
+  async export(@Res() res: Response, @Body() body: List${BusinessName}Dto) {
+    return this.${businessName}Service.export(res, body)
   }
 }

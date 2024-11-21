@@ -103,7 +103,7 @@ export class ${BusinessName}Service {
     const list = await this.findAll(body)
     const options = {
       sheetName: '${tableComment}',
-      data: list.data.list,
+      data: list.data.rows,
       header: [#foreach($column in $columns)#if($column.isList == '1')
         { title: '$column.columnComment', dataIndex: '$column.javaField' },#end#end
       ],
