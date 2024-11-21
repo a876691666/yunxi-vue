@@ -22,12 +22,9 @@ export class MemberUserService {
     const entity = this.MemberUserEntityRep.createQueryBuilder('entity')
     entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
     entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
-    const [list, total] = await entity.getManyAndCount()
+    const [rows, total] = await entity.getManyAndCount()
 
-    return ResultData.ok({
-      list,
-      total,
-    })
+    return ResultData.rows({ rows, total })
   }
 
   async findOne(id: number) {

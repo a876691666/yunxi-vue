@@ -37,9 +37,9 @@ export class ExtendsLogService {
       entity.orderBy(`entity.${query.orderByColumn}`, orderMap[query.isAsc])
     }
 
-    const [list, total] = await entity.getManyAndCount()
+    const [rows, total] = await entity.getManyAndCount()
 
-    return ResultData.ok({ list, total })
+    return ResultData.rows({ rows, total })
   }
 
   /**

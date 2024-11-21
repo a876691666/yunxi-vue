@@ -44,14 +44,12 @@ export class ToolService {
     if (tableComment) {
       entity.andWhere('entity.comment LIKE :tableComment', { tableComment: `%${tableComment}%` })
     }
-    const [list, total] = await entity
+    const [rows, total] = await entity
       .skip((pageNum - 1) * pageSize)
       .take(pageSize)
       .getManyAndCount()
-    return ResultData.ok({
-      list,
-      total,
-    })
+
+    return ResultData.rows({ rows, total })
   }
 
   /**

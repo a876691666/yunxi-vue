@@ -40,12 +40,9 @@ export class PostService {
       entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     }
 
-    const [list, total] = await entity.getManyAndCount()
+    const [rows, total] = await entity.getManyAndCount()
 
-    return ResultData.ok({
-      list,
-      total,
-    })
+    return ResultData.rows({ rows, total })
   }
 
   async findOne(postId: number) {

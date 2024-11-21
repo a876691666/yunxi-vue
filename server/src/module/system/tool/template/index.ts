@@ -73,7 +73,7 @@ const templateList = glob.sync('./**/*.*.vm').map((file) => {
   // 减去rootPath部分的路径
   const relativePath = path.relative(rootPath, file)
   const name = relativePath.replace('.vm', '').replace(/\\/g, '/')
-  // 1234
+  // 123
   // 减去rootPath部分的路径
   const previewRelativePath = path.relative(previewRootPath, file)
   const previewName = previewRelativePath.replace(/\\/g, '/')

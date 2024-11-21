@@ -20,7 +20,7 @@ export class MainController {
     private readonly mainService: MainService,
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   @ApiOperation({
     summary: '用户登录',
@@ -104,6 +104,18 @@ export class MainController {
       roles: user.roles,
       user: user.user,
     }
+  }
+
+  @ApiOperation({
+    summary: '用户信息',
+  })
+  @Get('/system/user/getInfo')
+  async systemUserGetInfo(@User() user: UserDto) {
+    return ResultData.ok({
+      permissions: user.permissions,
+      roles: user.roles,
+      user: user.user,
+    })
   }
 
   @ApiOperation({

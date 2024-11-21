@@ -1,4 +1,4 @@
-import { BaseEntity, PageQuery } from '@/api/base';
+import type { PageQuery, BaseEntity } from '#/api/common';
 
 export interface ${BusinessName}VO {
 #foreach ($column in $columns)

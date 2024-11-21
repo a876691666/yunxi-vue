@@ -1,15 +1,16 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
-import { User, UserDto } from 'src/module/system/user/user.decorator'
+import { ResultData } from 'src/common/utils/result'
 
+import { User, UserDto } from 'src/module/system/user/user.decorator'
 import { GenDbTableList, GenTableList, GenTableUpdate, TableIds, TableNames } from './dto/create-genTable-dto'
 import { ToolService } from './tool.service'
 
 @ApiTags('系统工具')
 @Controller('tool')
 export class ToolController {
-  constructor(private readonly toolService: ToolService) {}
+  constructor(private readonly toolService: ToolService) { }
 
   @ApiOperation({ summary: '数据表列表' })
   @Get('/gen/list')
@@ -39,6 +40,12 @@ export class ToolController {
   @Get('/gen/batchGenCode')
   batchGenCode(@Query() tables: TableIds, @Res() res: Response) {
     return this.toolService.batchGenCode(tables, res)
+  }
+
+  @ApiOperation({ summary: '数据源' })
+  @Get('/gen/getDataNames')
+  getDataNames() {
+    return ResultData.ok([])
   }
 
   @ApiOperation({ summary: '查询表详细信息' })

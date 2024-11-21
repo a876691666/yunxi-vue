@@ -210,12 +210,9 @@ export class UserService {
       'dept.deptId = user.deptId',
     )
 
-    const [list, total] = await entity.getManyAndCount()
+    const [rows, total] = await entity.getManyAndCount()
 
-    return ResultData.ok({
-      list,
-      total,
-    })
+    return ResultData.rows({ rows, total })
   }
 
   /**
@@ -824,11 +821,9 @@ export class UserService {
       'dept',
       'dept.deptId = user.deptId',
     )
-    const [list, total] = await entity.getManyAndCount()
-    return ResultData.ok({
-      list,
-      total,
-    })
+    const [rows, total] = await entity.getManyAndCount()
+
+    return ResultData.rows({ rows, total })
   }
 
   /**
@@ -866,11 +861,9 @@ export class UserService {
       'dept',
       'dept.deptId = user.deptId',
     )
-    const [list, total] = await entity.getManyAndCount()
-    return ResultData.ok({
-      list,
-      total,
-    })
+    const [rows, total] = await entity.getManyAndCount()
+
+    return ResultData.rows({ rows, total })
   }
 
   /**

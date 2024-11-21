@@ -18,7 +18,7 @@ export class OperlogService {
     @InjectRepository(SysOperlogEntity)
     private readonly sysOperlogEntityRep: Repository<SysOperlogEntity>,
     private readonly axiosService: AxiosService,
-  ) {}
+  ) { }
 
   create(createOperlogDto: CreateOperlogDto) {
     return 'This action adds a new operlog'
@@ -40,12 +40,9 @@ export class OperlogService {
       entity.orderBy(`entity.${query.orderByColumn}`, orderMap[query.isAsc])
     }
 
-    const [list, total] = await entity.getManyAndCount()
+    const [rows, total] = await entity.getManyAndCount()
 
-    return ResultData.ok({
-      list,
-      total,
-    })
+    return ResultData.rows({ rows, total })
   }
 
   async removeAll() {
@@ -74,6 +71,7 @@ export class OperlogService {
     title,
     handlerName,
     errorMsg,
+    status = '0',
     businessType,
   }: {
     resultData?: any
@@ -81,6 +79,7 @@ export class OperlogService {
     title: string
     handlerName: string
     errorMsg?: string
+    status?: string
     businessType: number
   }) {
     const { originalUrl, method, ip, body, query } = this.request
@@ -100,6 +99,7 @@ export class OperlogService {
       operParam: JSON.stringify({ ...body, ...query }),
       jsonResult: JSON.stringify(resultData),
       errorMsg,
+      status,
 
       businessType,
       operatorType: '1',

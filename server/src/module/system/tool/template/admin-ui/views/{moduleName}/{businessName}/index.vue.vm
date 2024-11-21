@@ -1,115 +1,197 @@
-<template>
-  <PageWrapper dense>
-    <BasicTable @register="registerTable">
-      <template #toolbar>
-        <a-button
-          @click="downloadExcel(${businessName}Export, '${functionName}数据', getForm().getFieldsValue())"
-          v-auth="'${permissionPrefix}:export'"
-          >导出</a-button
-        >
-        <a-button
-          type="primary"
-          danger
-          @click="multipleRemove(${businessName}Remove)"
-          :disabled="!selected"
-          v-auth="'${permissionPrefix}:remove'"
-          >删除</a-button
-        >
-        <a-button
-          type="primary"
-          @click="handleAdd"
-          v-auth="'${permissionPrefix}:add'"
-          >新增</a-button
-        >
-      </template>
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'action'">
-          <TableAction
-            stopButtonPropagation
-            :actions="[
-              {
-                label: '修改',
-                icon: IconEnum.EDIT,
-                type: 'primary',
-                ghost: true,
-                auth: '${permissionPrefix}:edit',
-                onClick: handleEdit.bind(null, record),
-              },
-              {
-                label: '删除',
-                icon: IconEnum.DELETE,
-                type: 'primary',
-                danger: true,
-                ghost: true,
-                auth: '${permissionPrefix}:remove',
-                popConfirm: {
-                  placement: 'left',
-                  title: '是否删除${functionName}[' + record.${primaryKey} + ']?',
-                  confirm: handleDelete.bind(null, record),
-                },
-              },
-            ]"
-          />
-        </template>
-      </template>
-    </BasicTable>
-    <${BusinessName}Modal @register="registerModal" @reload="reload" />
-  </PageWrapper>
-</template>
-
 <script setup lang="ts">
-  import { PageWrapper } from '@/components/Page';
-  import { BasicTable, useTable, TableAction } from '@/components/Table';
-  import { ${businessName}List, ${businessName}Export, ${businessName}Remove } from '@/api/${moduleName}/${businessName}';
-  import { downloadExcel } from '@/utils/file/download';
-  import { useModal } from '@/components/Modal';
-  import ${BusinessName}Modal from './${businessName}Modal.vue';
-  import { formSchemas, columns } from './${businessName}.data';
-  import { IconEnum } from '@/enums/appEnum';
+import type { Recordable } from '@vben/types';
 
-  defineOptions({ name: '${BusinessName}' });
+import { ref } from 'vue';
 
-  const [registerTable, { reload, multipleRemove, selected, getForm }] = useTable({
-    rowSelection: {
-      type: 'checkbox',
+import { Page, useVbenModal, type VbenFormProps } from '@vben/common-ui';
+import { getVxePopupContainer } from '@vben/utils';
+
+import { Modal, Drawer, Popconfirm, Space } from 'ant-design-vue';
+import dayjs from 'dayjs';
+
+import {   
+  tableCheckboxEvent,
+  useVbenVxeGrid, 
+  type VxeGridProps 
+} from '#/adapter/vxe-table';
+
+import {
+  ${businessName}Export,
+  ${businessName}List,
+  ${businessName}Remove,
+} from '#/api/${moduleName}/${businessName}';
+import type { ${BusinessName}Form } from '#/api/${moduleName}/${businessName}/model';
+import { commonDownloadExcel } from '#/utils/file/download';
+
+import ${businessName}Modal from './${businessName}-modal.vue';
+import ${businessName}Drawer from './${businessName}-drawer.vue';
+import { columns, querySchema } from './data';
+
+const formOptions: VbenFormProps = {
+  commonConfig: {
+    labelWidth: 80,
+    componentProps: {
+      allowClear: true,
     },
-    title: '${functionName}列表',
-    api: ${businessName}List,
-    showIndexColumn: false,
-    rowKey: '${primaryKey}',
-    useSearchForm: true,
-    formConfig: {
-      schemas: formSchemas,
-      baseColProps: {
-        xs: 24,
-        sm: 24,
-        md: 24,
-        lg: 6,
+  },
+  schema: querySchema(),
+  wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+  // 处理区间选择器RangePicker时间格式 将一个字段映射为两个字段 搜索/导出会用到
+  // 不需要直接删除
+  // fieldMappingTime: [
+  //  [
+  //    'createTime',
+  //    ['params[beginTime]', 'params[endTime]'],
+  //    ['YYYY-MM-DD 00:00:00', 'YYYY-MM-DD 23:59:59'],
+  //  ],
+  // ],
+};
+
+const gridOptions: VxeGridProps = {
+  checkboxConfig: {
+    // 高亮
+    highlight: true,
+    // 翻页时保留选中状态
+    reserve: true,
+    // 点击行选中
+    // trigger: 'row',
+  },
+  columns,
+  height: 'auto',
+  keepSource: true,
+  pagerConfig: {},
+  proxyConfig: {
+    ajax: {
+      query: async ({ page }, formValues = {}) => {
+        return await ${businessName}List({
+          pageNum: page.currentPage,
+          pageSize: page.pageSize,
+          ...formValues,
+        });
       },
     },
-    columns: columns,
-    actionColumn: {
-      width: 200,
-      title: '操作',
-      key: 'action',
-      fixed: 'right',
+  },
+  rowConfig: {
+    keyField: '${primaryColumn.javaField}',
+  },
+  // 表格全局唯一表示 保存列配置需要用到
+  id: '${moduleName}-${businessName}-index'
+};
+
+const checked = ref(false);
+const [BasicTable, tableApi] = useVbenVxeGrid({
+  formOptions,
+  gridOptions,
+  gridEvents: {
+    checkboxChange: tableCheckboxEvent(checked),
+    checkboxAll: tableCheckboxEvent(checked),
+  }
+});
+
+const [${BusinessName}Modal, modalApi] = useVbenModal({
+  connectedComponent: ${businessName}Modal,
+});
+
+// const [${BusinessName}Drawer, drawerApi] = useVbenDrawer({
+//   connectedComponent: ${businessName}Drawer,
+// });
+
+function handleAdd() {
+  modalApi.setData({});
+  modalApi.open();
+  // drawerApi.setData({});
+  // drawerApi.open();
+}
+
+async function handleEdit(row: Required<${BusinessName}Form>) {
+  modalApi.setData({ id: row.${primaryColumn.javaField} });
+  modalApi.open();
+  // drawerApi.setData({ id: row.${primaryColumn.javaField} });
+  // drawerApi.open();
+}
+
+async function handleDelete(row: Required<${BusinessName}Form>) {
+  await ${businessName}Remove(row.${primaryColumn.javaField});
+  await tableApi.query();
+}
+
+function handleMultiDelete() {
+  const rows = tableApi.grid.getCheckboxRecords();
+  const ids = rows.map((row: Required<${BusinessName}Form>) => row.${primaryColumn.javaField});
+  // Drawer.confirm({
+  Modal.confirm({
+    title: '提示',
+    okType: 'danger',
+    content: `确认删除选中的${ids.length}条记录吗？`,
+    onOk: async () => {
+      await ${businessName}Remove(ids);
+      await tableApi.query();
+      checked.value = false;
     },
   });
+}
 
-  const [registerModal, { openModal }] = useModal();
-
-  function handleEdit(record: Recordable) {
-    openModal(true, { record, update: true });
-  }
-
-  function handleAdd() {
-    openModal(true, { update: false });
-  }
-
-  async function handleDelete(record: Recordable) {
-    await ${businessName}Remove([record.${primaryKey}]);
-    await reload();
-  }
+function handleDownloadExcel() {
+  commonDownloadExcel(${businessName}Export, '${functionName}数据', tableApi.formApi.form.values, {
+    fieldMappingTime: formOptions.fieldMappingTime,
+  });
+}
 </script>
 
-<style scoped></style>
+<template>
+  <Page :auto-content-height="true">
+    <BasicTable table-title="${functionName}列表">
+      <template #toolbar-tools>
+        <Space>
+          <a-button
+            v-access:code="['${permissionPrefix}:export']"
+            @click="handleDownloadExcel"
+          >
+            {{ $t('pages.common.export') }}
+          </a-button>
+          <a-button
+            :disabled="!checked"
+            danger
+            type="primary" 
+            v-access:code="['${permissionPrefix}:remove']" 
+            @click="handleMultiDelete">
+            {{ $t('pages.common.delete') }}
+          </a-button>
+          <a-button
+            type="primary"
+            v-access:code="['${permissionPrefix}:add']"
+            @click="handleAdd"
+          >
+            {{ $t('pages.common.add') }}
+          </a-button>
+        </Space>
+      </template>
+      <template #action="{ row }">
+        <Space>
+          <ghost-button
+            v-access:code="['${permissionPrefix}:edit']"
+            @click.stop="handleEdit(row)"
+          >
+            {{ $t('pages.common.edit') }}
+          </ghost-button>
+          <Popconfirm
+            :get-popup-container="getVxePopupContainer"
+            placement="left"
+            title="确认删除？"
+            @confirm="handleDelete(row)"
+          >
+            <ghost-button
+              danger
+              v-access:code="['${permissionPrefix}:remove']"
+              @click.stop=""
+            >
+              {{ $t('pages.common.delete') }}
+            </ghost-button>
+          </Popconfirm>
+        </Space>
+      </template>
+    </BasicTable>
+    <${BusinessName}Modal @reload="tableApi.query()" />
+    <!-- <${BusinessName}Drawer @reload="tableApi.query()" /> -->
+  </Page>
+</template>

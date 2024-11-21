@@ -21,7 +21,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly uploadService: UploadService,
-  ) {}
+  ) { }
 
   @ApiOperation({
     summary: '个人中心-用户信息',
@@ -29,7 +29,11 @@ export class UserController {
   @RequirePermission('system:user:query')
   @Get('/profile')
   profile(@User() user: UserDto) {
-    return ResultData.ok({ data: user.user })
+    return ResultData.ok({
+      permissions: user.permissions,
+      roles: user.roles,
+      user: user.user,
+    })
   }
 
   @ApiOperation({

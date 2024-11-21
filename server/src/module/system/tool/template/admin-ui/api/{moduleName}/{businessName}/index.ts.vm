@@ -1,21 +1,24 @@
-import { defHttp } from '@/utils/http/axios';
-import { ID, IDS, commonExport } from '@/api/base';
-import { ${BusinessName}VO, ${BusinessName}Form, ${BusinessName}Query } from './model';
+import type { ${BusinessName}VO, ${BusinessName}Form, ${BusinessName}Query } from './model';
+
+import type { ID, IDS } from '#/api/common';
+
+import { commonExport } from '#/api/helper';
+import { requestClient } from '#/api/request';
 
 /**
- * 查询${functionName}列表
- * @param params
- * @returns
- */
+* 查询${functionName}列表
+* @param params
+* @returns ${functionName}列表
+*/
 export function ${businessName}List(params?: ${BusinessName}Query) {
-  return defHttp.get<${BusinessName}VO[]>({ url: '/${moduleName}/${businessName}/list', params });
+  return requestClient.get<${BusinessName}VO[]>(`/${moduleName}/${businessName}/list`, { params });
 }
 
 #if($tplCategory != 'tree')
 /**
  * 导出${functionName}列表
  * @param params
- * @returns
+ * @returns ${functionName}列表
  */
 export function ${businessName}Export(params?: ${BusinessName}Query) {
   return commonExport('/${moduleName}/${businessName}/export', params ?? {});
@@ -23,37 +26,37 @@ export function ${businessName}Export(params?: ${BusinessName}Query) {
 #end
 
 /**
- * 查询${functionName}详细
+ * 查询${functionName}详情
  * @param ${primaryKey} id
- * @returns
+ * @returns ${functionName}详情
  */
 export function ${businessName}Info(${primaryKey}: ID) {
-  return defHttp.get<${BusinessName}VO>({ url: '/${moduleName}/${businessName}/' + ${primaryKey} });
+  return requestClient.get<${BusinessName}VO>(`/${moduleName}/${businessName}/\${${primaryKey}}`);
 }
 
 /**
  * 新增${functionName}
  * @param data
- * @returns
+ * @returns void
  */
 export function ${businessName}Add(data: ${BusinessName}Form) {
-  return defHttp.postWithMsg<void>({ url: '/${moduleName}/${businessName}', data });
+  return requestClient.postWithMsg<void>('/${moduleName}/${businessName}', data);
 }
 
 /**
  * 更新${functionName}
  * @param data
- * @returns
+ * @returns void
  */
 export function ${businessName}Update(data: ${BusinessName}Form) {
-  return defHttp.putWithMsg<void>({ url: '/${moduleName}/${businessName}', data });
+  return requestClient.putWithMsg<void>('/${moduleName}/${businessName}', data);
 }
 
 /**
  * 删除${functionName}
  * @param ${primaryKey} id
- * @returns
+ * @returns void
  */
 export function ${businessName}Remove(${primaryKey}: ID | IDS) {
-  return defHttp.deleteWithMsg<void>({ url: '/${moduleName}/${businessName}/' + ${primaryKey} },);
+  return requestClient.deleteWithMsg<void>(`/${moduleName}/${businessName}/\${${primaryKey}}`);
 }

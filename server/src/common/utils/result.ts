@@ -29,4 +29,8 @@ export class ResultData {
   static fail(code: number, msg?: string, data?: any): ResultData {
     return new ResultData(code || 500, msg || 'fail', data)
   }
+
+  static rows(data: { rows: any[], total: number, [key: string]: any }, msg?: string): ResultData {
+    return new ResultData(SUCCESS_CODE, msg || '查询成功', data)
+  }
 }

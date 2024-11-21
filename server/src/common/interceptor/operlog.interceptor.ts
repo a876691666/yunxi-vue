@@ -44,7 +44,7 @@ export class OperlogInterceptor implements NestInterceptor {
           const costTime = Date.now() - now
 
           this.logger.error(`[${className}.${handlerName}] [${userName}:${userId}] ${summary} ${costTime}ms`)
-          this.logService.logAction({ costTime, errorMsg: err.response, handlerName, title: summary, businessType: logConfig?.businessType })
+          this.logService.logAction({ costTime, status: '1', errorMsg: JSON.stringify(err.response?.message), handlerName, title: summary, businessType: logConfig?.businessType })
 
           return throwError(() => err)
         }),
