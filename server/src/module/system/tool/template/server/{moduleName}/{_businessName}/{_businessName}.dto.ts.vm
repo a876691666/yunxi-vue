@@ -16,14 +16,23 @@ export class Create${BusinessName}Dto {#foreach($column in $columns)
   #end
 #end}
 
-export class Update${BusinessName}Dto extends Create${BusinessName}Dto {#if($primaryColumn.columnType == 'bigint')
+export class Update${BusinessName}Dto {#if($primaryColumn.columnType == 'bigint')
   @ApiProperty({ required: true, description: '主键' })
   @IsString()
   ${primaryKey}: string#else
   @ApiProperty({ required: true, description: '主键' })
   @IsNumber()
-  ${primaryKey}: number#end
-}
+  ${primaryKey}: number
+  #end
+  #foreach($column in $columns)
+    #if($ignoreField($column.javaField) || $column.javaField == $primaryKey || $column.isEdit != '1')
+    #else
+  @ApiProperty({ required: false, description: '${column.columnComment}' })
+  @IsOptional()
+  $getValidatorDecorator($column.javaType)
+  $column.javaField?: $getTsType($column.javaType)
+    #end
+  #end}
 
 export class List${BusinessName}Dto extends PagingDto {#foreach($column in $columns)
   #if($column.isQuery != '1')

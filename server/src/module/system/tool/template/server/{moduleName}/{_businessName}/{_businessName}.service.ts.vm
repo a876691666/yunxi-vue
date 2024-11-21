@@ -4,8 +4,8 @@ import { Response } from 'express'
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
 import { Repository } from 'typeorm'
-import { Create${BusinessName}Dto, List${BusinessName}Dto, Update${BusinessName}Dto } from './${businessName}.dto'
-import { ${BusinessName}Entity } from './${businessName}.entity'
+import { Create${BusinessName}Dto, List${BusinessName}Dto, Update${BusinessName}Dto } from './${_businessName}.dto'
+import { ${BusinessName}Entity } from './${_businessName}.entity'
 
 @Injectable()
 export class ${BusinessName}Service {
@@ -97,7 +97,7 @@ export class ${BusinessName}Service {
     return ResultData.ok(data)
   }
 
-  async export(res: Response, body: ListTagDto) {
+  async export(res: Response, body: List${BusinessName}Dto) {
     delete body.pageNum
     delete body.pageSize
     const list = await this.findAll(body)

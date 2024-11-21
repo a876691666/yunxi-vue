@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { useVbenDrawer } from '@vben/common-ui';
+import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 import { cloneDeep } from '@vben/utils';
 
 import { useVbenForm } from '#/adapter/form';
-import { ${businessName}Add, ${businessName}Info, ${businessName}Update } from '#/api/${moduleName}/${businessName}';
+import { memberUserAdd, memberUserInfo, memberUserUpdate } from '#/api/member/member-user';
 
-import { drawerSchema } from './data';
+import { modalSchema } from './data';
 
 const emit = defineEmits<{ reload: [] }>();
 
@@ -28,12 +28,12 @@ const [BasicForm, formApi] = useVbenForm({
       class: 'w-full',
     }
   },
-  schema: drawerSchema(),
+  schema: modalSchema(),
   showDefaultActions: false,
   wrapperClass: 'grid-cols-2',
 });
 
-const [BasicDrawer, drawerApi] = useVbenDrawer({
+const [BasicModal, modalApi] = useVbenModal({
   fullscreenButton: false,
   onCancel: handleCancel,
   onConfirm: handleConfirm,
@@ -41,47 +41,47 @@ const [BasicDrawer, drawerApi] = useVbenDrawer({
     if (!isOpen) {
       return null;
     }
-    drawerApi.drawerLoading(true);
+    modalApi.modalLoading(true);
 
-    const { id } = drawerApi.getData() as { id?: number | string };
+    const { id } = modalApi.getData() as { id?: number | string };
     isUpdate.value = !!id;
 
     if (isUpdate.value && id) {
-      const record = await ${businessName}Info(id);
+      const record = await memberUserInfo(id);
       await formApi.setValues(record);
     }
 
-    drawerApi.drawerLoading(false);
+    modalApi.modalLoading(false);
   },
 });
 
 async function handleConfirm() {
   try {
-    drawerApi.drawerLoading(true);
+    modalApi.modalLoading(true);
     const { valid } = await formApi.validate();
     if (!valid) {
       return;
     }
     // getValues获取为一个readonly的对象 需要修改必须先深拷贝一次
     const data = cloneDeep(await formApi.getValues());
-    await (isUpdate.value ? ${businessName}Update(data) : ${businessName}Add(data));
+    await (isUpdate.value ? memberUserUpdate(data) : memberUserAdd(data));
     emit('reload');
     await handleCancel();
   } catch (error) {
     console.error(error);
   } finally {
-    drawerApi.drawerLoading(false);
+    modalApi.modalLoading(false);
   }
 }
 
 async function handleCancel() {
-  drawerApi.close();
+  modalApi.close();
   await formApi.resetForm();
 }
 </script>
 
 <template>
-  <BasicDrawer :close-on-click-modal="false" :title="title" class="w-[550px]">
+  <BasicModal :close-on-click-modal="false" :title="title" class="w-[550px]">
     <BasicForm />
-  </BasicDrawer>
+  </BasicModal>
 </template>

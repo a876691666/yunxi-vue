@@ -30,6 +30,13 @@ onMounted(async () => {
   const resp = await genInfo(tableId);
   // 需要做菜单转换 严格相等 才能选中回显
   resp.info.parentMenuId = safeParseNumber(resp.info.parentMenuId);
+  resp.info.columns.forEach((column) => {
+    column.insert = column.isInsert === '1';
+    column.edit = column.isEdit === '1';
+    column.list = column.isList === '1';
+    column.query = column.isQuery === '1';
+    column.required = column.isRequired === '1';
+  });
   genInfoData.value = resp.info;
   setTabTitle(`生成配置: ${resp.info.tableName}`);
 });

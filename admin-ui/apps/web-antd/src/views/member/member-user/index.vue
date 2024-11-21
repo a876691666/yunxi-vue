@@ -16,15 +16,15 @@ import {
 } from '#/adapter/vxe-table';
 
 import {
-  ${businessName}Export,
-  ${businessName}List,
-  ${businessName}Remove,
-} from '#/api/${moduleName}/${businessName}';
-import type { ${BusinessName}Form } from '#/api/${moduleName}/${businessName}/model';
+  memberUserExport,
+  memberUserList,
+  memberUserRemove,
+} from '#/api/member/member-user';
+import type { MemberUserForm } from '#/api/member/member-user/model';
 import { commonDownloadExcel } from '#/utils/file/download';
 
-import ${businessName}Modal from './${businessName}-modal.vue';
-import ${businessName}Drawer from './${businessName}-drawer.vue';
+import memberUserModal from './member-user-modal.vue';
+import memberUserDrawer from './member-user-drawer.vue';
 import { columns, querySchema } from './data';
 
 const formOptions: VbenFormProps = {
@@ -63,7 +63,7 @@ const gridOptions: VxeGridProps = {
   proxyConfig: {
     ajax: {
       query: async ({ page }, formValues = {}) => {
-        return await ${businessName}List({
+        return await memberUserList({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
           ...formValues,
@@ -72,10 +72,10 @@ const gridOptions: VxeGridProps = {
     },
   },
   rowConfig: {
-    keyField: '${primaryColumn.javaField}',
+    keyField: 'userId',
   },
   // 表格全局唯一表示 保存列配置需要用到
-  id: '${moduleName}-${businessName}-index'
+  id: 'member-member-user-index'
 };
 
 const checked = ref(false);
@@ -88,12 +88,12 @@ const [BasicTable, tableApi] = useVbenVxeGrid({
   }
 });
 
-const [${BusinessName}Modal, modalApi] = useVbenModal({
-  connectedComponent: ${businessName}Modal,
+const [MemberUserModal, modalApi] = useVbenModal({
+  connectedComponent: memberUserModal,
 });
 
-// const [${BusinessName}Drawer, drawerApi] = useVbenDrawer({
-//   connectedComponent: ${businessName}Drawer,
+// const [MemberUserDrawer, drawerApi] = useVbenDrawer({
+//   connectedComponent: memberUserDrawer,
 // });
 
 function handleAdd() {
@@ -103,28 +103,28 @@ function handleAdd() {
   // drawerApi.open();
 }
 
-async function handleEdit(row: Required<${BusinessName}Form>) {
-  modalApi.setData({ id: row.${primaryColumn.javaField} });
+async function handleEdit(row: Required<MemberUserForm>) {
+  modalApi.setData({ id: row.userId });
   modalApi.open();
-  // drawerApi.setData({ id: row.${primaryColumn.javaField} });
+  // drawerApi.setData({ id: row.userId });
   // drawerApi.open();
 }
 
-async function handleDelete(row: Required<${BusinessName}Form>) {
-  await ${businessName}Remove(row.${primaryColumn.javaField});
+async function handleDelete(row: Required<MemberUserForm>) {
+  await memberUserRemove(row.userId);
   await tableApi.query();
 }
 
 function handleMultiDelete() {
   const rows = tableApi.grid.getCheckboxRecords();
-  const ids = rows.map((row: Required<${BusinessName}Form>) => row.${primaryColumn.javaField});
+  const ids = rows.map((row: Required<MemberUserForm>) => row.userId);
   // Drawer.confirm({
   Modal.confirm({
     title: '提示',
     okType: 'danger',
     content: `确认删除选中的${ids.length}条记录吗？`,
     onOk: async () => {
-      await ${businessName}Remove(ids);
+      await memberUserRemove(ids);
       await tableApi.query();
       checked.value = false;
     },
@@ -132,7 +132,7 @@ function handleMultiDelete() {
 }
 
 function handleDownloadExcel() {
-  commonDownloadExcel(${businessName}Export, '${functionName}数据', tableApi.formApi.form.values, {
+  commonDownloadExcel(memberUserExport, 'App 用户信息表数据', tableApi.formApi.form.values, {
     fieldMappingTime: formOptions.fieldMappingTime,
   });
 }
@@ -140,11 +140,11 @@ function handleDownloadExcel() {
 
 <template>
   <Page :auto-content-height="true">
-    <BasicTable table-title="${functionName}列表">
+    <BasicTable table-title="App 用户信息表列表">
       <template #toolbar-tools>
         <Space>
           <a-button
-            v-access:code="['${permissionPrefix}:export']"
+            v-access:code="['member:member-user:export']"
             @click="handleDownloadExcel"
           >
             {{ $t('pages.common.export') }}
@@ -153,13 +153,13 @@ function handleDownloadExcel() {
             :disabled="!checked"
             danger
             type="primary" 
-            v-access:code="['${permissionPrefix}:remove']" 
+            v-access:code="['member:member-user:remove']" 
             @click="handleMultiDelete">
             {{ $t('pages.common.delete') }}
           </a-button>
           <a-button
             type="primary"
-            v-access:code="['${permissionPrefix}:add']"
+            v-access:code="['member:member-user:add']"
             @click="handleAdd"
           >
             {{ $t('pages.common.add') }}
@@ -169,7 +169,7 @@ function handleDownloadExcel() {
       <template #action="{ row }">
         <Space>
           <ghost-button
-            v-access:code="['${permissionPrefix}:edit']"
+            v-access:code="['member:member-user:edit']"
             @click.stop="handleEdit(row)"
           >
             {{ $t('pages.common.edit') }}
@@ -182,7 +182,7 @@ function handleDownloadExcel() {
           >
             <ghost-button
               danger
-              v-access:code="['${permissionPrefix}:remove']"
+              v-access:code="['member:member-user:remove']"
               @click.stop=""
             >
               {{ $t('pages.common.delete') }}
@@ -191,7 +191,7 @@ function handleDownloadExcel() {
         </Space>
       </template>
     </BasicTable>
-    <${BusinessName}Modal @reload="tableApi.query()" />
-    <!-- <${BusinessName}Drawer @reload="tableApi.query()" /> -->
+    <MemberUserModal @reload="tableApi.query()" />
+    <!-- <MemberUserDrawer @reload="tableApi.query()" /> -->
   </Page>
 </template>

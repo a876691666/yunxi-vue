@@ -31,9 +31,9 @@ export class ToolController {
   }
 
   @ApiOperation({ summary: '同步表' })
-  @Get('/gen/synchDb/:tableName')
-  synchDb(@Param('tableName') tableName: string) {
-    return this.toolService.synchDb(tableName)
+  @Get('/gen/synchDb/:tableId')
+  synchDb(@Param('tableId') tableId: string) {
+    return this.toolService.synchDb(tableId)
   }
 
   @ApiOperation({ summary: '生成代码' })

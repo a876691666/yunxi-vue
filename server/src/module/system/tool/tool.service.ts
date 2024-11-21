@@ -15,7 +15,7 @@ import { CreateGenTableDto, GenDbTableList, GenTableList, GenTableUpdate, TableI
 import { GenTableEntity } from './entities/gen-table.entity'
 import { GenTableColumnEntity } from './entities/gen-table-cloumn.entity'
 import { gen, previewGen } from './template/index'
-import { arraysContains, capitalize, getColumnLength, StringUtils } from './utils/index'
+import { arraysContains, capitalize, convertToCamelCase, getColumnLength, StringUtils } from './utils/index'
 
 @Injectable()
 export class ToolService {
@@ -92,10 +92,11 @@ export class ToolService {
    * 同步数据库,  我们导入了需要生成代码的数据表，但是我们更改了数据库的结构（比如删除了一些字段，和添加了一些字段），同步更新表数据
    * @param table
    */
-  async synchDb(tableName: string) {
-    const table = await this.findOneByTableName(tableName)
+  async synchDb(tableId: string) {
+    const table = (await this.findOne(+tableId))?.data?.info
     if (!table)
       throw new BadRequestException('同步数据失败，原表结构不存在！')
+    const tableName = table.tableName
     // 已在数据库中的表列信息
     const tableColumns = table.columns
     // 更改后的数据库表的列信息
@@ -209,7 +210,7 @@ export class ToolService {
    */
   async genUpdate(genTableUpdate: GenTableUpdate) {
     for (const item of genTableUpdate.columns) {
-      delete (item as any)._X_ROW_KEY
+      delete (item as any).id
       delete (item as any).query
       delete (item as any).insert
       delete (item as any).edit
@@ -268,10 +269,12 @@ export class ToolService {
         return {
           primaryKey,
           primaryColumn,
-          BusinessName: capitalize(data.businessName),
           permissionPrefix: `${data.moduleName}:${data.businessName}`,
           ...data,
           columns,
+          _businessName: (data.businessName),
+          businessName: convertToCamelCase(data.businessName),
+          BusinessName: capitalize(convertToCamelCase(data.businessName)),
         }
       }),
     )
@@ -313,10 +316,12 @@ export class ToolService {
     const info = {
       primaryColumn,
       primaryKey,
-      BusinessName: capitalize(data.businessName),
       permissionPrefix: `${data.moduleName}:${data.businessName}`,
       ...data,
       columns,
+      _businessName: (data.businessName),
+      businessName: convertToCamelCase(data.businessName),
+      BusinessName: capitalize(convertToCamelCase(data.businessName)),
     }
     return ResultData.ok(previewGen(info))
   }
@@ -353,7 +358,7 @@ export class ToolService {
       limit ${(q.pageNum - 1) * q.pageSize},${q.pageSize}
       `
     const data = {
-      list: await this.dataSource.query(sql, params).then(res =>
+      rows: await this.dataSource.query(sql, params).then(res =>
         res.map(v => ({
           ...v,
           createTime: FormatDate(v.createTime),
@@ -362,7 +367,7 @@ export class ToolService {
       ),
       total: Number((await this.dataSource.query(sqlCount, params))[0]?.total),
     }
-    return ResultData.ok(data)
+    return ResultData.rows(data)
   }
 
   /**

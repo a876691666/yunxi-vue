@@ -11,7 +11,7 @@ import { requestClient } from '#/api/request';
 * @returns ${functionName}列表
 */
 export function ${businessName}List(params?: ${BusinessName}Query) {
-  return requestClient.get<${BusinessName}VO[]>(`/${moduleName}/${businessName}/list`, { params });
+  return requestClient.get<${BusinessName}VO[]>(`/${moduleName}/${_businessName}/list`, { params });
 }
 
 #if($tplCategory != 'tree')
@@ -21,7 +21,7 @@ export function ${businessName}List(params?: ${BusinessName}Query) {
  * @returns ${functionName}列表
  */
 export function ${businessName}Export(params?: ${BusinessName}Query) {
-  return commonExport('/${moduleName}/${businessName}/export', params ?? {});
+  return commonExport('/${moduleName}/${_businessName}/export', params ?? {});
 }
 #end
 
@@ -31,7 +31,7 @@ export function ${businessName}Export(params?: ${BusinessName}Query) {
  * @returns ${functionName}详情
  */
 export function ${businessName}Info(${primaryKey}: ID) {
-  return requestClient.get<${BusinessName}VO>(`/${moduleName}/${businessName}/\${${primaryKey}}`);
+  return requestClient.get<${BusinessName}VO>(`/${moduleName}/${_businessName}/\${${primaryKey}}`);
 }
 
 /**
@@ -40,7 +40,7 @@ export function ${businessName}Info(${primaryKey}: ID) {
  * @returns void
  */
 export function ${businessName}Add(data: ${BusinessName}Form) {
-  return requestClient.postWithMsg<void>('/${moduleName}/${businessName}', data);
+  return requestClient.postWithMsg<void>('/${moduleName}/${_businessName}', data);
 }
 
 /**
@@ -49,7 +49,7 @@ export function ${businessName}Add(data: ${BusinessName}Form) {
  * @returns void
  */
 export function ${businessName}Update(data: ${BusinessName}Form) {
-  return requestClient.putWithMsg<void>('/${moduleName}/${businessName}', data);
+  return requestClient.putWithMsg<void>('/${moduleName}/${_businessName}', data);
 }
 
 /**
@@ -58,5 +58,5 @@ export function ${businessName}Update(data: ${BusinessName}Form) {
  * @returns void
  */
 export function ${businessName}Remove(${primaryKey}: ID | IDS) {
-  return requestClient.deleteWithMsg<void>(`/${moduleName}/${businessName}/\${${primaryKey}}`);
+  return requestClient.deleteWithMsg<void>(`/${moduleName}/${_businessName}/\${${primaryKey}}`);
 }

@@ -4,8 +4,8 @@ INSERT INTO sys_menu(
     path, icon, component, status
 )
 VALUES (
-    '${tableComment}', '${moduleName}:${businessName}:list', 'C', 0, ${parentMenuId},
-    '${businessName}', '', '${moduleName}/${businessName}/index', 0
+    '${tableComment}', '${moduleName}:${_businessName}:list', 'C', 0, ${parentMenuId},
+    '${businessName}', '', '${moduleName}/${_businessName}/index', 0
 );
 
 -- 按钮父菜单ID
@@ -18,7 +18,7 @@ INSERT INTO sys_menu(
     path, icon, component, status
 )
 VALUES (
-    '查询${tableComment}', '${moduleName}:${businessName}:query', 'F', 1, @parentId,
+    '查询${tableComment}', '${moduleName}:${_businessName}:query', 'F', 1, @parentId,
     '', '', '', 0
 );
 INSERT INTO sys_menu(
@@ -26,7 +26,7 @@ INSERT INTO sys_menu(
     path, icon, component, status
 )
 VALUES (
-    '创建${tableComment}', '${moduleName}:${businessName}:add', 'F', 2, @parentId,
+    '创建${tableComment}', '${moduleName}:${_businessName}:add', 'F', 2, @parentId,
     '', '', '', 0
 );
 INSERT INTO sys_menu(
@@ -34,7 +34,7 @@ INSERT INTO sys_menu(
     path, icon, component, status
 )
 VALUES (
-    '更新${tableComment}', '${moduleName}:${businessName}:edit', 'F', 3, @parentId,
+    '更新${tableComment}', '${moduleName}:${_businessName}:edit', 'F', 3, @parentId,
     '', '', '', 0
 );
 INSERT INTO sys_menu(
@@ -42,7 +42,7 @@ INSERT INTO sys_menu(
     path, icon, component, status
 )
 VALUES (
-    '删除${tableComment}', '${moduleName}:${businessName}:remove', 'F', 4, @parentId,
+    '删除${tableComment}', '${moduleName}:${_businessName}:remove', 'F', 4, @parentId,
     '', '', '', 0
 );
 INSERT INTO sys_menu(
@@ -50,6 +50,6 @@ INSERT INTO sys_menu(
     path, icon, component, status
 )
 VALUES (
-    '导出${tableComment}', '${moduleName}:${businessName}:export', 'F', 5, @parentId,
+    '导出${tableComment}', '${moduleName}:${_businessName}:export', 'F', 5, @parentId,
     '', '', '', 0
 );

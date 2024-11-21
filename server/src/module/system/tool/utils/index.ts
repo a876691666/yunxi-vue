@@ -47,7 +47,7 @@ export class StringUtils {
  * @returns {string} - 转换后的驼峰命名法字符串
  */
 export function convertToCamelCase(str) {
-  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+  return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
 }
 /**
  * 将字符串的首字母大写

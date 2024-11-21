@@ -4,17 +4,17 @@ import { Response } from 'express'
 import { BusinessType } from 'src/common/constant/business.constant'
 import { Operlog } from 'src/common/decorators/operlog.decorator'
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator'
-import { Create${BusinessName}Dto, List${BusinessName}Dto, Update${BusinessName}Dto } from './${businessName}.dto'
-import { ${BusinessName}Service } from './${businessName}.service'
+import { Create${BusinessName}Dto, List${BusinessName}Dto, Update${BusinessName}Dto } from './${_businessName}.dto'
+import { ${BusinessName}Service } from './${_businessName}.service'
 
-@Controller('${moduleName}/${businessName}')
+@Controller('${moduleName}/${_businessName}')
 export class ${BusinessName}Controller {
   constructor(private readonly ${businessName}Service: ${BusinessName}Service) { }
 
   @ApiOperation({
     summary: '查询${functionName}列表',
   })
-  @RequirePermission('${moduleName}:${businessName}:query')
+  @RequirePermission('${moduleName}:${_businessName}:query')
   @Get('list')
   findAll(@Query() query: List${BusinessName}Dto) {
     return this.${businessName}Service.findAll(query)
@@ -23,7 +23,7 @@ export class ${BusinessName}Controller {
   @ApiOperation({
     summary: '${functionName}-创建',
   })
-  @RequirePermission('${moduleName}:${businessName}:add')
+  @RequirePermission('${moduleName}:${_businessName}:add')
   @Post()
   @Operlog({ businessType: BusinessType.INSERT })
   create(@Body() create${BusinessName}Dto: Create${BusinessName}Dto) {
@@ -33,7 +33,7 @@ export class ${BusinessName}Controller {
   @ApiOperation({
     summary: '${functionName}-详情',
   })
-  @RequirePermission('${moduleName}:${businessName}:query')
+  @RequirePermission('${moduleName}:${_businessName}:query')
   @Get(':id')
   findOne(@Param('id') id: string) {#if($primaryColumn.columnType == 'bigint')
     return this.${businessName}Service.findOne(id)#else
@@ -43,7 +43,7 @@ export class ${BusinessName}Controller {
   @ApiOperation({
     summary: '${functionName}-修改',
   })
-  @RequirePermission('${moduleName}:${businessName}:edit')
+  @RequirePermission('${moduleName}:${_businessName}:edit')
   @Put()
   @Operlog({ businessType: BusinessType.UPDATE })
   update(@Body() update${BusinessName}Dto: Update${BusinessName}Dto) {
@@ -53,7 +53,7 @@ export class ${BusinessName}Controller {
   @ApiOperation({
     summary: '${functionName}-删除',
   })
-  @RequirePermission('${moduleName}:${businessName}:remove')
+  @RequirePermission('${moduleName}:${_businessName}:remove')
   @Delete(':id')
   @Operlog({ businessType: BusinessType.DELETE })
   remove(@Param('id') id: string) {#if($primaryColumn.columnType == 'bigint')
@@ -64,7 +64,7 @@ export class ${BusinessName}Controller {
   @ApiOperation({
     summary: '${functionName}-导出xlsx文件',
   })
-  @RequirePermission('${moduleName}:${businessName}:export')
+  @RequirePermission('${moduleName}:${_businessName}:export')
   @Post('/export')
   @Operlog({ businessType: BusinessType.EXPORT })
   async export(@Res() res: Response, @Body() body: ListTagDto) {

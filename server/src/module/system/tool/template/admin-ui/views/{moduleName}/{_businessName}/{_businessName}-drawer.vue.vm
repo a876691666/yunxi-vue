@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 import { cloneDeep } from '@vben/utils';
 
 import { useVbenForm } from '#/adapter/form';
-import { ${businessName}Add, ${businessName}Info, ${businessName}Update } from '#/api/${moduleName}/${businessName}';
+import { ${businessName}Add, ${businessName}Info, ${businessName}Update } from '#/api/${moduleName}/${_businessName}';
 
-import { modalSchema } from './data';
+import { drawerSchema } from './data';
 
 const emit = defineEmits<{ reload: [] }>();
 
@@ -28,12 +28,12 @@ const [BasicForm, formApi] = useVbenForm({
       class: 'w-full',
     }
   },
-  schema: modalSchema(),
+  schema: drawerSchema(),
   showDefaultActions: false,
   wrapperClass: 'grid-cols-2',
 });
 
-const [BasicModal, modalApi] = useVbenModal({
+const [BasicDrawer, drawerApi] = useVbenDrawer({
   fullscreenButton: false,
   onCancel: handleCancel,
   onConfirm: handleConfirm,
@@ -41,9 +41,9 @@ const [BasicModal, modalApi] = useVbenModal({
     if (!isOpen) {
       return null;
     }
-    modalApi.modalLoading(true);
+    drawerApi.drawerLoading(true);
 
-    const { id } = modalApi.getData() as { id?: number | string };
+    const { id } = drawerApi.getData() as { id?: number | string };
     isUpdate.value = !!id;
 
     if (isUpdate.value && id) {
@@ -51,13 +51,13 @@ const [BasicModal, modalApi] = useVbenModal({
       await formApi.setValues(record);
     }
 
-    modalApi.modalLoading(false);
+    drawerApi.drawerLoading(false);
   },
 });
 
 async function handleConfirm() {
   try {
-    modalApi.modalLoading(true);
+    drawerApi.drawerLoading(true);
     const { valid } = await formApi.validate();
     if (!valid) {
       return;
@@ -70,18 +70,18 @@ async function handleConfirm() {
   } catch (error) {
     console.error(error);
   } finally {
-    modalApi.modalLoading(false);
+    drawerApi.drawerLoading(false);
   }
 }
 
 async function handleCancel() {
-  modalApi.close();
+  drawerApi.close();
   await formApi.resetForm();
 }
 </script>
 
 <template>
-  <BasicModal :close-on-click-modal="false" :title="title" class="w-[550px]">
+  <BasicDrawer :close-on-click-modal="false" :title="title" class="w-[550px]">
     <BasicForm />
-  </BasicModal>
+  </BasicDrawer>
 </template>

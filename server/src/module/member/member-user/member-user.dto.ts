@@ -4,217 +4,141 @@ import { PagingDto } from 'src/common/dto'
 import { MemberUserEntity } from './member-user.entity'
 
 export class CreateMemberUserDto {
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, description: '用户账号' })
   @IsString()
   userName: string
 
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, description: '用户昵称' })
   @IsString()
   nickName: string
 
-  @ApiProperty({ required: true })
-  @IsString()
-  email: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  phonenumber: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  sex: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  password: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  status: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  delFlag: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  loginIp: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  createBy: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsDate()
-  createTime?: string
-
-  @ApiProperty({ required: true })
-  @IsString()
-  updateBy: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsDate()
-  updateTime?: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  remark?: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  userId?: number
-
-  @ApiProperty({ required: true })
-  @IsString()
-  avatar: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsDate()
-  loginDate?: Date
-}
-
-export class UpdateMemberUserDto {
-  @ApiProperty({ required: true })
-  @IsNumber()
-  userId: number
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  userName?: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  remark?: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  nickName?: string
-
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '邮箱' })
   @IsOptional()
   @IsString()
   email?: string
 
-  @ApiProperty({ required: false })
-  @MaxLength(11)
+  @ApiProperty({ required: false, description: '手机号码' })
   @IsOptional()
   @IsString()
   phonenumber?: string
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '性别' })
   @IsOptional()
   @IsString()
   sex?: string
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '头像地址' })
   @IsOptional()
   @IsString()
-  password?: string
+  avatar?: string
+}
 
-  @ApiProperty({ required: false })
+export class UpdateMemberUserDto {
+  @ApiProperty({ required: true, description: '主键' })
+  @IsNumber()
+  userId: number
+
+  @ApiProperty({ required: false, description: '用户账号' })
+  @IsOptional()
+  @IsString()
+  userName?: string
+
+  @ApiProperty({ required: false, description: '用户昵称' })
+  @IsOptional()
+  @IsString()
+  nickName?: string
+
+  @ApiProperty({ required: false, description: '邮箱' })
+  @IsOptional()
+  @IsString()
+  email?: string
+
+  @ApiProperty({ required: false, description: '手机号码' })
+  @IsOptional()
+  @IsString()
+  phonenumber?: string
+
+  @ApiProperty({ required: false, description: '性别' })
+  @IsOptional()
+  @IsString()
+  sex?: string
+
+  @ApiProperty({ required: false, description: '头像地址' })
+  @IsOptional()
+  @IsString()
+  avatar?: string
+}
+
+export class ListMemberUserDto extends PagingDto {
+  @ApiProperty({ required: false, description: '用户账号' })
+  @IsOptional()
+  @IsString()
+  userName?: string
+
+  @ApiProperty({ required: false, description: '用户昵称' })
+  @IsOptional()
+  @IsString()
+  nickName?: string
+
+  @ApiProperty({ required: false, description: '邮箱' })
+  @IsOptional()
+  @IsString()
+  email?: string
+
+  @ApiProperty({ required: false, description: '手机号码' })
+  @IsOptional()
+  @IsString()
+  phonenumber?: string
+
+  @ApiProperty({ required: false, description: '性别' })
+  @IsOptional()
+  @IsString()
+  sex?: string
+
+  @ApiProperty({ required: false, description: '状态（0正常 1关闭）' })
   @IsOptional()
   @IsString()
   status?: string
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '最后登录IP' })
   @IsOptional()
   @IsString()
-  delFlag?: string
-}
+  loginIp?: string
 
-export class ListMemberUserDto extends PagingDto {
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '创建者' })
   @IsOptional()
   @IsString()
-  userName: string
+  createBy?: string
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '创建时间' })
+  @IsOptional()
+  @IsString({ each: true })
+  createTime?: string[]
+
+  @ApiProperty({ required: false, description: '更新者' })
   @IsOptional()
   @IsString()
-  nickName: string
+  updateBy?: string
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '更新时间' })
   @IsOptional()
-  @IsString()
-  email: string
+  @IsString({ each: true })
+  updateTime?: string[]
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  phonenumber: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  sex: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  password: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  status: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  delFlag: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  loginIp: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  createBy: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsDate()
-  createTime?: Date
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  updateBy: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsDate()
-  updateTime?: Date
-
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '备注' })
   @IsOptional()
   @IsString()
   remark?: string
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  userId?: number
-
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '头像地址' })
   @IsOptional()
   @IsString()
-  avatar: string
+  avatar?: string
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: '最后登录时间' })
   @IsOptional()
-  @IsDate()
-  loginDate?: Date
+  @IsString({ each: true })
+  loginDate?: string[]
 }
 
 export class ResetPwdDto {
