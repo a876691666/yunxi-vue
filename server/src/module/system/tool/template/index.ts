@@ -69,6 +69,11 @@ function getBigintType(ColumnType) {
   return 'number'
 }
 
+function getBool(str) {
+  console.log(str)
+  return str === '1' ? 'true' : 'false'
+}
+
 const templateList = glob.sync('./**/*.*.vm').map((file) => {
   // 减去rootPath部分的路径
   const relativePath = path.relative(rootPath, file)
@@ -94,6 +99,7 @@ export function gen(options) {
       getBigintType,
       ignoreField,
       getTsType,
+      getBool,
       ...options,
     })
   }
@@ -112,6 +118,7 @@ export function previewGen(options) {
       getBigintType,
       ignoreField,
       getTsType,
+      getBool,
       ...options,
     })
   }

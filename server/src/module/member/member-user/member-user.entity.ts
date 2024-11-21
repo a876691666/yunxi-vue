@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer'
 import { BaseEntity } from 'src/common/entities/base'
+import { stringDateTransformer } from 'src/common/entities/transformer'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('member_user', {
@@ -25,9 +26,6 @@ export class MemberUserEntity extends BaseEntity {
   @Column({ type: 'char', name: 'sex', default: '0', length: 1, comment: '性别' })
   public sex: string
 
-  @Column({ type: 'varchar', name: 'avatar', default: '', comment: '头像地址' })
-  public avatar: string
-
   @Exclude({ toPlainOnly: true }) // 输出屏蔽密码
   @Column({ type: 'varchar', length: 200, nullable: false, default: '', comment: '用户登录密码' })
   public password: string
@@ -35,8 +33,11 @@ export class MemberUserEntity extends BaseEntity {
   @Column({ type: 'varchar', name: 'login_ip', length: 128, default: '', comment: '最后登录IP' })
   public loginIp: string
 
-  @Column({ type: 'timestamp', name: 'login_date', nullable: true, comment: '最后登录时间' })
-  public loginDate: Date
+  @Column({ type: 'varchar', name: 'avatar', nullable: true, comment: '头像地址' })
+  public avatar: string
+
+  @Column({ type: 'timestamp', name: 'loginDate', nullable: true, comment: '最后登录时间', transformer: stringDateTransformer })
+  public loginDate: string
 
   @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '状态（0正常 1关闭）' })
   public status: string

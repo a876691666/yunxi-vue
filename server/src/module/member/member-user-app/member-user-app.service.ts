@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
+import dayjs from 'dayjs'
 import { Captcha } from 'src/common/decorators/captcha.decorator'
 import { ClientInfoDto } from 'src/common/decorators/common.decorator'
 import { CacheEvict } from 'src/common/decorators/redis.decorator'
@@ -59,7 +60,7 @@ export class MemberUserService {
     this.clearCacheByUserId(userId)
 
     const loginDate = new Date()
-    await this.userRepo.update({ userId }, { loginDate, loginIp: clientInfo.ipaddr })
+    await this.userRepo.update({ userId }, { loginDate: dayjs().format('YYYY-MM-DD HH:mm:ss'), loginIp: clientInfo.ipaddr })
 
     const uuid = GenerateUUID()
     const token = this.createToken({ uuid, userId })
@@ -143,7 +144,7 @@ export class MemberUserService {
     if (checkUserNameUnique) {
       return ResultData.fail(500, `保存用户'${user.userName}'失败，注册账号已存在`)
     }
-    await this.userRepo.save({ ...user, loginDate: new Date() })
+    await this.userRepo.save({ ...user, loginDate: dayjs().format('YYYY-MM-DD HH:mm:ss') })
     return ResultData.ok()
   }
 

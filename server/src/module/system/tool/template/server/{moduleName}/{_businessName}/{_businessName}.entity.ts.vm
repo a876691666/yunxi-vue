@@ -11,6 +11,7 @@ export class ${BusinessName}Entity extends BaseEntity {#foreach($column in $colu
   #set($isPk = $column.isPk)
   #set($columnType = $column.columnType)
   #set($columnComment = $column.columnComment)
+  #set($nullable = $column.isRequired != '1')
   #if($isPk == '1')
   @PrimaryGeneratedColumn({ type: '${columnType}', name: '${javaField}', comment: '${columnComment}' })
   public ${javaField}:#if($column.columnType == 'bigint') string
@@ -18,10 +19,10 @@ export class ${BusinessName}Entity extends BaseEntity {#foreach($column in $colu
     #end
   #elseif($GenConstants.BASE_ENTITY.includes($javaField))
   #elseif($javaType == 'Date')
-  @Column({ type: '${columnType}', name: '${javaField}', comment: '${columnComment}', transformer: stringDateTransformer })
+  @Column({ type: '${columnType}', name: '${javaField}', nullable: $nullable, comment: '${columnComment}', transformer: stringDateTransformer })
   public ${javaField}: string
   #else
-  @Column({ type: '${columnType}', name: '${javaField}', comment: '${columnComment}' })
+  @Column({ type: '${columnType}', name: '${javaField}', nullable: $nullable, comment: '${columnComment}' })
   public ${javaField}:#if($column.columnType == 'bigint') string
     #else $getTsType($column.javaType)
     #end
