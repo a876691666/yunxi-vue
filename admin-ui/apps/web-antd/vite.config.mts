@@ -34,6 +34,13 @@ export default defineConfig(async () => {
             target: 'http://localhost:8080',
             ws: true,
           },
+          '/files': {
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/files/, 'files'),
+            // mock代理目标地址
+            target: 'http://localhost:8080',
+            ws: true,
+          },
         },
         warmup: {
           clientFiles: ['./index.html', './src/{views,components}/*'],
