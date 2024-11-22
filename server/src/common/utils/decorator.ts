@@ -52,3 +52,9 @@ export function paramsKeyGetObj(func: () => any, formatKey: string | undefined, 
 
   return null
 }
+
+export function paramsKeyGet(formatKey: string | undefined, obj: { [key: string]: any }): any {
+  return stringFormat(formatKey, (key) => {
+    return get(obj, key)
+  })
+}

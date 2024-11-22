@@ -1,0 +1,1 @@
+export { default as RemoteSelect } from './src/index.vue';

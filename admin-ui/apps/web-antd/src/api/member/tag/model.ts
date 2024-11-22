@@ -23,6 +23,11 @@ export interface TagVO {
   module: string;
 }
 
+export interface TagOption {
+  id: string;
+  name: string;
+}
+
 export interface TagForm extends BaseEntity {
   /**
    * 状态

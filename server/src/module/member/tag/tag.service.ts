@@ -1,17 +1,23 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Response } from 'express'
+import { Cacheable, CacheEvict, CacheList } from 'src/common/decorators/redis.decorator'
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
+import { RedisService } from 'src/module/common/redis/redis.service'
 import { Repository } from 'typeorm'
 import { CreateTagDto, ListTagDto, UpdateTagDto } from './tag.dto'
 import { TagEntity } from './tag.entity'
+
+const CACHE_KEY = 'MEMBER_TAG:'
+const CACHE_ITEMS_KEY = `${CACHE_KEY}ITEMS:`
 
 @Injectable()
 export class TagService {
   constructor(
     @InjectRepository(TagEntity)
     private readonly tagEntityRep: Repository<TagEntity>,
+    private readonly redisService: RedisService,
   ) { }
 
   async create(createTagDto: CreateTagDto) {
@@ -72,16 +78,63 @@ export class TagService {
 
     const [rows, total] = await entity.getManyAndCount()
 
+    await this.cacheList(rows)
+
     return ResultData.rows({ rows, total })
   }
 
+  async options(name?: string) {
+    const entity = this.tagEntityRep.createQueryBuilder('entity')
+    entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
+    if (name)
+      entity.andWhere('entity.name like :name', { name: `%${name}%` })
+    entity.select(['entity.id', 'entity.name'])
+
+    entity.skip(0).take(10)
+
+    const rows = await entity.getMany()
+    return ResultData.ok(rows)
+  }
+
+  async findByIds(ids: string[]): Promise<ResultData<(TagEntity | null)[]>> {
+    if (ids.length === 0) {
+      return ResultData.ok([])
+    }
+    const entity = this.tagEntityRep.createQueryBuilder('entity')
+    entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
+
+    const reulst = await this.redisService.getCacheList<TagEntity>(CACHE_ITEMS_KEY, ids)
+    const databaseIds = reulst.map((item, index) => item === null ? ids[index] : null).filter(item => item !== null)
+
+    entity.andWhereInIds(databaseIds)
+    const rows = await entity.getMany()
+    this.cacheList(rows)
+
+    let rowIndex = 0
+    return ResultData.ok(reulst.map((item) => {
+      return item === null ? rows[rowIndex++] : item
+    }))
+  }
+
+  @CacheList(CACHE_ITEMS_KEY, '{id}')
+  async cacheList(list: any[]) {
+    return list
+  }
+
+  @Cacheable(CACHE_ITEMS_KEY, '{id}')
+  async findOneCache(id: string) {
+    const oneData = await this.tagEntityRep.findOne({ where: { delFlag: '0', id } })
+    if (!oneData)
+      throw new BadRequestException('数据不存在')
+    return oneData
+  }
+
   async findOne(id: string) {
-    const res = await this.tagEntityRep.findOne({
-      where: { delFlag: '0', id },
-    })
+    const res = await this.findOneCache(id)
     return ResultData.ok(res)
   }
 
+  @CacheEvict(CACHE_ITEMS_KEY, '{id}')
   async update(updateTagDto: UpdateTagDto) {
     const res = await this.tagEntityRep.update(
       { id: updateTagDto.id },
@@ -90,6 +143,7 @@ export class TagService {
     return ResultData.ok(res)
   }
 
+  @CacheEvict(CACHE_ITEMS_KEY, '{id}')
   async remove(id: string) {
     const data = await this.tagEntityRep.update(
       { id },

@@ -20,6 +20,16 @@ export class ${BusinessName}Controller {
     return this.${businessName}Service.findAll(query)
   }
 
+  // 多余的接口可以删除
+  @ApiOperation({
+    summary: '查询${functionName}下拉选项',
+  })
+  @RequirePermission('${moduleName}:${_businessName}:options')
+  @Get('options')
+  options(@Query('name') name: string) {
+    return this.${businessName}Service.options(name)
+  }
+
   @ApiOperation({
     summary: '${functionName}-创建',
   })

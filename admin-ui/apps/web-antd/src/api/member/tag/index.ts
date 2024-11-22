@@ -1,4 +1,4 @@
-import type { TagVO, TagForm, TagQuery } from './model';
+import type { TagVO, TagForm, TagQuery, TagOption } from './model';
 
 import type { ID, IDS } from '#/api/common';
 
@@ -13,6 +13,7 @@ import { requestClient } from '#/api/request';
 export function tagList(params?: TagQuery) {
   return requestClient.get<TagVO[]>(`/member/tag/list`, { params });
 }
+
 /**
  * 导出用户标签表列表
  * @param params
@@ -56,4 +57,12 @@ export function tagUpdate(data: TagForm) {
  */
 export function tagRemove(id: ID | IDS) {
   return requestClient.deleteWithMsg<void>(`/member/tag/${id}`);
+}
+
+/**
+ * 查询用户标签表作为下拉框数据
+ * @returns 用户标签表下拉框数据
+ */
+export function tagOptions(name?: string) {
+  return requestClient.get<TagOption[]>('/member/tag/options', { params: { name } });
 }

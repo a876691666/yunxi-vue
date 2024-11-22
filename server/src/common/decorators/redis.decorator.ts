@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common'
 import { RedisService } from 'src/module/common/redis/redis.service'
-import { paramsKeyFormat } from '../utils/decorator'
+import { paramsKeyFormat, paramsKeyGet } from '../utils/decorator'
 
 export function CacheEvict(CACHE_NAME: string, CACHE_KEY: string) {
   const injectRedis = Inject(RedisService)
@@ -14,12 +14,15 @@ export function CacheEvict(CACHE_NAME: string, CACHE_KEY: string) {
       const key = paramsKeyFormat(originMethod, CACHE_KEY, args)
 
       if (key === '*') {
-        await this.redis.del(await this.redis.keys(`${CACHE_NAME}*`))
+        const sets = await this.redis.sMembers(`${CACHE_NAME}SET`)
+        await this.redis.del(sets)
       }
       else if (key !== null) {
+        await this.redis.sRem(`${CACHE_NAME}SET`, key)
         await this.redis.del(`${CACHE_NAME}${key}`)
       }
       else {
+        await this.reids.sRem(`${CACHE_NAME}SET`, CACHE_KEY)
         await this.redis.del(`${CACHE_NAME}${CACHE_KEY}`)
       }
 
@@ -48,12 +51,45 @@ export function Cacheable(CACHE_NAME: string, CACHE_KEY: string, CACHE_EXPIRESIN
       if (!cacheResult) {
         const result = await originMethod.apply(this, args)
 
+        if (!result) {
+          return result
+        }
+
+        await this.redis.sAdd(`${CACHE_NAME}SET`, key)
         await this.redis.set(`${CACHE_NAME}${key}`, result, CACHE_EXPIRESIN)
 
         return result
       }
 
       return cacheResult
+    }
+  }
+}
+
+export function CacheList(CACHE_NAME: string, CACHE_KEY: string, CACHE_EXPIRESIN?: number) {
+  const injectRedis = Inject(RedisService)
+
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    injectRedis(target, 'redis')
+
+    const originMethod = descriptor.value
+
+    descriptor.value = async function (...args: any[]) {
+      const result: any[] = await originMethod.apply(this, args)
+
+      if (!result || result.length === 0 || !Array.isArray(result)) {
+        return result
+      }
+
+      const list = result.map((item) => {
+        const key = paramsKeyGet(CACHE_KEY, item)
+        return [key, item]
+      }).filter(item => item[0] !== null)
+
+      await this.redis.sAdd(`${CACHE_NAME}SET`, list.map(([key]) => key))
+      await this.redis.mset(list.map(([key, value]) => [`${CACHE_NAME}${key}`, value]))
+
+      return result
     }
   }
 }

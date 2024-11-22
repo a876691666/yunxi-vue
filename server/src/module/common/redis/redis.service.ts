@@ -87,6 +87,15 @@ export class RedisService {
     return await this.client.set(key, data, 'PX', ttl)
   }
 
+  async mset(data: Array<[string, any]>, ttl?: number) {
+    if (!data || data.length === 0)
+      return null
+
+    const list = data.map(([key, val]) => [key, typeof val === 'string' ? val : JSON.stringify(val)]).flat()
+
+    return await this.client.mset(...list)
+  }
+
   async mget(keys: string[]): Promise<any[]> {
     if (!keys)
       return null
@@ -390,5 +399,99 @@ export class RedisService {
   async reset() {
     const keys = await this.client.keys('*')
     return this.client.del(keys)
+  }
+
+  /**
+   * 添加一个或多个元素到集合
+   * @param key
+   * @param members
+   */
+  async sAdd(key: string, ...members: string[]): Promise<number> {
+    if (!key || members.length === 0)
+      return 0
+    return await this.client.sadd(key, ...members)
+  }
+
+  /**
+   * 移除集合中的一个或多个元素
+   * @param key
+   * @param members
+   */
+  async sRemove(key: string, ...members: string[]): Promise<number> {
+    if (!key || members.length === 0)
+      return 0
+    return await this.client.srem(key, ...members)
+  }
+
+  /**
+   * 判断元素是否在集合中
+   * @param key
+   * @param member
+   */
+  sIsMember(key: string, member: string): Promise<boolean> {
+    if (!key || !member)
+      return Promise.resolve(false)
+    return new Promise((resolve) => {
+      this.client.sismember(key, member).then((res) => {
+        resolve(res === 1)
+      }).catch(() => {
+        resolve(false)
+      })
+    })
+  }
+
+  /**
+   * 获取集合中的所有元素
+   * @param key
+   */
+  async sMembers(key: string): Promise<string[]> {
+    if (!key)
+      return []
+    return await this.client.smembers(key)
+  }
+
+  /**
+   * 获取集合的元素数量
+   * @param key
+   */
+  async sCard(key: string): Promise<number> {
+    if (!key)
+      return 0
+    return await this.client.scard(key)
+  }
+
+  /**
+   * 随机移除并返回集合中的一个元素
+   * @param key
+   */
+  async sPop(key: string): Promise<string | null> {
+    if (!key)
+      return null
+    return await this.client.spop(key)
+  }
+
+  /**
+   * 返回集合中的一个或多个随机元素
+   * @param key
+   * @param count
+   */
+  async sRandMember(key: string, count: number = 1): Promise<string[]> {
+    if (!key)
+      return []
+    return await this.client.srandmember(key, count)
+  }
+
+  /**
+   * 差异
+   * @param keys
+   */
+  async sDiff(...keys: string[]): Promise<string[]> {
+    if (!keys || keys.length === 0)
+      return []
+    return await this.client.sdiff(...keys)
+  }
+
+  async getCacheList<T>(CACHE_NAME: string, keys: string[]): Promise<(T | null)[]> {
+    return await this.mget(keys.map(key => `${CACHE_NAME}${key}`))
   }
 }

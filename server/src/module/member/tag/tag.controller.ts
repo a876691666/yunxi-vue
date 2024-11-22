@@ -21,6 +21,15 @@ export class TagController {
   }
 
   @ApiOperation({
+    summary: '查询用户标签表下拉选项',
+  })
+  @RequirePermission('member:tag:options')
+  @Get('options')
+  options(@Query('name') name: string) {
+    return this.tagService.options(name)
+  }
+
+  @ApiOperation({
     summary: '用户标签表-创建',
   })
   @RequirePermission('member:tag:add')

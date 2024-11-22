@@ -1,17 +1,23 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Response } from 'express'
+import { Cacheable, CacheEvict, CacheList } from 'src/common/decorators/redis.decorator'
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
+import { RedisService } from 'src/module/common/redis/redis.service'
 import { Repository } from 'typeorm'
 import { Create${BusinessName}Dto, List${BusinessName}Dto, Update${BusinessName}Dto } from './${_businessName}.dto'
 import { ${BusinessName}Entity } from './${_businessName}.entity'
+
+const CACHE_KEY = '${moduleName.toUpperCase()}_${_businessName.toUpperCase()}:'
+const CACHE_ITEMS_KEY = `${CACHE_KEY}ITEMS:`
 
 @Injectable()
 export class ${BusinessName}Service {
   constructor(
     @InjectRepository(${BusinessName}Entity)
     private readonly ${businessName}EntityRep: Repository<${BusinessName}Entity>,
+    private readonly redisService: RedisService,
   ) { }
 
   async create(create${BusinessName}Dto: Create${BusinessName}Dto) {
@@ -70,17 +76,65 @@ export class ${BusinessName}Service {
     }
 
     const [rows, total] = await entity.getManyAndCount()
+    
+    await this.cacheList(rows)
 
     return ResultData.rows({ rows, total })
   }
 
-  async findOne(id: $getBigintType($primaryColumn.columnType)) {
+  async options(name?: string) {
+    const entity = this.tagEntityRep.createQueryBuilder('entity')
+    entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
+    if (name)
+      entity.andWhere('entity.name like :name', { name: `%${name}%` })
+    entity.select(['entity.$primaryColumn.columnType', 'entity.name'])
+
+    entity.skip(0).take(10)
+
+    const rows = await entity.getMany()
+    return ResultData.ok(rows)
+  }
+
+  async findByIds(ids: $getBigintType($primaryColumn.columnType)[]) {
+    if (ids.length === 0) {
+      return ResultData.ok([])
+    }
+    const entity = this.${businessName}EntityRep.createQueryBuilder('entity')
+    entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
+
+    const reulst = await this.redisService.getCacheList<${BusinessName}Entity>(CACHE_ITEMS_KEY, ids)
+    const databaseIds = reulst.map((item, index) => item === null ? ids[index] : null).filter(item => item !== null)
+
+    entity.andWhereInIds(databaseIds)
+    const rows = await entity.getMany()
+    this.cacheList(rows)
+
+    let rowIndex = 0
+    return ResultData.ok(reulst.map((item) => {
+      return item === null ? rows[rowIndex++] : item
+    }))
+  }
+
+  @CacheList(CACHE_ITEMS_KEY, '{$primaryColumn.columnType}')
+  async cacheList(list: any[]) {
+    return list
+  }
+
+  @Cacheable(CACHE_ITEMS_KEY, '{$primaryColumn.columnType}')
+  findOneCache($primaryColumn.columnType: $getBigintType($primaryColumn.columnType)) {
+    return this.${businessName}EntityRep.findOne({
+      where: { delFlag: '0', ${primaryKey}: $primaryColumn.columnType },
+    })
+  }
+
+  async findOne($primaryColumn.columnType: $getBigintType($primaryColumn.columnType)) {
     const res = await this.${businessName}EntityRep.findOne({
-      where: { delFlag: '0', ${primaryKey}: id, },
+      where: { delFlag: '0', ${primaryKey}: $primaryColumn.columnType, },
     })
     return ResultData.ok(res)
   }
 
+  @CacheEvict(CACHE_ITEMS_KEY, '{$primaryColumn.columnType}')
   async update(update${BusinessName}Dto: Update${BusinessName}Dto) {
     const res = await this.${businessName}EntityRep.update(
       { ${primaryKey}: update${BusinessName}Dto.${primaryKey} },
@@ -89,9 +143,10 @@ export class ${BusinessName}Service {
     return ResultData.ok(res)
   }
 
-  async remove(id: $getBigintType($primaryColumn.columnType)) {
+  @CacheEvict(CACHE_ITEMS_KEY, '{$primaryColumn.columnType}')
+  async remove($primaryColumn.columnType: $getBigintType($primaryColumn.columnType)) {
     const data = await this.${businessName}EntityRep.update(
-      { ${primaryKey}: id },
+      { ${primaryKey}: $primaryColumn.columnType },
       { delFlag: '1' }
     )
     return ResultData.ok(data)
