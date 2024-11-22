@@ -4,7 +4,7 @@ import Redis from 'ioredis'
 
 @Injectable()
 export class RedisService {
-  private readonly client: Redis
+  readonly client: Redis
 
   constructor(private readonly rs: liaoliaoRedisService) {
     this.client = this.rs.getOrThrow()

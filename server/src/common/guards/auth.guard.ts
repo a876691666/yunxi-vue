@@ -3,6 +3,7 @@ import { ExecutionContext, ForbiddenException, Inject, Injectable, UnauthorizedE
 import { ConfigService } from '@nestjs/config'
 import { Reflector } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
+import { Request } from 'express'
 import { pathToRegexp } from 'path-to-regexp'
 
 import { UserService } from 'src/module/system/user/user.service'
@@ -34,13 +35,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true
     }
 
-    const req = ctx.switchToHttp().getRequest()
-    const accessToken = req.get('Authorization')
+    const req = ctx.switchToHttp().getRequest<Request>()
+
+    const accessToken = req.get('Authorization') || req.query?.Authorization as string || req.cookies?.Authorization as string
+
     if (!accessToken)
       throw new ForbiddenException('请重新登录')
     const atUserId = await this.userService.parseToken(accessToken)
     if (!atUserId)
       throw new UnauthorizedException('当前登录已过期，请重新登录')
+
     return await this.activate(ctx)
   }
 
@@ -75,7 +79,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       // 请求方法类型相同
       if (req.method.toUpperCase() === route.method.toUpperCase()) {
         // 对比 url
-        return !!pathToRegexp(route.path).exec(req.url)
+        return !!pathToRegexp(route.path)?.regexp?.exec(req.url)
       }
       return false
     })

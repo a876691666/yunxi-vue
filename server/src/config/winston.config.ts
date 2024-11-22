@@ -44,7 +44,7 @@ const winstonLogger = createLogger({
           colors: levelsColors,
         }),
         format.simple(),
-        format.printf((info) => {
+        format.printf((info: any) => {
           // 获取 Info Symbols key
           const symbols = Object.getOwnPropertySymbols(info)
           const color = levelsColors[info[symbols[0]]] // 获取日志级别的颜色

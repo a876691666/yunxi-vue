@@ -2,12 +2,13 @@ import path from 'node:path'
 import { Global, Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { JwtAuthGuard } from 'src/common/guards/auth.guard'
 import { PermissionGuard } from 'src/common/guards/permission.guard'
-import { RolesGuard } from './common/guards/roles.guard'
 
+import { RolesGuard } from './common/guards/roles.guard'
 import configuration from './config/index'
 import { CommonModule } from './module/common/common.module'
 import { ExtendsModule } from './module/extends/extends.module'
@@ -20,6 +21,7 @@ import { UploadModule } from './module/upload/upload.module'
 @Global()
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     // 配置模块
     ConfigModule.forRoot({
       cache: true,

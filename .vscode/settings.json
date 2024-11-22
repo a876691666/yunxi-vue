@@ -26,7 +26,7 @@
     { "rule": "*quotes", "severity": "off" },
     { "rule": "*semi", "severity": "off" }
   ],
-
+  "editor.codeLens": true,
   // Enable eslint for all supported languages
   "eslint.validate": [
     "javascript",

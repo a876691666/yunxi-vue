@@ -55,11 +55,13 @@ export const useNotifyStore = defineStore(
         },
       });
 
-      watch(data, (message) => {
-        if (!message) return;
-        console.log(`接收到消息: ${message}`);
+      watch(data, (payloadStr) => {
+        if (!payloadStr) return;
+        console.log(`接收到消息: ${payloadStr}`);
 
-        notification.success({
+        const { type, message } = JSON.parse(payloadStr);
+
+        notification[type === '0' ? 'success' : 'error']({
           description: message,
           duration: 3,
           message: $t('component.notice.received'),
@@ -70,7 +72,7 @@ export const useNotifyStore = defineStore(
           avatar: SvgMessageUrl,
           date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
           isRead: false,
-          message,
+          message: message,
           title: $t('component.notice.title'),
           userId: userId.value,
         });

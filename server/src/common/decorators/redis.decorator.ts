@@ -18,11 +18,11 @@ export function CacheEvict(CACHE_NAME: string, CACHE_KEY: string) {
         await this.redis.del(sets)
       }
       else if (key !== null) {
-        await this.redis.sRem(`${CACHE_NAME}SET`, key)
+        await this.redis.sRemove(`${CACHE_NAME}SET`, key)
         await this.redis.del(`${CACHE_NAME}${key}`)
       }
       else {
-        await this.reids.sRem(`${CACHE_NAME}SET`, CACHE_KEY)
+        await this.reids?.sRemove?.(`${CACHE_NAME}SET`, CACHE_KEY)
         await this.redis.del(`${CACHE_NAME}${CACHE_KEY}`)
       }
 

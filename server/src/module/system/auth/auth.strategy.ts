@@ -16,7 +16,11 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     private readonly redisService: RedisService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: (req) => {
+        const accessToken = req.get('Authorization') || req.query?.Authorization as string || req.cookies?.Authorization as string
+
+        return accessToken.replace('Bearer ', '')
+      },
       secretOrKey: config.get('jwt.secretkey'),
     })
   }
