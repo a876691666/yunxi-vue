@@ -61,6 +61,10 @@ export interface MemberUserVO {
 
 export interface MemberUserForm extends BaseEntity {
   /**
+   * 用户id
+   */
+  userId?: string;
+  /**
    * 用户账号
    */
   userName?: string;

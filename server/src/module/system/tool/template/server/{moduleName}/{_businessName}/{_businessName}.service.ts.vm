@@ -83,11 +83,11 @@ export class ${BusinessName}Service {
   }
 
   async options(name?: string) {
-    const entity = this.tagEntityRep.createQueryBuilder('entity')
+    const entity = this.${businessName}EntityRep.createQueryBuilder('entity')
     entity.where('entity.delFlag = :delFlag', { delFlag: '0' })
     if (name)
       entity.andWhere('entity.name like :name', { name: `%${name}%` })
-    entity.select(['entity.$primaryColumn.columnType', 'entity.name'])
+    entity.select(['entity.$primaryKey', 'entity.name'])
 
     entity.skip(0).take(10)
 
@@ -95,7 +95,7 @@ export class ${BusinessName}Service {
     return ResultData.ok(rows)
   }
 
-  async findByIds(ids: $getBigintType($primaryColumn.columnType)[]) {
+  async findByIds(ids: ${getBigintType($primaryColumn.columnType)}[]) {
     if (ids.length === 0) {
       return ResultData.ok([])
     }
@@ -115,26 +115,24 @@ export class ${BusinessName}Service {
     }))
   }
 
-  @CacheList(CACHE_ITEMS_KEY, '{$primaryColumn.columnType}')
+  @CacheList(CACHE_ITEMS_KEY, '{$primaryKey}')
   async cacheList(list: any[]) {
     return list
   }
 
-  @Cacheable(CACHE_ITEMS_KEY, '{$primaryColumn.columnType}')
-  findOneCache($primaryColumn.columnType: $getBigintType($primaryColumn.columnType)) {
+  @Cacheable(CACHE_ITEMS_KEY, '{$primaryKey}')
+  findOneCache($primaryKey: $getBigintType($primaryColumn.columnType)) {
     return this.${businessName}EntityRep.findOne({
-      where: { delFlag: '0', ${primaryKey}: $primaryColumn.columnType },
+      where: { delFlag: '0', ${primaryKey}: $primaryKey },
     })
   }
 
-  async findOne($primaryColumn.columnType: $getBigintType($primaryColumn.columnType)) {
-    const res = await this.${businessName}EntityRep.findOne({
-      where: { delFlag: '0', ${primaryKey}: $primaryColumn.columnType, },
-    })
+  async findOne($primaryKey: $getBigintType($primaryColumn.columnType)) {
+    const res = await this.findOneCache.findOne($primaryKey)
     return ResultData.ok(res)
   }
 
-  @CacheEvict(CACHE_ITEMS_KEY, '{$primaryColumn.columnType}')
+  @CacheEvict(CACHE_ITEMS_KEY, '{$primaryKey}')
   async update(update${BusinessName}Dto: Update${BusinessName}Dto) {
     const res = await this.${businessName}EntityRep.update(
       { ${primaryKey}: update${BusinessName}Dto.${primaryKey} },
@@ -143,10 +141,10 @@ export class ${BusinessName}Service {
     return ResultData.ok(res)
   }
 
-  @CacheEvict(CACHE_ITEMS_KEY, '{$primaryColumn.columnType}')
-  async remove($primaryColumn.columnType: $getBigintType($primaryColumn.columnType)) {
+  @CacheEvict(CACHE_ITEMS_KEY, '{$primaryKey}')
+  async remove($primaryKey: $getBigintType($primaryColumn.columnType)) {
     const data = await this.${businessName}EntityRep.update(
-      { ${primaryKey}: $primaryColumn.columnType },
+      { ${primaryKey}: $primaryKey },
       { delFlag: '1' }
     )
     return ResultData.ok(data)

@@ -66,3 +66,10 @@ export function tagRemove(id: ID | IDS) {
 export function tagOptions(name?: string) {
   return requestClient.get<TagOption[]>('/member/tag/options', { params: { name } });
 }
+/**
+ * 查询用户分组表作为下拉框数据
+ * @returns 用户分组表下拉框数据
+ */
+export function groupOptions(name?: string) {
+  return requestClient.get<TagOption[]>('/member/group/options', { params: { name } });
+}

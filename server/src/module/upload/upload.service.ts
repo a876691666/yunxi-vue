@@ -241,8 +241,8 @@ export class UploadService {
     fs.writeFileSync(targetFile, file.buffer)
 
     // 文件服务完整路径
-    const fileName = path.join(this.config.get('app.file.serveRoot'), relativeFilePath)
-    const url = path.join(this.config.get('app.file.domain'), fileName)
+    const fileName = path.join(this.config.get('app.file.serveRoot'), relativeFilePath).replace(/\\/g, '/')
+    const url = this.config.get('app.file.domain') + fileName
     return {
       fileName,
       newFileName,

@@ -2,13 +2,10 @@ import type { FormSchemaGetter } from '#/adapter/form';
 import type { VxeGridProps } from '#/adapter/vxe-table';
 import { getDictOptions } from '#/utils/dict';
 import { renderDict } from '#/utils/render';
+import { RemoteSelect } from '#/components/remote-select';
+import { markRaw } from 'vue';
 
 export const querySchema: FormSchemaGetter = () => [
-  {
-    component: 'Input',
-    fieldName: 'level',
-    label: '级别',
-  },
   {
     component: 'RadioGroup',
     componentProps: {
@@ -24,7 +21,15 @@ export const querySchema: FormSchemaGetter = () => [
 
 export const columns: VxeGridProps['columns'] = [
   {
-    title: '级别',
+    title: '分组名',
+    field: 'name',
+  },
+  {
+    title: '模块',
+    field: 'module', 
+  },
+  {
+    title: '等级',
     field: 'level',
   },
   {
@@ -48,9 +53,9 @@ export const columns: VxeGridProps['columns'] = [
 
 export const modalSchema: FormSchemaGetter = () => [
   {
-    label: '用户ID',
+    label: "用户ID",
     fieldName: 'userId',
-    component: 'Select',
+    component: 'Input',
     componentProps: {
     },
     dependencies: {
@@ -59,22 +64,16 @@ export const modalSchema: FormSchemaGetter = () => [
     },
   },
   {
-    label: '级别',
-    fieldName: 'level',
-    component: 'Input',
-    rules: 'required',
+    label: '分组',
+    fieldName: 'groupId',
+    rules: "selectRequired",
+    component: markRaw(RemoteSelect),
   },
   {
-    label: '禁止状态',
-    fieldName: 'status',
-    component: 'RadioGroup',
-    componentProps: {
-      // 可选从DictEnum中获取 DictEnum.SYS_NORMAL_DISABLE 便于维护
-      options: getDictOptions('sys_normal_disable'),
-      buttonStyle: 'solid',
-      optionType: 'button',
-    },
-    rules: 'selectRequired',
+    label: '等级',
+    fieldName: 'level',
+    component: 'InputNumber',
+    rules: 'required',
   },
 ];
 

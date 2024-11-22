@@ -6,7 +6,7 @@ import { requestClient } from '#/api/request';
  * @returns 上传结果
  */
 export function uploadApi(file: Blob | File) {
-  return requestClient.upload('/resource/oss/upload', { file });
+  return requestClient.upload('/common/upload', { file });
 }
 /**
  * 默认上传结果

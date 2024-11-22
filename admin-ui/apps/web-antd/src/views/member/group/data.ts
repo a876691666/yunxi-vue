@@ -134,7 +134,7 @@ export const modalSchema: FormSchemaGetter = () => [
   {
     label: '分组最大人数',
     fieldName: 'max',
-    component: 'Input',
+    component: 'InputNumber',
     rules: 'required',
   },
 ];

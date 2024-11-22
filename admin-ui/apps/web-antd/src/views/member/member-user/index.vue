@@ -6,13 +6,13 @@ import { ref } from 'vue';
 import { Page, useVbenModal, type VbenFormProps } from '@vben/common-ui';
 import { getVxePopupContainer } from '@vben/utils';
 
-import { Modal, Drawer, Popconfirm, Space } from 'ant-design-vue';
+import { Modal, Drawer, Popconfirm, Space, Avatar } from 'ant-design-vue';
 import dayjs from 'dayjs';
 
-import {   
+import {
   tableCheckboxEvent,
-  useVbenVxeGrid, 
-  type VxeGridProps 
+  useVbenVxeGrid,
+  type VxeGridProps
 } from '#/adapter/vxe-table';
 
 import {
@@ -24,38 +24,26 @@ import type { MemberUserForm } from '#/api/member/member-user/model';
 import { commonDownloadExcel } from '#/utils/file/download';
 
 import memberUserModal from './member-user-modal.vue';
-import memberUserDrawer from './member-user-drawer.vue';
 import { columns, querySchema } from './data';
+import { preferences } from '@vben/preferences';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const formOptions: VbenFormProps = {
   commonConfig: {
-    labelWidth: 80,
+    labelWidth: 120,
     componentProps: {
       allowClear: true,
     },
   },
   schema: querySchema(),
-  wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+  wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3',
   // 处理区间选择器RangePicker时间格式 将一个字段映射为两个字段 搜索/导出会用到
-  // 不需要直接删除
-  // fieldMappingTime: [
-  //  [
-  //    'createTime',
-  //    ['params[beginTime]', 'params[endTime]'],
-  //    ['YYYY-MM-DD 00:00:00', 'YYYY-MM-DD 23:59:59'],
-  //  ],
-  // ],
 };
 
 const gridOptions: VxeGridProps = {
-  checkboxConfig: {
-    // 高亮
-    highlight: true,
-    // 翻页时保留选中状态
-    reserve: true,
-    // 点击行选中
-    // trigger: 'row',
-  },
+  checkboxConfig: { highlight: true, reserve: true },
   columns,
   height: 'auto',
   keepSource: true,
@@ -92,22 +80,18 @@ const [MemberUserModal, modalApi] = useVbenModal({
   connectedComponent: memberUserModal,
 });
 
-// const [MemberUserDrawer, drawerApi] = useVbenDrawer({
-//   connectedComponent: memberUserDrawer,
-// });
-
 function handleAdd() {
   modalApi.setData({});
   modalApi.open();
-  // drawerApi.setData({});
-  // drawerApi.open();
 }
 
 async function handleEdit(row: Required<MemberUserForm>) {
   modalApi.setData({ id: row.userId });
   modalApi.open();
-  // drawerApi.setData({ id: row.userId });
-  // drawerApi.open();
+}
+
+function handleDetail(row: Required<MemberUserForm>) {
+  router.push(`/member/member-user-detail/${row.userId}`);
 }
 
 async function handleDelete(row: Required<MemberUserForm>) {
@@ -118,7 +102,6 @@ async function handleDelete(row: Required<MemberUserForm>) {
 function handleMultiDelete() {
   const rows = tableApi.grid.getCheckboxRecords();
   const ids = rows.map((row: Required<MemberUserForm>) => row.userId);
-  // Drawer.confirm({
   Modal.confirm({
     title: '提示',
     okType: 'danger',
@@ -143,48 +126,33 @@ function handleDownloadExcel() {
     <BasicTable table-title="App 用户信息表列表">
       <template #toolbar-tools>
         <Space>
-          <a-button
-            v-access:code="['member:member-user:export']"
-            @click="handleDownloadExcel"
-          >
+          <a-button v-access:code="['member:member-user:export']" @click="handleDownloadExcel">
             {{ $t('pages.common.export') }}
           </a-button>
-          <a-button
-            :disabled="!checked"
-            danger
-            type="primary" 
-            v-access:code="['member:member-user:remove']" 
+          <a-button :disabled="!checked" danger type="primary" v-access:code="['member:member-user:remove']"
             @click="handleMultiDelete">
             {{ $t('pages.common.delete') }}
           </a-button>
-          <a-button
-            type="primary"
-            v-access:code="['member:member-user:add']"
-            @click="handleAdd"
-          >
+          <a-button type="primary" v-access:code="['member:member-user:add']" @click="handleAdd">
             {{ $t('pages.common.add') }}
           </a-button>
         </Space>
       </template>
+      <template #avatar="{ row }">
+        <!-- 可能要判断空字符串情况 所以没有使用?? -->
+        <Avatar :src="row.avatar || preferences.app.defaultAvatar" />
+      </template>
       <template #action="{ row }">
         <Space>
-          <ghost-button
-            v-access:code="['member:member-user:edit']"
-            @click.stop="handleEdit(row)"
-          >
+          <ghost-button v-access:code="['member:member-user:edit']" @click.stop="handleEdit(row)">
             {{ $t('pages.common.edit') }}
           </ghost-button>
-          <Popconfirm
-            :get-popup-container="getVxePopupContainer"
-            placement="left"
-            title="确认删除？"
-            @confirm="handleDelete(row)"
-          >
-            <ghost-button
-              danger
-              v-access:code="['member:member-user:remove']"
-              @click.stop=""
-            >
+          <ghost-button v-access:code="['member:member-user:detail']" @click.stop="handleDetail(row)">
+            {{ $t('pages.common.info') }}
+          </ghost-button>
+          <Popconfirm :get-popup-container="getVxePopupContainer" placement="left" title="确认删除？"
+            @confirm="handleDelete(row)">
+            <ghost-button danger v-access:code="['member:member-user:remove']" @click.stop="">
               {{ $t('pages.common.delete') }}
             </ghost-button>
           </Popconfirm>
@@ -192,6 +160,5 @@ function handleDownloadExcel() {
       </template>
     </BasicTable>
     <MemberUserModal @reload="tableApi.query()" />
-    <!-- <MemberUserDrawer @reload="tableApi.query()" /> -->
   </Page>
 </template>

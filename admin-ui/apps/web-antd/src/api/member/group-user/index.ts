@@ -52,8 +52,9 @@ export function groupUserUpdate(data: GroupUserForm) {
 /**
  * 删除用户分组映射表
  * @param userId id
+ * @param groupId id
  * @returns void
  */
-export function groupUserRemove(userId: ID | IDS) {
-  return requestClient.deleteWithMsg<void>(`/member/group-user/${userId}`);
+export function groupUserRemove(userId: ID | IDS, groupId: ID | IDS) {
+  return requestClient.deleteWithMsg<void>(`/member/group-user/${userId}/${groupId}`);
 }

@@ -1,17 +1,25 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Response } from 'express'
+import { Cacheable, CacheEvict, CacheList } from 'src/common/decorators/redis.decorator'
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
+import { RedisService } from 'src/module/common/redis/redis.service'
 import { Repository } from 'typeorm'
+import { GroupService } from '../group/group.service'
 import { CreateGroupUserDto, ListGroupUserDto, UpdateGroupUserDto } from './group-user.dto'
 import { GroupUserEntity } from './group-user.entity'
+
+const CACHE_KEY = 'MEMBER_GROUP-USER:'
+const CACHE_ITEMS_KEY = `${CACHE_KEY}ITEMS:`
 
 @Injectable()
 export class GroupUserService {
   constructor(
     @InjectRepository(GroupUserEntity)
     private readonly groupUserEntityRep: Repository<GroupUserEntity>,
+    private readonly redisService: RedisService,
+    private readonly groupService: GroupService,
   ) { }
 
   async create(createGroupUserDto: CreateGroupUserDto) {
@@ -22,9 +30,7 @@ export class GroupUserService {
   async findAll(query: ListGroupUserDto) {
     const entity = this.groupUserEntityRep.createQueryBuilder('entity')
 
-    if (query.level) {
-      entity.andWhere('entity.level = :level', { level: query.level })
-    }
+    entity.where('entity.user_id = :userId', { userId: query.userId })
 
     if (query.status) {
       entity.andWhere('entity.status = :status', { status: query.status })
@@ -34,18 +40,74 @@ export class GroupUserService {
       entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
     }
 
+    entity.select(['entity.groupId', 'entity.status', 'entity.level'])
+
     const [rows, total] = await entity.getManyAndCount()
 
-    return ResultData.rows({ rows, total })
+    const groupList = await this.groupService.findByIds(rows.map(item => item.groupId))
+
+    return ResultData.rows({
+      rows: groupList.data.map((item, index) => ({
+        status: rows[index].status,
+        level: rows[index].level,
+        groupId: item.id,
+        name: item.name,
+        module: item.module,
+        groupDisabled: item.status,
+      })),
+      total,
+    })
   }
 
-  async findOne(id: string) {
-    const res = await this.groupUserEntityRep.findOne({
-      where: { userId: id },
+  async options(name?: string) {
+    const entity = this.groupUserEntityRep.createQueryBuilder('entity')
+    if (name)
+      entity.andWhere('entity.name like :name', { name: `%${name}%` })
+    entity.select(['entity.userId', 'entity.name'])
+
+    entity.skip(0).take(10)
+
+    const rows = await entity.getMany()
+    return ResultData.ok(rows)
+  }
+
+  async findByIds(ids: string[]) {
+    if (ids.length === 0) {
+      return ResultData.ok([])
+    }
+    const entity = this.groupUserEntityRep.createQueryBuilder('entity')
+
+    const reulst = await this.redisService.getCacheList<GroupUserEntity>(CACHE_ITEMS_KEY, ids)
+    const databaseIds = reulst.map((item, index) => item === null ? ids[index] : null).filter(item => item !== null)
+
+    entity.andWhereInIds(databaseIds)
+    const rows = await entity.getMany()
+    this.cacheList(rows)
+
+    let rowIndex = 0
+    return ResultData.ok(reulst.map((item) => {
+      return item === null ? rows[rowIndex++] : item
+    }))
+  }
+
+  @CacheList(CACHE_ITEMS_KEY, '{userId}')
+  async cacheList(list: any[]) {
+    return list
+  }
+
+  @Cacheable(CACHE_ITEMS_KEY, '{userId}')
+  findOneCache(userId: string) {
+    return this.groupUserEntityRep.findOne({
+      where: { userId },
     })
+  }
+
+  async findOne(userId: string) {
+    const res = await this.findOneCache(userId)
     return ResultData.ok(res)
   }
 
+  @CacheEvict(CACHE_ITEMS_KEY, '{userId}')
   async update(updateGroupUserDto: UpdateGroupUserDto) {
     const res = await this.groupUserEntityRep.update(
       { userId: updateGroupUserDto.userId },
@@ -54,8 +116,9 @@ export class GroupUserService {
     return ResultData.ok(res)
   }
 
-  async remove(id: string) {
-    const data = await this.groupUserEntityRep.delete({ userId: id })
+  @CacheEvict(CACHE_ITEMS_KEY, '{userId}')
+  async remove(userId: string) {
+    const data = await this.groupUserEntityRep.delete({ userId })
     return ResultData.ok(data)
   }
 

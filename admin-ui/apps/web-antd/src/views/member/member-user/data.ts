@@ -82,16 +82,6 @@ export const querySchema: FormSchemaGetter = () => [
     label: '更新时间',
   },
   {
-    component: 'Input',
-    fieldName: 'remark',
-    label: '备注',
-  },
-  {
-    component: 'Input',
-    fieldName: 'avatar',
-    label: '头像地址',
-  },
-  {
     component: 'RangePicker',
     componentProps: {
       showTime: true,
@@ -107,6 +97,7 @@ export const columns: VxeGridProps['columns'] = [
   {
     title: '用户账号',
     field: 'userName',
+    fixed: 'left',
   },
   {
     title: '用户昵称',
@@ -123,6 +114,7 @@ export const columns: VxeGridProps['columns'] = [
   {
     title: '性别',
     field: 'sex',
+    visible: false,
     slots: {
       default: ({ row }) => {
         // 可选从DictEnum中获取 DictEnum.SYS_USER_SEX 便于维护
@@ -145,39 +137,45 @@ export const columns: VxeGridProps['columns'] = [
     field: 'loginIp',
   },
   {
+    title: '最后登录时间',
+    field: 'loginDate',
+  },
+  {
     title: '创建者',
     field: 'createBy',
+    visible: false,
   },
   {
     title: '创建时间',
     field: 'createTime',
+    visible: false,
   },
   {
     title: '更新者',
     field: 'updateBy',
+    visible: false,
   },
   {
     title: '更新时间',
     field: 'updateTime',
+    visible: false,
   },
   {
     title: '备注',
     field: 'remark',
+    visible: false,
   },
   {
     title: '头像地址',
     field: 'avatar',
-  },
-  {
-    title: '最后登录时间',
-    field: 'loginDate',
+    slots: { default: 'avatar' },
   },
   {
     field: 'action',
     fixed: 'right',
     slots: { default: 'action' },
     title: '操作',
-    width: 180,
+    width: 280,
   },
 ];
 

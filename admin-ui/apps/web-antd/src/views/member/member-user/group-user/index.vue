@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import type { Recordable } from '@vben/types';
-
 import { ref } from 'vue';
 
-import { Page, useVbenModal, type VbenFormProps } from '@vben/common-ui';
+import { useVbenModal, type VbenFormProps } from '@vben/common-ui';
 import { getVxePopupContainer } from '@vben/utils';
 
-import { Modal, Drawer, Popconfirm, Space } from 'ant-design-vue';
-import dayjs from 'dayjs';
+import { Modal, Popconfirm, Space } from 'ant-design-vue';
 
 import {
   tableCheckboxEvent,
@@ -24,8 +21,14 @@ import type { GroupUserForm } from '#/api/member/group-user/model';
 import { commonDownloadExcel } from '#/utils/file/download';
 
 import groupUserModal from './group-user-modal.vue';
-import groupUserDrawer from './group-user-drawer.vue';
 import { columns, querySchema } from './data';
+
+import TableSwitch from '#/components/table/src/table-switch.vue';
+import { useRoute } from 'vue-router';
+
+const routes = useRoute();
+// 获取路由参数
+const userId = routes.params.userId as string;
 
 const formOptions: VbenFormProps = {
   commonConfig: {
@@ -36,15 +39,6 @@ const formOptions: VbenFormProps = {
   },
   schema: querySchema(),
   wrapperClass: 'grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3',
-  // 处理区间选择器RangePicker时间格式 将一个字段映射为两个字段 搜索/导出会用到
-  // 不需要直接删除
-  // fieldMappingTime: [
-  //  [
-  //    'createTime',
-  //    ['params[beginTime]', 'params[endTime]'],
-  //    ['YYYY-MM-DD 00:00:00', 'YYYY-MM-DD 23:59:59'],
-  //  ],
-  // ],
 };
 
 const gridOptions: VxeGridProps = {
@@ -66,15 +60,15 @@ const gridOptions: VxeGridProps = {
         return await groupUserList({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
+          userId,
           ...formValues,
         });
       },
     },
   },
   rowConfig: {
-    keyField: 'userId',
+    keyField: 'groupId',
   },
-  // 表格全局唯一表示 保存列配置需要用到
   id: 'member-group-user-index'
 };
 
@@ -92,43 +86,34 @@ const [GroupUserModal, modalApi] = useVbenModal({
   connectedComponent: groupUserModal,
 });
 
-// const [GroupUserDrawer, drawerApi] = useVbenDrawer({
-//   connectedComponent: groupUserDrawer,
-// });
-
 function handleAdd() {
-  modalApi.setData({});
+  modalApi.setData({
+    userId: userId,
+    existGroupIds: tableApi.grid.getTableData().fullData.map(
+      (row: Required<GroupUserForm>) => row.groupId
+    )
+  });
   modalApi.open();
-  // drawerApi.setData({});
-  // drawerApi.open();
-}
-
-async function handleEdit(row: Required<GroupUserForm>) {
-  modalApi.setData({ id: row.userId });
-  modalApi.open();
-  // drawerApi.setData({ id: row.userId });
-  // drawerApi.open();
 }
 
 async function handleDelete(row: Required<GroupUserForm>) {
-  await groupUserRemove(row.userId);
+  await groupUserRemove(userId, row.groupId);
   await tableApi.query();
 }
 
 function handleMultiDelete() {
-  const rows = tableApi.grid.getCheckboxRecords();
-  const ids = rows.map((row: Required<GroupUserForm>) => row.userId);
-  // Drawer.confirm({
-  Modal.confirm({
-    title: '提示',
-    okType: 'danger',
-    content: `确认删除选中的${ids.length}条记录吗？`,
-    onOk: async () => {
-      await groupUserRemove(ids);
-      await tableApi.query();
-      checked.value = false;
-    },
-  });
+  // const rows = tableApi.grid.getCheckboxRecords();
+  // const ids = rows.map((row: Required<GroupUserForm>) => row.groupId);
+  // Modal.confirm({
+  //   title: '提示',
+  //   okType: 'danger',
+  //   content: `确认删除选中的${ids.length}条记录吗？`,
+  //   onOk: async () => {
+  //     await groupUserRemove(userId, ids);
+  //     await tableApi.query();
+  //     checked.value = false;
+  //   },
+  // });
 }
 
 function handleDownloadExcel() {
@@ -140,7 +125,7 @@ function handleDownloadExcel() {
 
 <template>
   <div>
-    <BasicTable table-title="用户分组映射表列表">
+    <BasicTable table-title="用户分组映射表列表" id="member-group-user">
       <template #toolbar-tools>
         <Space>
           <a-button v-access:code="['member:group-user:export']" @click="handleDownloadExcel">
@@ -155,21 +140,20 @@ function handleDownloadExcel() {
           </a-button>
         </Space>
       </template>
+      <template #status="{ row }">
+        <TableSwitch v-model="row.status" :reload="() => tableApi.query()" />
+      </template>
       <template #action="{ row }">
         <Space>
-          <ghost-button v-access:code="['member:group-user:edit']" @click.stop="handleEdit(row)">
-            {{ $t('pages.common.edit') }}
-          </ghost-button>
-          <Popconfirm :get-popup-container="getVxePopupContainer" placement="left" title="确认删除？"
-            @confirm="handleDelete(row)">
-            <ghost-button danger v-access:code="['member:group-user:remove']" @click.stop="">
-              {{ $t('pages.common.delete') }}
-            </ghost-button>
+          <Popconfirm :get-popup-container="(node) => getVxePopupContainer(node, 'member-group-user')" placement="left"
+            title="确认去掉分组？" @confirm="handleDelete(row)">
+            <a-button danger v-access:code="['member:group-user:remove']" @click.stop="" size="small">
+              去掉分组
+            </a-button>
           </Popconfirm>
         </Space>
       </template>
     </BasicTable>
     <GroupUserModal @reload="tableApi.query()" />
-    <!-- <GroupUserDrawer @reload="tableApi.query()" /> -->
   </div>
 </template>

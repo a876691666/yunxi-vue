@@ -20,6 +20,16 @@ export class GroupUserController {
     return this.groupUserService.findAll(query)
   }
 
+  // 多余的接口可以删除
+  @ApiOperation({
+    summary: '查询用户分组映射表下拉选项',
+  })
+  @RequirePermission('member:group-user:options')
+  @Get('options')
+  options(@Query('name') name: string) {
+    return this.groupUserService.options(name)
+  }
+
   @ApiOperation({
     summary: '用户分组映射表-创建',
   })
@@ -27,6 +37,7 @@ export class GroupUserController {
   @Post()
   @Operlog({ businessType: BusinessType.INSERT })
   create(@Body() createGroupUserDto: CreateGroupUserDto) {
+    console.log(createGroupUserDto)
     return this.groupUserService.create(createGroupUserDto)
   }
 

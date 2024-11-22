@@ -1,21 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-
 import { useVbenModal } from '@vben/common-ui';
-import { $t } from '@vben/locales';
-import { cloneDeep } from '@vben/utils';
+import { cloneDeep, getPopupContainer } from '@vben/utils';
 
 import { useVbenForm } from '#/adapter/form';
-import { groupUserAdd, groupUserInfo, groupUserUpdate } from '#/api/member/group-user';
+import { groupUserAdd } from '#/api/member/group-user';
 
 import { modalSchema } from './data';
+import { groupOptions } from '#/api/member/tag';
+import { ref } from 'vue';
 
 const emit = defineEmits<{ reload: [] }>();
-
-const isUpdate = ref(false);
-const title = computed(() => {
-  return isUpdate.value ? $t('pages.common.edit') : $t('pages.common.add');
-});
 
 const [BasicForm, formApi] = useVbenForm({
   commonConfig: {
@@ -33,6 +27,32 @@ const [BasicForm, formApi] = useVbenForm({
   wrapperClass: 'grid-cols-2',
 });
 
+/**
+ * 初始化分组选择
+ */
+async function setupGroupSelect() {
+  formApi.updateSchema([
+    {
+      componentProps: () => ({
+        class: 'w-full',
+        fieldNames: {
+          label: 'name',
+          value: 'id',
+          children: 'children',
+        },
+        onOptions: async (value: string) => {
+          return (await groupOptions(value)).filter((item) => !existGroupIds.value.includes(item.id));
+        },
+        getPopupContainer,
+        placeholder: '请选择',
+      }),
+      fieldName: 'groupId',
+    },
+  ]);
+}
+
+const existGroupIds = ref<string[]>([]);
+
 const [BasicModal, modalApi] = useVbenModal({
   fullscreenButton: false,
   onCancel: handleCancel,
@@ -42,15 +62,10 @@ const [BasicModal, modalApi] = useVbenModal({
       return null;
     }
     modalApi.modalLoading(true);
-
-    const { id } = modalApi.getData() as { id?: number | string };
-    isUpdate.value = !!id;
-
-    if (isUpdate.value && id) {
-      const record = await groupUserInfo(id);
-      await formApi.setValues(record);
-    }
-
+    await setupGroupSelect();
+    const modalData = modalApi.getData();
+    existGroupIds.value = modalData.existGroupIds;
+    formApi.setValues({ userId: modalData.userId });
     modalApi.modalLoading(false);
   },
 });
@@ -64,7 +79,7 @@ async function handleConfirm() {
     }
     // getValues获取为一个readonly的对象 需要修改必须先深拷贝一次
     const data = cloneDeep(await formApi.getValues());
-    await (isUpdate.value ? groupUserUpdate(data) : groupUserAdd(data));
+    await groupUserAdd(data);
     emit('reload');
     await handleCancel();
   } catch (error) {
@@ -81,7 +96,7 @@ async function handleCancel() {
 </script>
 
 <template>
-  <BasicModal :close-on-click-modal="false" :title="title" class="w-[550px]">
+  <BasicModal :close-on-click-modal="false" title="为用户添加分组" class="w-[550px]">
     <BasicForm />
   </BasicModal>
 </template>

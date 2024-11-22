@@ -9,6 +9,10 @@ export interface GroupUserVO {
    * 禁止状态
    */
   status: string;
+  /**
+   * 分组ID
+   */
+  groupId: string;
 }
 
 export interface GroupUserForm extends BaseEntity {
@@ -20,6 +24,14 @@ export interface GroupUserForm extends BaseEntity {
    * 禁止状态
    */
   status?: string;
+  /**
+   * 分组ID
+   */
+  groupId?: string;
+  /**
+   * 用户ID
+   */
+  userId?: string;
 }
 
 export interface GroupUserQuery extends PageQuery {
@@ -31,6 +43,14 @@ export interface GroupUserQuery extends PageQuery {
    * 禁止状态
    */
   status?: string;
+  /**
+   * 分组ID
+   */
+  groupId?: string;
+  /**
+   * 用户ID
+   */
+  userId?: string;
   /**
    * 日期范围参数
    */
