@@ -19,4 +19,7 @@ export class GroupEntity extends BaseEntity {
 
   @Column({ type: 'int', name: 'max', comment: '分组最大人数' })
   public max: number
+
+  @Column({ type: 'char', name: 'status', default: '0', length: 1, comment: '禁止状态' })
+  public status: string
 }

@@ -19,9 +19,6 @@ export const querySchema: FormSchemaGetter = () => [
   },
 ];
 
-
-
-
 export const columns: VxeGridProps['columns'] = [
   {
     title: '标签名',

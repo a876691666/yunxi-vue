@@ -34,3 +34,9 @@ export interface TagUserQuery extends PageQuery {
    */
   params?: any;
 }
+
+export interface UpdateTagUserDto {
+  userId: string;
+  tagId: string;
+  status: string;
+}

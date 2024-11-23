@@ -30,6 +30,16 @@ export class TagController {
   }
 
   @ApiOperation({
+    summary: '修改用户标签状态',
+  })
+  @RequirePermission('member:tag:edit')
+  @Put('status')
+  @Operlog({ businessType: BusinessType.UPDATE })
+  changeStatus(@Body() updateTagDto: UpdateTagDto) {
+    return this.tagService.update(updateTagDto)
+  }
+
+  @ApiOperation({
     summary: '用户标签表-创建',
   })
   @RequirePermission('member:tag:add')

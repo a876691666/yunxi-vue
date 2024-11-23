@@ -56,3 +56,9 @@ export interface GroupUserQuery extends PageQuery {
    */
   params?: any;
 }
+
+export interface UpdateGroupUserDto {
+  userId: string;
+  groupId: string;
+  status: string;
+}

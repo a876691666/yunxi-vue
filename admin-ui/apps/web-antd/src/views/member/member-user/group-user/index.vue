@@ -16,6 +16,7 @@ import {
   groupUserExport,
   groupUserList,
   groupUserRemove,
+  groupUserChangeStatus,
 } from '#/api/member/group-user';
 import type { GroupUserForm } from '#/api/member/group-user/model';
 import { commonDownloadExcel } from '#/utils/file/download';
@@ -141,7 +142,11 @@ function handleDownloadExcel() {
         </Space>
       </template>
       <template #status="{ row }">
-        <TableSwitch v-model="row.status" :reload="() => tableApi.query()" />
+        <TableSwitch v-model="row.status" :api="() => groupUserChangeStatus({
+          userId,
+          groupId: row.groupId,
+          status: row.status,
+        })" :reload="() => tableApi.query()" />
       </template>
       <template #action="{ row }">
         <Space>

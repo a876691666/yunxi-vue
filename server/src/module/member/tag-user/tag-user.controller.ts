@@ -20,6 +20,26 @@ export class TagUserController {
     return this.tagUserService.findAll(query)
   }
 
+  // 多余的接口可以删除
+  @ApiOperation({
+    summary: '查询用户标签映射表下拉选项',
+  })
+  @RequirePermission('member:tag-user:options')
+  @Get('options')
+  options(@Query('name') name: string) {
+    return this.tagUserService.options(name)
+  }
+
+  @ApiOperation({
+    summary: '修改用户标签映射状态',
+  })
+  @RequirePermission('member:tag-user:edit')
+  @Put('changeStatus')
+  @Operlog({ businessType: BusinessType.UPDATE })
+  changeStatus(@Body() updateTagUserDto: UpdateTagUserDto) {
+    return this.tagUserService.update(updateTagUserDto)
+  }
+
   @ApiOperation({
     summary: '用户标签映射表-创建',
   })

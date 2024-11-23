@@ -1,4 +1,4 @@
-import type { TagUserVO, TagUserForm, TagUserQuery } from './model';
+import type { TagUserVO, TagUserForm, TagUserQuery, UpdateTagUserDto } from './model';
 
 import type { ID, IDS } from '#/api/common';
 
@@ -56,4 +56,13 @@ export function tagUserUpdate(data: TagUserForm) {
  */
 export function tagUserRemove(userId: ID | IDS, tagId: ID | IDS) {
   return requestClient.deleteWithMsg<void>(`/member/tag-user/${userId}/${tagId}`);
+}
+
+/**
+ * 修改用户标签映射状态
+ * @param data
+ * @returns void
+ */
+export function tagUserChangeStatus(data: UpdateTagUserDto) {
+  return requestClient.putWithMsg<void>('/member/tag-user/changeStatus', data);
 }

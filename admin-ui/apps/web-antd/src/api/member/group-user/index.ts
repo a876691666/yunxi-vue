@@ -1,4 +1,4 @@
-import type { GroupUserVO, GroupUserForm, GroupUserQuery } from './model';
+import type { GroupUserVO, GroupUserForm, GroupUserQuery, UpdateGroupUserDto } from './model';
 
 import type { ID, IDS } from '#/api/common';
 
@@ -57,4 +57,13 @@ export function groupUserUpdate(data: GroupUserForm) {
  */
 export function groupUserRemove(userId: ID | IDS, groupId: ID | IDS) {
   return requestClient.deleteWithMsg<void>(`/member/group-user/${userId}/${groupId}`);
+}
+
+/**
+ * 修改用户分组映射状态
+ * @param data
+ * @returns void
+ */
+export function groupUserChangeStatus(data: UpdateGroupUserDto) {
+  return requestClient.putWithMsg<void>('/member/group-user/changeStatus', data);
 }

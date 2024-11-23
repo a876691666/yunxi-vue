@@ -1,18 +1,24 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Response } from 'express'
+import { Cacheable, CacheEvict, CacheList } from 'src/common/decorators/redis.decorator'
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
+import { RedisService } from 'src/module/common/redis/redis.service'
 import { Repository } from 'typeorm'
 import { TagService } from '../tag/tag.service'
 import { CreateTagUserDto, ListTagUserDto, UpdateTagUserDto } from './tag-user.dto'
 import { TagUserEntity } from './tag-user.entity'
+
+const CACHE_KEY = 'MEMBER_TAG-USER:'
+const CACHE_ITEMS_KEY = `${CACHE_KEY}ITEMS:`
 
 @Injectable()
 export class TagUserService {
   constructor(
     @InjectRepository(TagUserEntity)
     private readonly tagUserEntityRep: Repository<TagUserEntity>,
+    private readonly redisService: RedisService,
     private readonly tagService: TagService,
   ) { }
 
@@ -52,12 +58,55 @@ export class TagUserService {
     })
   }
 
-  async findOne(userId: string) {
-    const res = await this.tagUserEntityRep.find({ select: ['tagId'], where: { status: '0', userId } })
-    const tagList = await this.tagService.findByIds(res.map(item => item.tagId))
-    return ResultData.ok(tagList)
+  async options(name?: string) {
+    const entity = this.tagUserEntityRep.createQueryBuilder('entity')
+    if (name)
+      entity.andWhere('entity.name like :name', { name: `%${name}%` })
+    entity.select(['entity.userId', 'entity.name'])
+
+    entity.skip(0).take(10)
+
+    const rows = await entity.getMany()
+    return ResultData.ok(rows)
   }
 
+  async findByIds(ids: string[]) {
+    if (ids.length === 0) {
+      return ResultData.ok([])
+    }
+    const entity = this.tagUserEntityRep.createQueryBuilder('entity')
+
+    const reulst = await this.redisService.getCacheList<TagUserEntity>(CACHE_ITEMS_KEY, ids)
+    const databaseIds = reulst.map((item, index) => item === null ? ids[index] : null).filter(item => item !== null)
+
+    entity.andWhereInIds(databaseIds)
+    const rows = await entity.getMany()
+    this.cacheList(rows)
+
+    let rowIndex = 0
+    return ResultData.ok(reulst.map((item) => {
+      return item === null ? rows[rowIndex++] : item
+    }))
+  }
+
+  @CacheList(CACHE_ITEMS_KEY, '{userId}')
+  async cacheList(list: any[]) {
+    return list
+  }
+
+  @Cacheable(CACHE_ITEMS_KEY, '{userId}')
+  findOneCache(userId: string) {
+    return this.tagUserEntityRep.findOne({
+      where: { userId },
+    })
+  }
+
+  async findOne(userId: string) {
+    const res = await this.findOneCache(userId)
+    return ResultData.ok(res)
+  }
+
+  @CacheEvict(CACHE_ITEMS_KEY, '{userId}')
   async update(updateTagUserDto: UpdateTagUserDto) {
     const res = await this.tagUserEntityRep.update(
       { userId: updateTagUserDto.userId },
@@ -66,6 +115,7 @@ export class TagUserService {
     return ResultData.ok(res)
   }
 
+  @CacheEvict(CACHE_ITEMS_KEY, '{userId}')
   async remove(userId: string, tagId: string) {
     const data = await this.tagUserEntityRep.delete({ userId, tagId })
     return ResultData.ok(data)

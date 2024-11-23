@@ -31,6 +31,16 @@ export class GroupUserController {
   }
 
   @ApiOperation({
+    summary: '修改用户分组映射状态',
+  })
+  @RequirePermission('member:group-user:edit')
+  @Put('changeStatus')
+  @Operlog({ businessType: BusinessType.UPDATE })
+  changeStatus(@Body() updateGroupUserDto: UpdateGroupUserDto) {
+    return this.groupUserService.update(updateGroupUserDto)
+  }
+
+  @ApiOperation({
     summary: '用户分组映射表-创建',
   })
   @RequirePermission('member:group-user:add')

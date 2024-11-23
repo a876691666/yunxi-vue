@@ -25,8 +25,8 @@ export const columns: VxeGridProps['columns'] = [
     field: 'name',
   },
   {
-    title: '模块',
-    field: 'module', 
+    title: '模块', 
+    field: 'module',
   },
   {
     title: '等级',
@@ -35,6 +35,11 @@ export const columns: VxeGridProps['columns'] = [
   {
     title: '禁止状态',
     field: 'status',
+    slots: { default: 'status' },
+  },
+  {
+    title: '分组状态',
+    field: 'groupDisabled',
     slots: {
       default: ({ row }) => {
         // 可选从DictEnum中获取 DictEnum.SYS_NORMAL_DISABLE 便于维护

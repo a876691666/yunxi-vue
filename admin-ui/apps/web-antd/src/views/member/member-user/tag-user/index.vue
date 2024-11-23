@@ -16,6 +16,7 @@ import {
   tagUserExport,
   tagUserList,
   tagUserRemove,
+  tagUserChangeStatus,
 } from '#/api/member/tag-user';
 import type { TagUserForm } from '#/api/member/tag-user/model';
 import { commonDownloadExcel } from '#/utils/file/download';
@@ -139,7 +140,11 @@ function handleDownloadExcel() {
         </Space>
       </template>
       <template #status="{ row }">
-        <TableSwitch v-model="row.status" :reload="() => tableApi.query()" />
+        <TableSwitch v-model="row.status" :api="() => tagUserChangeStatus({
+          userId,
+          tagId: row.tagId,
+          status: row.status,
+        })" :reload="() => tableApi.query()" />
       </template>
       <template #action="{ row }">
         <Space>
