@@ -128,6 +128,8 @@ menus:
   purePermissionButton: 按钮权限
   purePermissionButtonRouter: 路由返回按钮权限
   purePermissionButtonLogin: 登录接口返回按钮权限
+  purePermissionButtonPermTags: 标签权限
+  purePermissionPageTest: 页面权限测试
   pureTabs: 标签页操作
   pureGuide: 引导页
   pureAble: 功能

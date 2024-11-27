@@ -30,6 +30,7 @@ import { subBefore, getQueryMap } from "@pureadmin/utils";
     start++;
   }
 
+  debugger;
   if (sso.length === mustLength) {
     // 判定为单点登录
 

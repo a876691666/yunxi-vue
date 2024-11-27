@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { initRouter } from "@/router/utils";
-import { storageLocal } from "@pureadmin/utils";
-import { type CSSProperties, ref, computed } from "vue";
+import { type CSSProperties, computed } from "vue";
 import { useUserStoreHook } from "@/store/modules/user";
-import { usePermissionStoreHook } from "@/store/modules/permission";
+import { initRouter } from "@/router/utils";
 
 defineOptions({
   name: "PermissionPage"
@@ -16,31 +14,37 @@ const elStyle = computed((): CSSProperties => {
   };
 });
 
-const userName = ref(useUserStoreHook()?.userName);
+const userStore = useUserStoreHook();
 
 const options = [
   {
-    value: "admin",
-    label: "管理员角色"
+    value: JSON.stringify(userStore.tags),
+    label: "当前"
   },
   {
-    value: "common",
-    label: "普通角色"
+    value: JSON.stringify(["permTags:test"]),
+    label: "测试权限角色"
   }
 ];
 
-function onChange() {}
+function onChange(v: string) {
+  userStore.SET_TAGS(JSON.parse(v));
+  initRouter();
+}
 </script>
 
 <template>
   <div>
     <p class="mb-2">
       模拟后台根据不同角色返回对应路由，观察左侧菜单变化（管理员角色可查看系统管理菜单、普通角色不可查看系统管理菜单）
+      <br />
+      查看 src/router/modules/permission.ts
+      文件，可以看到测试权限角色对应的权限标签为
     </p>
     <el-card shadow="never" :style="elStyle">
       <template #header>
         <div class="card-header">
-          <span>当前角色：{{ userName }}</span>
+          <span>当前角色：{{ userStore.tags }}</span>
         </div>
         <el-link
           class="mt-2"
@@ -50,10 +54,14 @@ function onChange() {}
           代码位置 src/views/permission/page/index.vue
         </el-link>
       </template>
-      <el-select v-model="userName" class="!w-[160px]" @change="onChange">
+      <el-select
+        :model-value="JSON.stringify(userStore.tags)"
+        class="!w-[160px]"
+        @change="onChange"
+      >
         <el-option
-          v-for="item in options"
-          :key="item.value"
+          v-for="(item, index) in options"
+          :key="index"
           :label="item.label"
           :value="item.value"
         />

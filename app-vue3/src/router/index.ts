@@ -12,7 +12,8 @@ import {
   getHistoryMode,
   handleAliveRoute,
   formatTwoStageRoutes,
-  formatFlatteningRoutes
+  formatFlatteningRoutes,
+  isOneOfArray
 } from "./utils";
 import { type Router, createRouter, type RouteRecordRaw } from "vue-router";
 // import { removeToken } from "@/utils/auth";
@@ -131,13 +132,13 @@ router.beforeEach(async (to: ToRouteType, _from, next) => {
   //   whiteList.includes(to.fullPath) ? next(_from.fullPath) : next();
   // }
 
+  if (userStore.isLogin) {
+    // 无权限跳转403页面
+    if (to.meta?.tags && !isOneOfArray(to.meta?.tags, userStore.tags)) {
+      return next({ path: "/error/403" });
+    }
+  }
   next();
-
-  // if (userStore.isLogin) {
-  //   // 无权限跳转403页面
-  //   // if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
-  //   //   next({ path: "/error/403" });
-  //   // }
   //   // 开启隐藏首页后在浏览器地址栏手动输入首页welcome路由则跳转到404页面
   //   if (VITE_HIDE_HOME === "true" && to.fullPath === "/welcome") {
   //     next({ path: "/error/404" });

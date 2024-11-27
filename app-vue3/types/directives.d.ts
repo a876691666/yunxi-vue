@@ -15,6 +15,8 @@ declare module "vue" {
     vOptimize: Directive<HTMLElement, OptimizeOptions>;
     /** 按钮权限指令（根据登录接口返回的`permissions`字段进行判断）*/
     vPerms: Directive<HTMLElement, string | Array<string>>;
+    /** 标签权限指令（根据登录接口返回的`tags`字段进行判断）*/
+    vPermTags: Directive<HTMLElement, string | Array<string>>;
     /**
      * `v-ripple`指令，用法如下：
      * 1. `v-ripple`代表启用基本的`ripple`功能

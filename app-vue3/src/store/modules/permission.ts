@@ -7,7 +7,7 @@ import {
   getKeyList,
   filterTree,
   constantMenus,
-  filterNoPermissionTree,
+  filterNoPermissionTagsTree,
   formatFlatteningRoutes
 } from "../utils";
 import { useMultiTagsStoreHook } from "./multiTags";
@@ -18,7 +18,7 @@ export const usePermissionStore = defineStore({
     // 静态路由生成的菜单
     constantMenus,
     // 整体路由生成的菜单（静态、动态）
-    wholeMenus: constantMenus,
+    wholeMenus: [],
     // 整体路由（一维数组格式）
     flatteningRoutes: [],
     // 缓存页面keepAlive
@@ -26,13 +26,11 @@ export const usePermissionStore = defineStore({
   }),
   actions: {
     /** 组装整体路由生成的菜单 */
-    handleWholeMenus(routes: any[]) {
-      this.wholeMenus = filterNoPermissionTree(
-        filterTree(ascending(this.constantMenus.concat(routes)))
+    handleWholeMenus() {
+      this.wholeMenus = filterNoPermissionTagsTree(
+        filterTree(ascending(this.constantMenus))
       );
-      this.flatteningRoutes = formatFlatteningRoutes(
-        this.constantMenus.concat(routes)
-      );
+      this.flatteningRoutes = formatFlatteningRoutes(this.constantMenus);
     },
     cacheOperate({ mode, name }: cacheType) {
       const delIndex = this.cachePageList.findIndex(v => v === name);

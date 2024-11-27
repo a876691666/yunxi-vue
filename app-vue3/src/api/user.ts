@@ -87,6 +87,7 @@ export function updateProfile(data: any) {
 // 获取用户详细信息
 export function getInfo() {
   return http.request<{
+    tags: Array<string>;
     user: {
       userName: string;
       nickName: string;

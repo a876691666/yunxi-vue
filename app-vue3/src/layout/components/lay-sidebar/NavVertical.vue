@@ -87,7 +87,6 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  {{ menuData.length }}
   <div
     v-loading="loading"
     :class="['sidebar-container', showLogo ? 'has-logo' : 'no-logo']"

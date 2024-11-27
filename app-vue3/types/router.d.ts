@@ -24,6 +24,8 @@ declare global {
     showParent?: boolean;
     /** 页面级别权限设置 `可选` */
     roles?: Array<string>;
+    /** 页面级别权限设置 `可选` */
+    tags?: Array<string>;
     /** 按钮级别权限设置 `可选` */
     auths?: Array<string>;
     /** 路由组件缓存（开启 `true`、关闭 `false`）`可选` */

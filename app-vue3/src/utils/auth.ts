@@ -19,6 +19,8 @@ export interface DataInfo<T> {
   roles?: Array<string>;
   /** 当前登录用户的按钮级别权限 */
   permissions?: Array<string>;
+  /** 当前登录用户的标签级别权限 */
+  tags?: Array<string>;
 }
 
 export const userKey = "user-info";
@@ -71,12 +73,20 @@ export function setUserinfo(data: DataInfo<Date>) {
       : {}
   );
 
-  function setUserKey({ avatar, userName, nickname, roles, permissions }) {
+  function setUserKey({
+    avatar,
+    userName,
+    nickname,
+    roles,
+    permissions,
+    tags
+  }) {
     useUserStoreHook().SET_AVATAR(avatar);
     useUserStoreHook().SET_USERNAME(userName);
     useUserStoreHook().SET_NICKNAME(nickname);
     useUserStoreHook().SET_ROLES(roles);
     useUserStoreHook().SET_PERMS(permissions);
+    useUserStoreHook().SET_TAGS(tags);
     storageLocal().setItem(userKey, {
       refreshToken,
       expires,
@@ -84,10 +94,10 @@ export function setUserinfo(data: DataInfo<Date>) {
       userName,
       nickname,
       roles,
-      permissions
+      permissions,
+      tags
     });
   }
-
   if (data.userName && data.roles) {
     const { userName, roles } = data;
     setUserKey({
@@ -95,7 +105,8 @@ export function setUserinfo(data: DataInfo<Date>) {
       userName,
       nickname: data?.nickname ?? "",
       roles,
-      permissions: data?.permissions ?? []
+      permissions: data?.permissions ?? [],
+      tags: data?.tags ?? []
     });
   } else {
     const avatar =
@@ -108,12 +119,14 @@ export function setUserinfo(data: DataInfo<Date>) {
       storageLocal().getItem<DataInfo<number>>(userKey)?.roles ?? [];
     const permissions =
       storageLocal().getItem<DataInfo<number>>(userKey)?.permissions ?? [];
+    const tags = storageLocal().getItem<DataInfo<number>>(userKey)?.tags ?? [];
     setUserKey({
       avatar,
       userName,
       nickname,
       roles,
-      permissions
+      permissions,
+      tags
     });
   }
 }
@@ -139,5 +152,15 @@ export const hasPerms = (value: string | Array<string>): boolean => {
   const isAuths = isString(value)
     ? permissions.includes(value)
     : isIncludeAllChildren(value, permissions);
+  return isAuths ? true : false;
+};
+
+export const hasTag = (value: string | Array<string>): boolean => {
+  if (!value) return false;
+  const { tags } = useUserStoreHook();
+  if (!tags) return false;
+  const isAuths = isString(value)
+    ? tags.includes(value)
+    : isIncludeAllChildren(value, tags);
   return isAuths ? true : false;
 };

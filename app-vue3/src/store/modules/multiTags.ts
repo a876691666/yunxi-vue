@@ -8,7 +8,6 @@ import {
   isNumber,
   isBoolean,
   getConfig,
-  routerArrays,
   storageLocal,
   responsiveStorageNameSpace,
   router
@@ -27,10 +26,10 @@ export const useMultiTagsStore = defineStore({
             `${responsiveStorageNameSpace()}tags`
           )
         : [
-            ...routerArrays,
             ...usePermissionStoreHook().flatteningRoutes.filter(
               v => v?.meta?.fixedTag
-            )
+            ),
+            router.currentRoute.value
           ];
     })(),
     multiTagsCache: storageLocal().getItem<StorageConfigs>(
@@ -66,7 +65,6 @@ export const useMultiTagsStore = defineStore({
       value?: T | multiType,
       position?: positionType
     ): T {
-      console.log(router.getRoutes());
       switch (mode) {
         case "equal":
           this.multiTags = value;

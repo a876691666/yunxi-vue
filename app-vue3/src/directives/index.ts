@@ -4,3 +4,4 @@ export * from "./longpress";
 export * from "./optimize";
 export * from "./perms";
 export * from "./ripple";
+export * from "./permTags";

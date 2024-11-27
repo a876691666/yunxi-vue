@@ -24,6 +24,7 @@ import {
   setToken
 } from "@/utils/auth";
 import defAva from "@/assets/login/avatar.svg?url";
+import { initRouter } from "@/router/utils";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -39,6 +40,8 @@ export const useUserStore = defineStore({
     // 按钮级别权限
     permissions:
       storageLocal().getItem<DataInfo<number>>(userKey)?.permissions ?? [],
+    // 标签级别权限
+    tags: storageLocal().getItem<DataInfo<number>>(userKey)?.tags ?? [],
     // 前端生成的验证码（按实际需求替换）
     verifyCode: "",
     // 判断登录页面显示哪个组件（0：登录（默认）、1：手机登录、2：二维码登录、3：注册、4：忘记密码）
@@ -64,12 +67,16 @@ export const useUserStore = defineStore({
       this.nickname = nickname;
     },
     /** 存储角色 */
-    SET_ROLES(roles: Array<string>) {
+    SET_ROLES(roles: string[]) {
       this.roles = roles;
     },
     /** 存储按钮级别权限 */
-    SET_PERMS(permissions: Array<string>) {
+    SET_PERMS(permissions: string[]) {
       this.permissions = permissions;
+    },
+    /** 存储标签级别权限 */
+    SET_TAGS(tags: string[]) {
+      this.tags = tags;
     },
     /** 存储前端生成的验证码 */
     SET_VERIFYCODE(verifyCode: string) {
@@ -120,7 +127,7 @@ export const useUserStore = defineStore({
     getInfo() {
       return new Promise((resolve, _reject) => {
         getInfo()
-          .then(res => {
+          .then(async res => {
             const avatar =
               res.user.avatar == "" || res.user.avatar == null
                 ? defAva
@@ -129,6 +136,10 @@ export const useUserStore = defineStore({
             this.isLogin = true;
             this.userName = res.user.userName;
             this.avatar = avatar;
+            this.tags = res.tags;
+
+            await initRouter();
+
             resolve(res);
           })
           .catch(error => {

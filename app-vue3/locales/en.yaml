@@ -128,6 +128,8 @@ menus:
   purePermissionButton: Button Permission
   purePermissionButtonRouter: Route return button permission
   purePermissionButtonLogin: Login interface return button permission
+  purePermissionButtonPermTags: Tag permission
+  purePermissionPageTest: Page permission test
   pureTabs: Tabs Operate
   pureGuide: Guide
   pureAble: Able
