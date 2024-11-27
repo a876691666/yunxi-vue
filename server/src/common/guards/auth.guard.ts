@@ -5,6 +5,7 @@ import { Reflector } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
 import { Request } from 'express'
 import { pathToRegexp } from 'path-to-regexp'
+import { AppMemberUserService } from 'src/module/member/app-member-user/app-member-user.service'
 
 import { UserService } from 'src/module/system/user/user.service'
 
@@ -41,6 +42,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     if (!accessToken)
       throw new ForbiddenException('请重新登录')
+
     const atUserId = await this.userService.parseToken(accessToken)
     if (!atUserId)
       throw new UnauthorizedException('当前登录已过期，请重新登录')

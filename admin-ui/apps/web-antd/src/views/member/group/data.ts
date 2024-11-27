@@ -17,8 +17,18 @@ export const querySchema: FormSchemaGetter = () => [
   },
   {
     component: 'Input',
-    fieldName: 'id',
-    label: '分组ID',
+    fieldName: 'remark',
+    label: '备注',
+  },
+  {
+    component: 'Input',
+    fieldName: 'name',
+    label: '分组显示名',
+  },
+  {
+    component: 'Input',
+    fieldName: 'module',
+    label: '模块标志',
   },
   {
     component: 'Input',
@@ -68,32 +78,16 @@ export const columns: VxeGridProps['columns'] = [
     field: 'remark',
   },
   {
-    title: '模块标志',
-    field: 'module',
-  },
-  {
     title: '分组显示名',
     field: 'name',
   },
   {
+    title: '模块标志',
+    field: 'module',
+  },
+  {
     title: '分组最大人数',
     field: 'max',
-  },
-  {
-    title: '创建者',
-    field: 'createBy',
-  },
-  {
-    title: '创建时间',
-    field: 'createTime',
-  },
-  {
-    title: '更新者',
-    field: 'updateBy',
-  },
-  {
-    title: '更新时间',
-    field: 'updateTime',
   },
   {
     field: 'action',
@@ -106,13 +100,24 @@ export const columns: VxeGridProps['columns'] = [
 
 export const modalSchema: FormSchemaGetter = () => [
   {
+    label: '状态',
+    fieldName: 'status',
+    component: 'RadioGroup',
+    componentProps: {
+      // 可选从DictEnum中获取 DictEnum.SYS_NORMAL_DISABLE 便于维护
+      options: getDictOptions('sys_normal_disable'),
+      buttonStyle: 'solid',
+      optionType: 'button',
+    },
+  },
+  {
     label: '备注',
     fieldName: 'remark',
     component: 'Input',
   },
   {
-    label: '模块标志',
-    fieldName: 'module',
+    label: '分组显示名',
+    fieldName: 'name',
     component: 'Input',
     rules: 'required',
   },
@@ -126,8 +131,8 @@ export const modalSchema: FormSchemaGetter = () => [
     },
   },
   {
-    label: '分组显示名',
-    fieldName: 'name',
+    label: '模块标志',
+    fieldName: 'module',
     component: 'Input',
     rules: 'required',
   },

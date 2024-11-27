@@ -96,8 +96,8 @@ export class RedisService {
     return await this.client.mset(...list)
   }
 
-  async mget(keys: string[]): Promise<any[]> {
-    if (!keys)
+  async mget(keys: string[]): Promise<(any | null)[]> {
+    if (!keys || keys.length === 0)
       return null
     const list = await this.client.mget(keys)
     return list.map(item => JSON.parse(item))
@@ -119,6 +119,8 @@ export class RedisService {
       return 0
     if (typeof keys === 'string')
       keys = [keys]
+    if (keys.length === 0)
+      return 0
     return await this.client.del(...keys)
   }
 
@@ -400,6 +402,8 @@ export class RedisService {
     const keys = await this.client.keys('*')
     return this.client.del(keys)
   }
+
+  /* ----------------------- set 相关操作 ----------------------- */
 
   /**
    * 添加一个或多个元素到集合

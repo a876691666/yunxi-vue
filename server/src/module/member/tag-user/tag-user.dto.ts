@@ -22,10 +22,13 @@ export class UpdateTagUserDto {
   @IsString()
   userId: string
 
-  @ApiProperty({ required: false, description: '禁止状态' })
-  @IsOptional()
+  @ApiProperty({ required: true, description: '禁止状态' })
   @IsString()
-  status?: string
+  status: string
+
+  @ApiProperty({ required: true, description: '标签ID' })
+  @IsString()
+  tagId: string
 }
 
 export class ListTagUserDto extends PagingDto {

@@ -150,7 +150,7 @@ function handleDownloadExcel() {
         <Space>
           <Popconfirm :get-popup-container="(node) => getVxePopupContainer(node, 'member-tag-user')" placement="left"
             title="确认去掉标签？" @confirm="handleDelete(row)">
-            <a-button danger v-access:code="['member:tag-user:remove']" @click.stop="" size="small">
+            <a-button type="primary" danger v-access:code="['member:tag-user:remove']" @click.stop="" size="small">
               去掉标签
             </a-button>
           </Popconfirm>

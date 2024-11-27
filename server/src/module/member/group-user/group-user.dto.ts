@@ -42,13 +42,13 @@ export class ListGroupUserDto extends PagingDto {
   @IsString()
   userId: string
 
-  @ApiProperty({ required: false, description: '级别' })
-  @IsOptional()
-  @IsNumber()
-  level?: number
-
   @ApiProperty({ required: false, description: '禁止状态' })
   @IsOptional()
   @IsString()
   status?: string
+
+  @ApiProperty({ required: false, description: '分组ID' })
+  @IsOptional()
+  @IsString()
+  groupId?: string
 }

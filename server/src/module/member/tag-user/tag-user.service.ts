@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Response } from 'express'
 import { Cacheable, CacheEvict, CacheList } from 'src/common/decorators/redis.decorator'
@@ -6,6 +7,7 @@ import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
 import { RedisService } from 'src/module/common/redis/redis.service'
 import { Repository } from 'typeorm'
+import { EmitAppMemberUserEvent } from '../app-member-user/app-member-user.subscriber'
 import { TagService } from '../tag/tag.service'
 import { CreateTagUserDto, ListTagUserDto, UpdateTagUserDto } from './tag-user.dto'
 import { TagUserEntity } from './tag-user.entity'
@@ -20,10 +22,14 @@ export class TagUserService {
     private readonly tagUserEntityRep: Repository<TagUserEntity>,
     private readonly redisService: RedisService,
     private readonly tagService: TagService,
+    private readonly eventEmitter: EventEmitter2,
   ) { }
 
   async create(createTagUserDto: CreateTagUserDto) {
     const res = await this.tagUserEntityRep.save(createTagUserDto)
+
+    await this.eventEmitter.emitAsync(EmitAppMemberUserEvent.updateRedis, new EmitAppMemberUserEvent(createTagUserDto.userId))
+
     return ResultData.ok(res)
   }
 
@@ -51,8 +57,10 @@ export class TagUserService {
         status: rows[index].status,
         tagId: item.id,
         name: item.name,
+        code: `${item.module}:${item.code}`,
         module: item.module,
         tagDisabled: item.status,
+        remark: item.remark,
       })),
       total,
     })
@@ -109,15 +117,21 @@ export class TagUserService {
   @CacheEvict(CACHE_ITEMS_KEY, '{userId}')
   async update(updateTagUserDto: UpdateTagUserDto) {
     const res = await this.tagUserEntityRep.update(
-      { userId: updateTagUserDto.userId },
+      { userId: updateTagUserDto.userId, tagId: updateTagUserDto.tagId },
       updateTagUserDto,
     )
+
+    await this.eventEmitter.emitAsync(EmitAppMemberUserEvent.updateRedis, new EmitAppMemberUserEvent(updateTagUserDto.userId))
+
     return ResultData.ok(res)
   }
 
   @CacheEvict(CACHE_ITEMS_KEY, '{userId}')
   async remove(userId: string, tagId: string) {
     const data = await this.tagUserEntityRep.delete({ userId, tagId })
+
+    await this.eventEmitter.emitAsync(EmitAppMemberUserEvent.updateRedis, new EmitAppMemberUserEvent(userId))
+
     return ResultData.ok(data)
   }
 

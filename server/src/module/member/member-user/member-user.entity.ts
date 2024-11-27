@@ -7,8 +7,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
   comment: 'App 用户信息表',
 })
 export class MemberUserEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'user_id', comment: '用户ID' })
-  public userId: number
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'user_id', comment: '用户ID' })
+  public userId: string
 
   @Column({ type: 'varchar', name: 'user_name', length: 30, nullable: false, comment: '用户账号' })
   public userName: string

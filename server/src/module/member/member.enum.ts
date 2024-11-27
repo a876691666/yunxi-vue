@@ -1,6 +1,8 @@
 export const MEMBER_ENUM = {
   USER: 'member_user:',
 
+  CACHE: 'member_cache:',
+
   LOGIN_TOKEN_KEY: 'member_login_token:',
 }
 

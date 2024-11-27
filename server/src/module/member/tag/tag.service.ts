@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Response } from 'express'
 import { Cacheable, CacheEvict, CacheList } from 'src/common/decorators/redis.decorator'
@@ -6,6 +7,7 @@ import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
 import { RedisService } from 'src/module/common/redis/redis.service'
 import { Repository } from 'typeorm'
+import { EmitAppMemberUserEvent } from '../app-member-user/app-member-user.subscriber'
 import { CreateTagDto, ListTagDto, UpdateTagDto } from './tag.dto'
 import { TagEntity } from './tag.entity'
 
@@ -18,6 +20,7 @@ export class TagService {
     @InjectRepository(TagEntity)
     private readonly tagEntityRep: Repository<TagEntity>,
     private readonly redisService: RedisService,
+    private readonly eventEmitter: EventEmitter2,
   ) { }
 
   async create(createTagDto: CreateTagDto) {
@@ -140,6 +143,9 @@ export class TagService {
       { id: updateTagDto.id },
       updateTagDto,
     )
+
+    await this.eventEmitter.emitAsync(EmitAppMemberUserEvent.clearAllRedis, new EmitAppMemberUserEvent(updateTagDto.id))
+
     return ResultData.ok(res)
   }
 

@@ -9,6 +9,7 @@ import { JwtAuthGuard } from 'src/common/guards/auth.guard'
 import { PermissionGuard } from 'src/common/guards/permission.guard'
 
 import { RolesGuard } from './common/guards/roles.guard'
+import { TagGuard } from './common/guards/tag.guard'
 import configuration from './config/index'
 import { CommonModule } from './module/common/common.module'
 import { ExtendsModule } from './module/extends/extends.module'
@@ -55,18 +56,10 @@ import { UploadModule } from './module/upload/upload.module'
     MemberModule,
   ],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: PermissionGuard,
-    },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+    { provide: APP_GUARD, useClass: PermissionGuard },
+    { provide: APP_GUARD, useClass: TagGuard },
   ],
 })
 export class AppModule { }

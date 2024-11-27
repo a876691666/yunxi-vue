@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { CacheEnum } from 'src/common/enum/index'
 import { RedisService } from 'src/module/common/redis/redis.service'
+import { MEMBER_ENUM } from 'src/module/member/member.enum'
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(Strategy) {
@@ -33,9 +34,12 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
    */
   async validate(payload: { uuid: string, userId: string, iat: Date }) {
     const user = await this.redisService.get(`${CacheEnum.LOGIN_TOKEN_KEY}${payload.uuid}`)
+    const memberUser = await this.redisService.get(`${MEMBER_ENUM.USER}${payload.uuid}`)
+
     // 如果用用户信息，代表 token 没有过期，没有则 token 已失效
-    if (!user)
+    if (!user && !memberUser)
       throw new UnauthorizedException('登录已过期，请重新登录')
-    return user
+
+    return user || memberUser
   }
 }

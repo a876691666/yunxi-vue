@@ -6,7 +6,7 @@ import { RedisService } from 'src/module/common/redis/redis.service'
 
 @Injectable()
 export class OnlineService {
-  constructor(private readonly redisService: RedisService) {}
+  constructor(private readonly redisService: RedisService) { }
   /**
    * 日志列表-分页
    * @param query
@@ -15,7 +15,8 @@ export class OnlineService {
   async findAll(query) {
     const kes = await this.redisService.keys(`${CacheEnum.LOGIN_TOKEN_KEY}*`)
     const data = await this.redisService.mget(kes)
-    const list = Paginate(
+
+    const rows = Paginate(
       {
         list: data,
         pageSize: query.pageSize,
@@ -23,9 +24,10 @@ export class OnlineService {
       },
       query,
     ).map((item) => {
+      console.log(item)
       return {
         tokenId: item.token,
-        deptName: item.user.deptName,
+        deptName: item.user?.dept?.deptName,
         userName: item.username,
         ipaddr: item.ipaddr,
         loginLocation: item.loginLocation,
@@ -34,10 +36,7 @@ export class OnlineService {
         loginTime: item.loginTime,
       }
     })
-    return ResultData.ok({
-      list,
-      total: data.length,
-    })
+    return ResultData.rows({ rows, total: data.length })
   }
 
   async delete(token: string) {

@@ -43,9 +43,13 @@ export const columns: VxeGridProps['columns'] = [
     slots: {
       default: ({ row }) => {
         // 可选从DictEnum中获取 DictEnum.SYS_NORMAL_DISABLE 便于维护
-        return renderDict(row.status, 'sys_normal_disable');
+        return renderDict(row.groupDisabled, 'sys_normal_disable');
       },
     },
+  },
+  {
+    title: '备注',
+    field: 'remark',
   },
   {
     field: 'action',

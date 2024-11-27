@@ -36,7 +36,7 @@ export class MemberUserController {
   @RequirePermission('member:member-user:query')
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.memberUserService.findOne(+id)
+    return this.memberUserService.findOne(id)
   }
 
   @ApiOperation({
@@ -56,7 +56,7 @@ export class MemberUserController {
   @Delete(':id')
   @Operlog({ businessType: BusinessType.DELETE })
   remove(@Param('id') id: string) {
-    return this.memberUserService.remove(+id)
+    return this.memberUserService.remove(id)
   }
 
   @ApiOperation({

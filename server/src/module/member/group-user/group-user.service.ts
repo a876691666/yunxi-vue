@@ -5,7 +5,7 @@ import { Cacheable, CacheEvict, CacheList } from 'src/common/decorators/redis.de
 import { ExportTable } from 'src/common/utils/export'
 import { ResultData } from 'src/common/utils/result'
 import { RedisService } from 'src/module/common/redis/redis.service'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, Repository } from 'typeorm'
 import { GroupService } from '../group/group.service'
 import { CreateGroupUserDto, ListGroupUserDto, UpdateGroupUserDto } from './group-user.dto'
 import { GroupUserEntity } from './group-user.entity'
@@ -23,14 +23,48 @@ export class GroupUserService {
   ) { }
 
   async create(createGroupUserDto: CreateGroupUserDto) {
+    // 获取分组信息
+    const group = await this.groupService.findOne(createGroupUserDto.groupId)
+    if (!group.data) {
+      throw new BadRequestException('分组不存在')
+    }
+
+    // 获取当前分组人数
+    const count = await this.count({ groupId: createGroupUserDto.groupId })
+
+    // 校验是否超过最大人数
+    if (count.data >= group.data.max) {
+      throw new BadRequestException('分组人数已达到上限')
+    }
+
     const res = await this.groupUserEntityRep.save(createGroupUserDto)
     return ResultData.ok(res)
+  }
+
+  async count(query: Partial<ListGroupUserDto>) {
+    const entity = this.groupUserEntityRep.createQueryBuilder('entity')
+
+    if (query.userId) {
+      entity.where('entity.userId = :userId', { userId: query.userId })
+    }
+
+    if (query.status) {
+      entity.andWhere('entity.status = :status', { status: query.status })
+    }
+
+    if (query.groupId) {
+      entity.andWhere('entity.groupId = :groupId', { groupId: query.groupId })
+    }
+
+    return ResultData.ok(await entity.getCount())
   }
 
   async findAll(query: ListGroupUserDto) {
     const entity = this.groupUserEntityRep.createQueryBuilder('entity')
 
-    entity.where('entity.user_id = :userId', { userId: query.userId })
+    if (query.userId) {
+      entity.where('entity.userId = :userId', { userId: query.userId })
+    }
 
     if (query.status) {
       entity.andWhere('entity.status = :status', { status: query.status })
@@ -54,6 +88,7 @@ export class GroupUserService {
         name: item.name,
         module: item.module,
         groupDisabled: item.status,
+        remark: item.remark,
       })),
       total,
     })

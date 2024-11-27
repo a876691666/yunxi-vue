@@ -1,13 +1,16 @@
-import { Module } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { MemberUserEntity } from '../member-user/member-user.entity'
-import { MemberUserController } from './member-user-app.controller'
-import { MemberUserService } from './member-user-app.service'
+import { TagUserModule } from '../tag-user/tag-user.module'
+import { AppMemberUserController } from './app-member-user.controller'
+import { AppMemberUserService } from './app-member-user.service'
 
+@Global()
 @Module({
   imports: [
+    TagUserModule,
     TypeOrmModule.forFeature([MemberUserEntity]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -17,7 +20,8 @@ import { MemberUserService } from './member-user-app.service'
       inject: [ConfigService],
     }),
   ],
-  controllers: [MemberUserController],
-  providers: [MemberUserService],
+  controllers: [AppMemberUserController],
+  providers: [AppMemberUserService],
+  exports: [AppMemberUserService],
 })
-export class MemberUserAppModule {}
+export class AppMemberUserAppModule { }

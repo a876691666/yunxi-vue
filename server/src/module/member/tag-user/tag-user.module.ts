@@ -6,8 +6,12 @@ import { TagUserEntity } from './tag-user.entity'
 import { TagUserService } from './tag-user.service'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TagUserEntity]), TagModule],
+  imports: [
+    TypeOrmModule.forFeature([TagUserEntity]),
+    TagModule,
+  ],
   controllers: [TagUserController],
   providers: [TagUserService],
+  exports: [TagUserService],
 })
-export class TagUserModule {}
+export class TagUserModule { }

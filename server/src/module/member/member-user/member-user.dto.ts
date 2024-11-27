@@ -35,8 +35,8 @@ export class CreateMemberUserDto {
 
 export class UpdateMemberUserDto {
   @ApiProperty({ required: true, description: '主键' })
-  @IsNumber()
-  userId: number
+  @IsString()
+  userId: string
 
   @ApiProperty({ required: false, description: '用户账号' })
   @IsOptional()
@@ -145,8 +145,8 @@ export class ResetPwdDto {
   @ApiProperty({
     required: true,
   })
-  @IsNumber()
-  userId: number
+  @IsString()
+  userId: string
 
   @ApiProperty({
     required: true,
@@ -159,4 +159,5 @@ export class ResetPwdDto {
 export interface MemberUserType {
   token: string
   user: MemberUserEntity
+  tags: string[]
 }

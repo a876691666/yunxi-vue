@@ -99,7 +99,7 @@ export class MemberUserService {
     return ResultData.rows({ rows, total })
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const res = await this.memberUserEntityRep.findOne({
       where: {
         delFlag: '0',
@@ -117,7 +117,7 @@ export class MemberUserService {
     return ResultData.ok(res)
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const data = await this.memberUserEntityRep.update(
       { userId: id },
       { delFlag: '1' },

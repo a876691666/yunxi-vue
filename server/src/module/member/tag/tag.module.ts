@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { TagController } from './tag.controller'
 import { TagEntity } from './tag.entity'
@@ -10,4 +10,4 @@ import { TagService } from './tag.service'
   providers: [TagService],
   exports: [TagService],
 })
-export class TagModule {}
+export class TagModule { }
